@@ -6,7 +6,7 @@ import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/application/pharmacy_provider.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_medicine_product/add_doctor.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_medicine_product/product_pharmacy.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/medicine_category/widgets/add_new_round_widget.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/medicine_category/widgets/get_category_popup.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/medicine_category/widgets/round_text_widget.dart';
@@ -144,7 +144,7 @@ class DoctorScreen extends StatelessWidget {
                               EasyNavigation.push(
                                 type: PageTransitionType.rightToLeft,
                                 context: context,
-                                page: const AddDoctorScreen(),
+                                page: const PharmacyProductScreen(),
                               );
                             },
                             onLongPress: () {

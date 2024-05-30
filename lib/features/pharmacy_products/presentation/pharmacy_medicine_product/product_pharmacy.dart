@@ -19,8 +19,8 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/custom/app_bar/sliver_appbar.dart';
 
-class AddDoctorScreen extends StatelessWidget {
-  const AddDoctorScreen({super.key});
+class PharmacyProductScreen extends StatelessWidget {
+  const PharmacyProductScreen({super.key});
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timestamp) {});
