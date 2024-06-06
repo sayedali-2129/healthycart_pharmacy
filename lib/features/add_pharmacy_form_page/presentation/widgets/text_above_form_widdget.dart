@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 
 class TextAboveFormFieldWidget extends StatelessWidget {
@@ -20,10 +21,18 @@ class TextAboveFormFieldWidget extends StatelessWidget {
                     fontSize: 14,
                   )),
           if (starText == true)
-            Text('*',
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      fontSize: 14, color: BColors.red,
-                    ))
+            Row(
+              children: [
+                const Gap(2),
+                Text(
+                  '*',
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        fontSize: 14,
+                        color: BColors.red,
+                      ),
+                ),
+              ],
+            )
         ],
       ),
     );

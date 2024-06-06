@@ -9,6 +9,7 @@ import 'package:healthycart_pharmacy/core/services/image_picker.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/i_pharmacy_facade.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_category_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/product_type_model.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: IPharmacyFacade)
@@ -18,13 +19,26 @@ class IPharmacyImpl implements IPharmacyFacade {
   final ImageService _imageService;
 //// Image section --------------------------
   @override
-  FutureResult<File> getImage() async {
-    return await _imageService.getGalleryImage();
+  FutureResult<List<File>> getProductImageList({required int maxImages}) async {
+    return await _imageService.getMultipleGalleryImage(maxImages: maxImages);
   }
 
   @override
-  FutureResult<String> saveImage({required File imageFile}) async {
-    return await _imageService.saveImage(imageFile: imageFile, folderName: 'pharmacy_category');
+  FutureResult<List<String>> saveProductImageList(
+      {required List<File> imageFileList}) async {
+    List<String> imageUrlList = [];
+    for (var imageFile in imageFileList) {
+      await _imageService
+          .saveImage(imageFile: imageFile, folderName: 'pharmacy_product')
+          .then((result) {
+        result.fold((failure) {
+          return left(failure);
+        }, (imageUrl) {
+          imageUrlList.add(imageUrl);
+        });
+      });
+    }
+    return right(imageUrlList);
   }
 
   @override
@@ -73,7 +87,6 @@ class IPharmacyImpl implements IPharmacyFacade {
               PharmacyCategoryModel.fromMap(e.data() as Map<String, dynamic>)
                   .copyWith(id: e.id))
           .toList();
-      log('Category of hospitals::::::${categoryList.length.toString()}');
 
       return right(categoryList);
     } on FirebaseException catch (e) {
@@ -92,13 +105,10 @@ class IPharmacyImpl implements IPharmacyFacade {
     required PharmacyCategoryModel category,
   }) async {
     try {
-      log('User Id:::::$pharmacyId CategoryId::::: ${category.id}');
-      log('${category.id}');
       if (pharmacyId == null) {
         return left(
             const MainFailure.firebaseException(errMsg: 'check userid'));
       }
-      log('User id for updating category');
       await _firebaseFirestore
           .collection(FirebaseCollections.pharmacy)
           .doc(pharmacyId)
@@ -126,8 +136,6 @@ class IPharmacyImpl implements IPharmacyFacade {
             const MainFailure.firebaseException(errMsg: 'Check user Id'));
       }
       final categoryId = category.id;
-      log('Category id for deleting category ::: $categoryId');
-      log('User id for deleting category ::: $pharmacyId');
       await _firebaseFirestore
           .collection(FirebaseCollections.pharmacy)
           .doc(pharmacyId)
@@ -153,7 +161,7 @@ class IPharmacyImpl implements IPharmacyFacade {
       final snapshot = await _firebaseFirestore
           .collection(FirebaseCollections.pharmacyProduct)
           .where('categoryId', isEqualTo: categoryId)
-          .where('hospitalId', isEqualTo: pharmacyId)
+          .where('pharmacyId', isEqualTo: pharmacyId)
           .get();
       return right(snapshot.docs.isNotEmpty);
     } on FirebaseException catch (e) {
@@ -169,18 +177,18 @@ class IPharmacyImpl implements IPharmacyFacade {
   @override
   FutureResult<PharmacyProductAddModel> addPharmacyProductDetails({
     required PharmacyProductAddModel productData,
+    required Map<String, dynamic> productMapData,
   }) async {
     try {
       final id = _firebaseFirestore
           .collection(FirebaseCollections.pharmacyProduct)
           .doc()
           .id;
-      productData.id = id;
+      productMapData.update('id', (value) => id);
       await _firebaseFirestore
           .collection(FirebaseCollections.pharmacyProduct)
           .doc(id)
-          .set(productData.toMap());
-      log('Doctor id :::::: $id');
+          .set(productMapData);
       return right(productData.copyWith(id: id));
     } on FirebaseException catch (e) {
       log(e.message!);
@@ -190,23 +198,42 @@ class IPharmacyImpl implements IPharmacyFacade {
     }
   }
 
+  DocumentSnapshot<Map<String, dynamic>>? lastDoc;
+  bool noMoreData = false;
   @override
   FutureResult<List<PharmacyProductAddModel>> getPharmacyProductDetails({
     required String categoryId,
     required String pharmacyId,
+    required String? searchText,
   }) async {
     try {
-      final snapshot = await _firebaseFirestore
+      if (noMoreData) return right([]);
+      Query query = _firebaseFirestore
           .collection(FirebaseCollections.pharmacyProduct)
-          .orderBy('createdAt')
+          .orderBy('createdAt', descending: true)
           .where('categoryId', isEqualTo: categoryId)
-          .where('hospitalId', isEqualTo: pharmacyId)
-          .get();
-      log(' Implementation of get doctor called  :::: ');
-      return right(snapshot.docs
+          .where('pharmacyId', isEqualTo: pharmacyId);
+
+      if (searchText != null && searchText.isNotEmpty) {
+        query =
+            query.where('keywords', arrayContains: searchText.toLowerCase());
+      }
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc!);
+        log(lastDoc!.id.toString());
+      }
+      final snapshots = await query.limit(6).get();
+      if (snapshots.docs.length < 6 || snapshots.docs.isEmpty) {
+        noMoreData = true;
+      } else {
+        lastDoc = snapshots.docs.last as DocumentSnapshot<Map<String, dynamic>>;
+      }
+      final List<PharmacyProductAddModel> productList = snapshots.docs
           .map((e) =>
-              PharmacyProductAddModel.fromMap(e.data()).copyWith(id: e.id))
-          .toList());
+              PharmacyProductAddModel.fromMap(e.data() as Map<String, dynamic>)
+                  .copyWith(id: e.id))
+          .toList();
+      return right(productList);
     } on FirebaseException catch (e) {
       log(e.code);
       log(e.message!);
@@ -217,17 +244,23 @@ class IPharmacyImpl implements IPharmacyFacade {
   }
 
   @override
+  void clearFetchData() {
+    noMoreData = false;
+    lastDoc = null;
+  }
+
+  @override
   FutureResult<PharmacyProductAddModel> deletePharmacyProductDetails({
-    required String pharmacyId,
+    required String productId,
     required PharmacyProductAddModel productData,
   }) async {
     try {
       await _firebaseFirestore
           .collection(FirebaseCollections.pharmacyProduct)
-          .doc(pharmacyId)
+          .doc(productId)
           .delete();
 
-      log(' Deletion of doctor called  :::: ');
+      log(' Deletion of pharmacy called  :::: ');
       return right(productData);
     } on FirebaseException catch (e) {
       log(e.code);
@@ -240,16 +273,18 @@ class IPharmacyImpl implements IPharmacyFacade {
 
   @override
   FutureResult<PharmacyProductAddModel> updatePharmacyProductDetails({
-    required String pharmacyId,
+    required String productId,
     required PharmacyProductAddModel productData,
+    required Map<String, dynamic> productMapData, 
   }) async {
     try {
       await _firebaseFirestore
           .collection(FirebaseCollections.pharmacyProduct)
-          .doc(pharmacyId)
-          .update(productData.toMap());
+          .doc(productId)
+          .update(productMapData);
 
-      log(' Updating  of get pharmacy called  :::: ');
+      log('Updating  of get pharmacy called  :::: ');
+      
       return right(productData);
     } on FirebaseException catch (e) {
       log(e.code);
@@ -261,23 +296,41 @@ class IPharmacyImpl implements IPharmacyFacade {
   }
 
   @override
-  FutureResult<List<File>> getProductImageList({required int maxImages}) async {
-    return await _imageService.getMultipleGalleryImage( maxImages: maxImages);
+  FutureResult<MedicineData> getMedicineFormAndPackageList() async {
+    try {
+      List<String>? productPackage;
+      List<String>? productForm;
+      await _firebaseFirestore
+          .collection(FirebaseCollections.productsForm)
+          .doc('medicine')
+          .get()
+          .then((value) {
+        var data = value.data() as Map<String, dynamic>;
+        List<dynamic> medicineFormList = data['medicineFormList'];
+        List<dynamic> medicinePackageList = data['medicinePackageList'];
+        productForm = medicineFormList.map((item) {
+          return item['medicineForm'] as String;
+        }).toList();
+        productPackage = medicinePackageList.map((item) {
+          return item['medicinePackage'] as String;
+        }).toList();
+      });
+      if (productPackage != null && productForm != null) {
+        return right(MedicineData(
+            productForm: productForm ?? [],
+            productPackage: productPackage ?? []));
+      } else {
+        return left(const MainFailure.generalException(
+            errMsg: "Couldn't able to get the data."));
+      }
+    } catch (e) {
+      return left(MainFailure.generalException(errMsg: e.toString()));
+    }
   }
 
   @override
-  FutureResult<List<String>> saveProductImageList(
-      {required List<File> imageFileList}) async {
-    List<String> imageUrlList = [];
-    for (var imageFile in imageFileList) {
-      await _imageService.saveImage(imageFile: imageFile, folderName: 'pharmacy_product').then((result) {
-        result.fold((failure) {
-          return left(failure);
-        }, (imageUrl) {
-          imageUrlList.add(imageUrl);
-        });
-      });
-    }
-    return right(imageUrlList);
+  FutureResult<Unit> deletePharmacyImageList(
+      {required List<String> imageUrlList}) async {
+    return await _imageService.deleteFirebaseStorageListUrl(imageUrlList);
   }
 }

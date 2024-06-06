@@ -30,11 +30,12 @@ class SearchTextFieldButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               elevation: 3,
               child: TextfieldWidget(
+                  textInputAction: TextInputAction.done,
                   controller: controller,
                   onChanged: onChanged,
                   onSubmit: onSubmit,
                   hintText: text,
-                  style: Theme.of(context).textTheme.labelLarge!),
+              )    
             ),
           ),
           const Gap(4),

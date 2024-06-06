@@ -50,7 +50,7 @@ class PharmacyFormScreen extends StatelessWidget {
                     ? SliverCustomAppbar(
                         title: 'Edit Profile',
                         onBackTap: () {
-                          if (isEditing == true) {
+                          if (pharmacyProvider.pdfUrl == null) {
                             CustomToast.sucessToast(text: 'Please add PDF');
                             return;
                           }
@@ -116,6 +116,7 @@ class PharmacyFormScreen extends StatelessWidget {
                             const DividerWidget(text: 'Tap above to add image'),
                             const Gap(24),
                             const TextAboveFormFieldWidget(
+                              starText: true,
                                 text: "Phone Number"),
                             TextfieldWidget(
                               readOnly: true,
@@ -124,16 +125,12 @@ class PharmacyFormScreen extends StatelessWidget {
                               validator: BValidator.validate,
                               controller: pharmacyProvider
                                   .pharmacyPhoneNumberController,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                    fontSize: 14,
-                                  ),
+                             
                             ),
                             const Gap(8),
                             //hospital Name
                             const TextAboveFormFieldWidget(
+                              starText: true,
                               text: "Pharmacy Name",
                             ),
 
@@ -146,16 +143,12 @@ class PharmacyFormScreen extends StatelessWidget {
                               validator: BValidator.validate,
                               controller:
                                   pharmacyProvider.pharmacyNameController,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                    fontSize: 14,
-                                  ),
+                             
                             ),
                             const Gap(8),
 
                             const TextAboveFormFieldWidget(
+                              starText: true,
                                 text: "Proprietor Name"),
                             TextfieldWidget(
                               hintText: 'Enter Proprietor name',
@@ -164,16 +157,12 @@ class PharmacyFormScreen extends StatelessWidget {
                               validator: BValidator.validate,
                               controller:
                                   pharmacyProvider.pharmacyOwnerNameController,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                    fontSize: 14,
-                                  ),
+                              
                             ),
                             const Gap(8),
 
                             const TextAboveFormFieldWidget(
+                              starText: true,
                                 text: "Pharmacy Address"),
                             TextfieldWidget(
                               hintText: 'Enter pharmacy address',
@@ -182,12 +171,7 @@ class PharmacyFormScreen extends StatelessWidget {
                               controller:
                                   pharmacyProvider.pharmacyAddressController,
                               maxlines: 3,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                    fontSize: 14,
-                                  ),
+                            
                             ),
                             const Gap(16),
                             SizedBox(
@@ -258,8 +242,7 @@ class PharmacyFormScreen extends StatelessWidget {
                                       context: context, text: 'Please wait...');
                                   if (pharmacyModel?.pharmacyRequested != 2) { // here we are checking if the hospital was not in review 
                                     await pharmacyProvider
-                                        .saveImage()
-                                        .then((value) async {
+                                        .saveImage().then((value) async {
                                       await pharmacyProvider.addPharmacyDetails(
                                           context: context);
                                     });

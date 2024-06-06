@@ -1,8 +1,9 @@
 class FirebaseCollections {
   static const String pharmacy = 'pharmacy';
-  static const String pharmacyProduct = 'pharmacy_Product';
+  static const String productsForm = 'medicine_types';
+  static const String pharmacyProduct = 'pharmacy_product';
   static const String pharmacycategory = 'pharmacy_category';
   static const String pharmacyLocation = 'pharmacy_locations';
-  static const String pharmacyBanner  = 'pharmacy_banner';
-  static const String counts  = 'counts';
+  static const String pharmacyBanner = 'pharmacy_banner';
+  static const String counts = 'counts';
 }

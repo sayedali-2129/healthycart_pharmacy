@@ -42,7 +42,8 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
   Widget build(BuildContext context) {
     return Scaffold(body:
         Consumer2<LocationProvider, AuthenticationProvider>(builder: (context, locationProvider,authProviderPharamacyDetails ,_) {
-      return CustomScrollView(slivers: [
+      return CustomScrollView(
+      slivers:[
         SliverCustomAppbar(
             title: 'Choose Location',
             onBackTap: () {
@@ -75,9 +76,8 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
               if (locationProvider.selectedPlaceMark == null) return;
               LoadingLottie.showLoading(
                   context: context, text: 'Getting Location..');
-              await locationProvider.setLocationByHospital(context: context, isHospitaEditProfile: widget.isHospitaEditProfile ?? false, hospitalModelrequestedCount: authProviderPharamacyDetails.pharmacyDataFetched?.pharmacyRequested);
-              
-            },
+              await locationProvider.updateUserLocation(context: context, isPharmacyEditProfile: widget.isHospitaEditProfile ?? false, pharmacyModelrequestedCount: authProviderPharamacyDetails.pharmacyDataFetched?.pharmacyRequested);
+              },
             child: Padding(
               padding:
                   const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 4),

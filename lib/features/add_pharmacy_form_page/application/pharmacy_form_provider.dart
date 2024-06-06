@@ -36,7 +36,7 @@ class PharmacyFormProvider extends ChangeNotifier {
       notifyListeners();
     }, (imageFilesucess) async {
       if (imageUrl != null) {
-        await _iFormFeildFacade.deleteImage(imageUrl: imageUrl!);
+        await _iFormFeildFacade.deleteImage(imageUrl: imageUrl!, pharmacyId: pharmacyId?? '');
         imageUrl = null;
       } // when editing  this will make the url null when we pick a new file
       imageFile = imageFilesucess;
@@ -80,15 +80,15 @@ class PharmacyFormProvider extends ChangeNotifier {
       id: pharmacyId,
       createdAt: Timestamp.now(),
       pharmacyKeywords: keywordHospitalBuider(),
-      phoneNo:pharmacyPhoneNumberController.text,
+      phoneNo: pharmacyPhoneNumberController.text,
       pharmacyName: pharmacyNameController.text,
       pharmacyAddress: pharmacyAddressController.text,
       pharmacyownerName: pharmacyOwnerNameController.text,
       pharmacyDocumentLicense: pdfUrl,
       pharmacyImage: imageUrl,
       isActive: true,
-      isPharmacyON : false,
-      pharmacyRequested :1,
+      isPharmacyON: false,
+      pharmacyRequested: 1,
     );
 
     final result = await _iFormFeildFacade.addPharmacyDetails(
@@ -116,6 +116,8 @@ class PharmacyFormProvider extends ChangeNotifier {
     pharmacyAddressController.clear();
     pdfFile = null;
     pdfUrl = null;
+    imageFile = null;
+    imageUrl = null;
     pharmacyPhoneNumberController.clear();
     pharmacyOwnerNameController.clear();
     notifyListeners();
@@ -133,11 +135,13 @@ class PharmacyFormProvider extends ChangeNotifier {
       CustomToast.errorToast(text: failure.errMsg);
       notifyListeners();
     }, (pdfFileSucess) async {
-        LoadingLottie.showLoading(context: context, text: 'Uploading document...');
-       if (pdfUrl != null) {
-        await _iFormFeildFacade.deletePDF(pdfUrl: pdfUrl??'', pharmacyId: pharmacyId?? '');
+      LoadingLottie.showLoading(
+          context: context, text: 'Uploading document...');
+      if (pdfUrl != null) {
+        await _iFormFeildFacade.deletePDF(
+            pdfUrl: pdfUrl ?? '', pharmacyId: pharmacyId ?? '');
         pdfUrl = null;
-      } 
+      }
       pdfFile = pdfFileSucess;
       await savePDF().then((value) {
         // save PDF function is called here......
@@ -171,7 +175,8 @@ class PharmacyFormProvider extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    final result = await _iFormFeildFacade.deletePDF(pdfUrl: pdfUrl?? '', pharmacyId: pharmacyId?? '');
+    final result = await _iFormFeildFacade.deletePDF(
+        pdfUrl: pdfUrl ?? '', pharmacyId: pharmacyId ?? '');
     result.fold((failure) {
       CustomToast.errorToast(text: failure.errMsg);
       notifyListeners();
@@ -218,7 +223,7 @@ class PharmacyFormProvider extends ChangeNotifier {
       clearAllData();
       CustomToast.sucessToast(text: 'Sucessfully updated details.');
       Navigator.pop(context);
-           EasyNavigation.pushReplacement(
+      EasyNavigation.pushReplacement(
         type: PageTransitionType.bottomToTop,
         context: context,
         page: const HomeScreen(),

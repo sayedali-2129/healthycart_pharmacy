@@ -90,18 +90,7 @@ class LoginScreen extends StatelessWidget {
                             .labelLarge!
                             .copyWith(fontSize: 18, color: BColors.white),
                       ),
-                      //const Gap(24),
-                      // CustomButton(
-                      //   width: double.infinity,
-                      //   height: 48,
-                      //   onTap: () {},
-                      //   text: 'Skip login',
-                      //   buttonColor: BColors.buttonLightColor,
-                      //   style: Theme.of(context)
-                      //       .textTheme
-                      //       .labelLarge!
-                      //       .copyWith(fontSize: 18, color: BColors.white),
-                      // ),
+
                     ],
                   ),
                 )),

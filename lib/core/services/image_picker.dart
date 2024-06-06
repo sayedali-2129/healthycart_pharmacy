@@ -66,7 +66,7 @@ class ImageService {
   }) async {
     if (imageUrl == null) {
       return left(const MainFailure.generalException(
-          errMsg: "Can't able to remove previous image."));
+          errMsg: "Can't able to remove image."));
     }
     final imageRef = _storage.refFromURL(imageUrl);
     try {
@@ -74,7 +74,7 @@ class ImageService {
       return right(unit);
     } catch (e) {
       return left(const MainFailure.generalException(
-          errMsg: "Can't able to remove previous image."));
+          errMsg: "Can't able to remove image."));
     }
   }
 
@@ -100,6 +100,23 @@ class ImageService {
     } catch (e) {
       return left(
           const MainFailure.generalException(errMsg: 'No images picked.'));
+    }
+  }
+
+  FutureResult<Unit> deleteFirebaseStorageListUrl(
+      List<String> imageUrlList) async {
+    try {
+      final functionList = <Future<void>>[];
+      for (final url in imageUrlList) {
+        functionList.add(deleteImageUrl(imageUrl: url));
+      }
+
+      await Future.wait(functionList);
+      log('images deleted successfully');
+      return right(unit);
+    } on Exception catch (e) {
+      return left( MainFailure.generalException(
+          errMsg: e.toString()));
     }
   }
 }

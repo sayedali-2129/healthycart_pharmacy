@@ -1,4 +1,6 @@
-import 'dart:io';
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,9 +10,11 @@ import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/i_pharmacy_facade.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_category_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/product_type_model.dart';
 import 'package:injectable/injectable.dart';
+import 'package:intl/intl.dart';
 
 @injectable
 class PharmacyProvider extends ChangeNotifier {
@@ -20,8 +24,6 @@ class PharmacyProvider extends ChangeNotifier {
 
   ///////////////////////
   ///Image section ---------------------------
-  String? imageUrl;
-  File? imageFile;
   bool fetchLoading = false;
   bool fetchAlertLoading = false;
   bool onTapBool = false;
@@ -30,39 +32,6 @@ class PharmacyProvider extends ChangeNotifier {
     // to change to long press and ontap
     onTapBool = !onTapBool;
     notifyListeners();
-  }
-
-  Future<void> getImage() async {
-    final result = await _iPharmacyFacade.getImage();
-    notifyListeners();
-    result.fold((failure) {
-      CustomToast.errorToast(text: failure.errMsg);
-    }, (imageFilesucess) async {
-      if (imageUrl != null) {
-        await _iPharmacyFacade.deleteImage(imageUrl: imageUrl!);
-        imageUrl = null;
-      } // when editing  this will make the url null when we pick a new file
-      imageFile = imageFilesucess;
-      notifyListeners();
-    });
-  }
-
-  Future<void> saveImage() async {
-    if (imageFile == null) {
-      CustomToast.errorToast(text: 'Please check the image selected.');
-      return;
-    }
-    fetchLoading = true;
-
-    /// fetch loading is true because I am using this function along with add function
-    notifyListeners();
-    final result = await _iPharmacyFacade.saveImage(imageFile: imageFile!);
-    result.fold((failure) {
-      CustomToast.errorToast(text: failure.errMsg);
-    }, (imageurlGet) {
-      imageUrl = imageurlGet;
-      notifyListeners();
-    });
   }
 
 //////////////////////////
@@ -81,11 +50,11 @@ class PharmacyProvider extends ChangeNotifier {
 
   List<PharmacyCategoryModel> pharmacyCategoryAllList = [];
   List<String> pharmacyCategoryIdList =
-      []; // to get id of category from the doctors list
+      []; // to get id of category from the product list
   List<PharmacyCategoryModel> pharmacyCategoryList = [];
   PharmacyCategoryModel? pharmacyCategory;
   List<PharmacyCategoryModel> pharmacyCategoryUniqueList = [];
-////getting category of doctor from admin side
+////getting category of pharmacy from admin side
   Future<void> getPharmacyCategoryAll() async {
     if (pharmacyCategoryAllList.isNotEmpty) return;
     fetchAlertLoading = true;
@@ -130,7 +99,7 @@ class PharmacyProvider extends ChangeNotifier {
     }
   }
 
-  /// update the category in hospital model
+  /// update the category in pharmacy
   Future<void> updatePharmacyCategoryDetails(
       {required PharmacyCategoryModel categorySelected,
       required String pharmacyId}) async {
@@ -147,10 +116,10 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
 ///////////////////////
-//////// Deleting doctor category-----------------------
+//////// Deleting pharmacy category-----------------------
   Future<void> deletePharmacyCategory(
       {required int index, required PharmacyCategoryModel category}) async {
-    // check if there is any doctors inside category that is going to be deleted
+    // check if there is any pharmacy inside category that is going to be deleted
     final boolResult =
         await _iPharmacyFacade.checkProductInsidePharmacyCategory(
             categoryId: category.id ?? 'No categoryId',
@@ -177,71 +146,17 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
 /////////////////////////////////////////////
-//        Doctor  Section---------------------------------
+//---------------------------Product  Section---------------------------------
+
   String? pharmacyId =
-      FirebaseAuth.instance.currentUser?.uid; // user id and hospital id is same
+      FirebaseAuth.instance.currentUser?.uid; // user id and pharmacy id is same
   String? categoryId;
 
   /// these both are used in the category also to check wheather the user
-  String? selectedDoctorCategoryText;
 
-  final GlobalKey<FormState> formKey =
-      GlobalKey<FormState>(); // formkey for the user
-  final TextEditingController aboutController = TextEditingController();
-  final TextEditingController doctorNameController = TextEditingController();
-  final TextEditingController doctorFeeController = TextEditingController();
-  final TextEditingController specializationController =
-      TextEditingController();
-  final TextEditingController experienceController = TextEditingController();
-  final TextEditingController qualificationController = TextEditingController();
-  final TextEditingController aboutDoctorController = TextEditingController();
-  String? timeSlotListElement1;
-  String? timeSlotListElement2;
-  String? availableTotalTimeSlot1;
-  String? availableTotalTimeSlot2;
-  String? availableTotalTime;
-  List<String>? timeSlotListElementList = [];
-// adding the userId/hospital and categoryId
-  void selectedCategoryDetail({
-    required String catId,
-    required String catName,
-  }) {
-    categoryId = catId;
-    selectedDoctorCategoryText = catName;
-    specializationController.text =
-        selectedDoctorCategoryText ?? 'No category selected';
-    notifyListeners();
-  }
+  ///////////////////////////////////// 1.)  Adding ImageList----------
 
-  ///setting total time slot
-  void totalAvailableTimeSetter(String time) {
-    availableTotalTime = time;
-    notifyListeners();
-  }
-
-// setting available time slot
-  void addTimeslot() {
-    if (timeSlotListElement1 != null && timeSlotListElement2 != null) {
-      timeSlotListElementList!
-          .add('$timeSlotListElement1 - $timeSlotListElement2');
-      timeSlotListElement1 = null;
-      timeSlotListElement2 = null;
-      notifyListeners();
-    } else {
-      CustomToast.errorToast(text: 'Select both start and end time');
-      notifyListeners();
-    }
-  }
-
-// removing timeslot from the list
-  void removeTimeSlot(int index) {
-    timeSlotListElementList!.removeAt(index);
-    notifyListeners();
-  }
-
-  ///////////////////////////////////// 1.)  Adding doctor----------
-
-// image section of adding doctor
+// image section of adding product
   List<String> imageProductUrlList = [];
 
   Future<void> getProductImageList({
@@ -266,7 +181,7 @@ class PharmacyProvider extends ChangeNotifier {
             imageProductUrlList.addAll(imageUrlList);
             notifyListeners();
             EasyNavigation.pop(context: context);
-            CustomToast.sucessToast(text: 'Sucessfully Picked');
+            CustomToast.sucessToast(text: 'Sucessfully picked an image');
           });
         });
       });
@@ -279,10 +194,20 @@ class PharmacyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<String> deleteUrlList = [];
+  void deletedUrl({required String selectedImageUrl}) {
+    selectedIndex = 0;
+    imageProductUrlList.remove(selectedImageUrl);
+    deleteUrlList.add(selectedImageUrl);
+    notifyListeners();
+  }
+
   Future<void> deleteProductImageList({
     required BuildContext context,
     required int index,
     required String selectedImageUrl,
+
+    /// check this when editing......
   }) async {
     await _iPharmacyFacade
         .deleteImage(imageUrl: selectedImageUrl)
@@ -297,162 +222,750 @@ class PharmacyProvider extends ChangeNotifier {
       });
     });
   }
-//   ///
-//   List<PharmacyProductAddModel> doctorList = [];
-//   PharmacyProductAddModel? doctorDetails;
-//   List<PharmacyProductAddModel> doctorData = [];
 
-//   Future<void> addDoctorDetail({
-//     required BuildContext context,
-//   }) async {
-//     fetchLoading = true;
-//     notifyListeners();
-//     doctorDataList();
-//     final result =
-//         await _iPharmacyFacade.addDoctorDetails(doctorData: doctorDetails!);
-//     result.fold((failure) {
-//       CustomToast.errorToast(
-//           text: "Couldn't able to add doctor, please try again.");
-//       EasyNavigation.pop(context: context);
-//     }, (doctorReturned) {
-//       CustomToast.sucessToast(text: "Added doctor sucessfully");
-//       EasyNavigation.pop(context: context);
-//       EasyNavigation.pop(context: context);
-//       doctorList.insert(doctorList.length, doctorReturned);
-//       clearDoctorDetails();
-//       notifyListeners();
-//     });
-//     fetchLoading = false;
-//     notifyListeners();
-//   }
+  Future<void> deletePharmacyImageList(
+      {required List<String> imageUrls}) async {
+    await _iPharmacyFacade.deletePharmacyImageList(imageUrlList: imageUrls);
+  }
 
-//   List<String> keywordDoctorBuilder() {
-//     List<String> combinedKeyWords = [];
-//     combinedKeyWords.addAll(keywordsBuilder(doctorNameController.text));
-//     combinedKeyWords.addAll(keywordsBuilder(specializationController.text));
-//     return combinedKeyWords;
-//   }
+  ///Medicine form section
+  final TextEditingController productNameController = TextEditingController();
+  final TextEditingController productBrandNameController =
+      TextEditingController();
+  final TextEditingController productMRPController = TextEditingController();
+  final TextEditingController productDiscountRateController =
+      TextEditingController();
+  final TextEditingController totalQuantityController = TextEditingController();
+  final TextEditingController storeBelowController = TextEditingController();
+  final TextEditingController expiryDateController = TextEditingController();
+  final TextEditingController productFormNumberController =
+      TextEditingController();
+  final TextEditingController productPackageNumberController =
+      TextEditingController();
+  final TextEditingController measurementUnitNumberController =
+      TextEditingController();
+  final TextEditingController keyIngredientController = TextEditingController();
+  final TextEditingController productInformationController =
+      TextEditingController();
+  final TextEditingController directionToUseController =
+      TextEditingController();
+  final TextEditingController safetyInformationController =
+      TextEditingController();
+  final TextEditingController keyBenefitController = TextEditingController();
+  final TextEditingController productBoxContainsController =
+      TextEditingController();
+  final TextEditingController productWarrantyController =
+      TextEditingController();
 
-//   void doctorDataList() {
-//     doctorDetails = PharmacyProductAddModel(
-//         categoryId: categoryId,
-//         hospitalId: pharmacyId,
-//         doctorImage: imageUrl,
-//         doctorName: doctorNameController.text,
-//         doctorTotalTime: availableTotalTime,
-//         doctorTimeList: timeSlotListElementList,
-//         doctorFee: int.parse(doctorFeeController.text),
-//         doctorSpecialization: specializationController.text,
-//         doctorExperience: int.parse(experienceController.text),
-//         doctorQualification: qualificationController.text,
-//         doctorAbout: aboutController.text,
-//         createdAt: Timestamp.now(),
-//         keywords: keywordDoctorBuilder());
-//     notifyListeners();
-//   }
+  bool? discountAvailable;
+  bool? prescriptionNeeded;
+  int? discountPercentage;
+  DateTime? expiryDate;
+  String? selectedCategoryText;
 
-//   void clearDoctorDetails() {
-//     imageFile = null;
-//     availableTotalTimeSlot2 = null;
-//     availableTotalTimeSlot1 = null;
-//     availableTotalTime = null;
-//     doctorNameController.clear();
-//     doctorFeeController.clear();
-//     experienceController.clear();
-//     qualificationController.clear();
-//     aboutController.clear();
-//     timeSlotListElementList?.clear();
-//     notifyListeners();
-//     if (imageUrl != null) {
-//       imageUrl = null;
-//     }
-//     notifyListeners();
-//   }
-//   ///////////////// 2.)  Getting doctor details according to the category and user-------
+//bool setter
+  void discountAvailableboolSetter(bool? value) {
+    discountAvailable = value ?? false;
+    notifyListeners();
+  }
 
-//   Future<void> getDoctorsData() async {
-//     fetchLoading = true;
-//     notifyListeners();
-//     doctorList.clear();
-//     final result = await _iPharmacyFacade.getDoctorDetails(
-//         categoryId: categoryId!, pharmacyId: pharmacyId!);
-//     result.fold((failure) {
-//       CustomToast.errorToast(text: "Couldn't able to fetch product's");
-//     }, (doctors) {
-//       doctorList.addAll(doctors); //// here we are assigning the doctor
-//     });
-//     fetchLoading = false;
-//     notifyListeners();
-//   }
-// /////////////////////////// 3.) deleting the doctor field
+  void prescriptionNeededboolSetter(bool? value) {
+    prescriptionNeeded = value ?? false;
+    notifyListeners();
+  }
 
-//   Future<void> deleteDoctorDetails(
-//       {required int index, required PharmacyProductAddModel doctorData}) async {
-//     final result = await _iPharmacyFacade.deleteDoctorDetails(
-//         doctorId: doctorData.id ?? '', doctorData: doctorData);
-//     result.fold((failure) {
-//       CustomToast.errorToast(
-//           text: "Couldn't able to remove doctor details, please try again.");
-//     }, (doctorsData) {
-//       CustomToast.sucessToast(text: "Removed doctor sucessfully");
-//       doctorList.removeAt(index); //// here we are assigning the doctor
-//     });
-//     notifyListeners();
-//   }
+//calculating the discount
+  void discountPercentageCalculator() {
+    double value = double.tryParse(productDiscountRateController.text)! /
+        double.tryParse(productMRPController.text)!;
+    double decimal = (1 - value);
+    discountPercentage = (decimal * 100).toInt();
+    log(discountAvailable.toString());
+    notifyListeners();
+  }
 
-// /////////////////////////// 3.) update the doctor field
-//   void setDoctorEditData({required PharmacyProductAddModel doctorEditData}) {
-//     imageUrl = doctorEditData.doctorImage;
-//     doctorNameController.text = doctorEditData.doctorName ?? 'Unknown Name';
-//     availableTotalTime = doctorEditData.doctorTotalTime;
-//     timeSlotListElementList = doctorEditData.doctorTimeList;
-//     doctorFeeController.text = doctorEditData.doctorFee.toString();
-//     specializationController.text =
-//         doctorEditData.doctorSpecialization ?? 'Unknown Specialization';
-//     experienceController.text = doctorEditData.doctorExperience.toString();
-//     qualificationController.text =
-//         doctorEditData.doctorQualification ?? 'Unknown qualification';
-//     aboutController.text = doctorEditData.doctorAbout ?? 'Unknown About';
-//     notifyListeners();
-//   }
+// adding the categoryId and type
+  String? typeOfProduct;
+  void selectedProductType({String? catId, String? selectedCategory}) {
+    selectedCategoryText = selectedCategory;
+    categoryId = catId ?? '';
+    notifyListeners();
+  }
 
-//   Future<void> updateDoctorDetails({
-//     required int index,
-//     required PharmacyProductAddModel doctorData,
-//     required BuildContext context,
-//   }) async {
-//     fetchLoading = true;
-//     notifyListeners();
-//     doctorDetails = PharmacyProductAddModel(
-//       id: doctorData.id,
-//       categoryId: doctorData.categoryId,
-//       hospitalId: doctorData.hospitalId,
-//       doctorImage: imageUrl,
-//       doctorName: doctorNameController.text,
-//       doctorTotalTime: availableTotalTime,
-//       doctorTimeList: timeSlotListElementList,
-//       doctorFee: int.parse(doctorFeeController.text),
-//       doctorSpecialization: specializationController.text,
-//       doctorExperience: int.parse(experienceController.text),
-//       doctorQualification: qualificationController.text,
-//       doctorAbout: aboutController.text,
-//       createdAt: doctorData.createdAt,
-//       keywords: keywordDoctorBuilder(),
-//     );
-//     final result = await _iPharmacyFacade.updateDoctorDetails(
-//         doctorId: doctorData.id ?? '', doctorData: doctorDetails!);
-//     result.fold((failure) {
-//       CustomToast.errorToast(
-//           text: "Couldn't able to delete doctor details, please try again.");
-//     }, (doctorsData) {
-//       CustomToast.sucessToast(text: "Edited doctor details sucessfully");
-//       doctorList.removeAt(index);
-//       doctorList.insert(
-//           index, doctorsData); //// here we are assigning the doctor
-//       clearDoctorDetails();
-//       notifyListeners();
-//     });
-//     fetchLoading = false;
-//     notifyListeners();
-//   }
+  ///setting  expiryDate
+  void expiryDateSetter(DateTime? date) {
+    expiryDate = date;
+    expiryDateController.text = DateFormat('yyyy-MM').format(date!);
+    notifyListeners();
+  }
+
+  String expiryDateSetterFetched(Timestamp expiryDate) {
+    final DateTime date =
+        DateTime.fromMillisecondsSinceEpoch(expiryDate.millisecondsSinceEpoch);
+    final String result = DateFormat('yyyy-MM').format(date);
+    return result;
+  }
+
+  List<String> measurmentOptionList = [
+    'L (Litre)',
+    'mL (Millilitre)',
+    'cc (Cubic cm)',
+    'Kg (Kilogram)',
+    'g (Gram)',
+    'mg (Milligram)',
+    'µg (Microgram)'
+  ];
+  List<String> warantyOptionList = ['Months', 'Years'];
+  List<String> idealForOptionList = [
+    'Infants',
+    'Toddlers',
+    'Children',
+    'Teenagers',
+    'Adults',
+    'Elderly',
+    'Men',
+    'Women',
+    'For both men & women',
+    'For everyone'
+  ];
+  List<String> productFormList = []; //
+  List<String> productPackageList = []; // getting from the admin side
+  String? productForm;
+  String? productPackage;
+  String? productMeasurementUnit;
+  String? selectedWarantyOption;
+  String? idealFor;
+  String? equipmentType;
+  String? productType;
+  List<String> equipmentTypeList = [];
+  void setWarantyOption(String text) {
+    selectedWarantyOption = text;
+    notifyListeners();
+  }
+
+  void setDropFormText(String text) {
+    productForm = text;
+    notifyListeners();
+  }
+
+  void setDropPackageText(String text) {
+    productPackage = text;
+    notifyListeners();
+  }
+
+  void setDropMeasurementText(String text) {
+    productMeasurementUnit = text;
+    notifyListeners();
+  }
+
+  void setIdealForText(String text) {
+    idealFor = text;
+    notifyListeners();
+  }
+
+// getting the two list The package  and form of medicine
+  MedicineData? medicineFormAndPackage;
+  Future<void> getMedicineFormAndPackageList() async {
+    if (productFormList.isNotEmpty && productPackageList.isNotEmpty) return;
+    await _iPharmacyFacade.getMedicineFormAndPackageList().then((value) {
+      value.fold((failure) {
+        CustomToast.errorToast(text: failure.errMsg);
+      }, (data) {
+        medicineFormAndPackage = data;
+        productFormList = medicineFormAndPackage?.productForm ?? [];
+        productPackageList = medicineFormAndPackage?.productPackage ?? [];
+        notifyListeners();
+      });
+    });
+  }
+
+  /// I.) Medicine section to add
+  List<PharmacyProductAddModel> productList = [];
+  PharmacyProductAddModel? medicineData;
+
+  Future<void> addPharmacyMedicineDetails({
+    required BuildContext context,
+  }) async {
+    fetchLoading = true;
+    notifyListeners();
+    medicineProductDetails();
+    final result = await _iPharmacyFacade.addPharmacyProductDetails(
+        productData: medicineData!,
+        productMapData: medicineData!.toMapMedicine());
+    result.fold((failure) {
+      CustomToast.errorToast(
+          text: "Couldn't able to add the medicine, please try again.");
+      EasyNavigation.pop(context: context);
+    }, (medicineReturned) {
+      CustomToast.sucessToast(text: "Added medicine sucessfully");
+      clearProductDetails();
+      productList.insert(0, medicineReturned);
+      notifyListeners();
+      EasyNavigation.pop(context: context);
+      EasyNavigation.pop(context: context);
+    });
+    fetchLoading = false;
+    notifyListeners();
+  }
+
+  List<String> keywordProductNameBuilder() {
+    List<String> combinedKeyWords = [];
+    combinedKeyWords.addAll(keywordsBuilder(productNameController.text));
+    combinedKeyWords.addAll(keywordsBuilder(productBrandNameController.text));
+    return combinedKeyWords;
+  }
+
+  void medicineProductDetails() {
+    medicineData = PharmacyProductAddModel(
+      categoryId: categoryId,
+      pharmacyId: pharmacyId,
+      productName: productNameController.text,
+      productBrandName: productBrandNameController.text,
+      productImage: imageProductUrlList,
+      typeOfProduct: typeOfProduct,
+      productMRPRate: num.tryParse(productMRPController.text),
+      productDiscountRate: num.tryParse(productDiscountRateController.text),
+      discountPercentage: discountPercentage,
+      totalQuantity: int.parse(totalQuantityController.text),
+      storingDegree: storeBelowController.text,
+      idealFor: idealFor,
+      expiryDate:
+          Timestamp.fromMillisecondsSinceEpoch(//// want to double check here
+              expiryDate?.millisecondsSinceEpoch ?? 0),
+      createdAt: Timestamp.now(),
+      productFormNumber: int.parse(productFormNumberController.text),
+      productForm: productForm,
+      productPackageNumber: int.parse(productPackageNumberController.text),
+      productPackage: productPackage,
+      productMeasurementNumber: int.parse(measurementUnitNumberController.text),
+      productMeasurement: productMeasurementUnit,
+      productInformation: productInformationController.text,
+      keyIngrdients: keyIngredientController.text,
+      directionToUse: directionToUseController.text,
+      safetyInformation: safetyInformationController.text,
+      requirePrescription: prescriptionNeeded,
+      keyBenefits: keyBenefitController.text,
+      keywords: keywordProductNameBuilder(),
+    );
+    notifyListeners();
+  }
+
+  void clearProductDetails() {
+    productFormList.clear();
+    productPackageList.clear();
+    imageProductUrlList.clear();
+    typeOfProduct = null;
+    productNameController.clear();
+    productBrandNameController.clear();
+    productMRPController.clear();
+    productDiscountRateController.clear();
+    totalQuantityController.clear();
+    storeBelowController.clear();
+    expiryDateController.clear();
+    productFormNumberController.clear();
+    productPackageNumberController.clear();
+    measurementUnitNumberController.clear();
+    keyIngredientController.clear();
+    productInformationController.clear();
+    directionToUseController.clear();
+    safetyInformationController.clear();
+    keyBenefitController.clear();
+    productWarrantyController.clear();
+    productBoxContainsController.clear();
+    selectedWarantyOption = null;
+    discountAvailable = null;
+    prescriptionNeeded = null;
+    productForm = null;
+    discountPercentage = null;
+    productPackage = null;
+    productMeasurementUnit = null;
+    expiryDate = null;
+    idealFor = null;
+    equipmentType = null;
+    productType = null;
+    otherData = null;
+    medicineData = null;
+    equipmentData = null;
+    notifyListeners();
+  }
+
+////II.) Equipment section to add
+  PharmacyProductAddModel? equipmentData;
+
+  Future<void> addPharmacyEquipmentDetails({
+    required BuildContext context,
+  }) async {
+    fetchLoading = true;
+    notifyListeners();
+    equipmentProductDetails();
+    final result = await _iPharmacyFacade.addPharmacyProductDetails(
+        productData: equipmentData!,
+        productMapData: equipmentData!.toEquipmentMap());
+    result.fold((failure) {
+      CustomToast.errorToast(
+          text: "Couldn't able to add the equipment, please try again.");
+      EasyNavigation.pop(context: context);
+    }, (equipmentReturned) {
+      CustomToast.sucessToast(text: "Added equipment sucessfully");
+      productList.insert(0, equipmentReturned);
+      clearProductDetails();
+      notifyListeners();
+      EasyNavigation.pop(context: context);
+      EasyNavigation.pop(context: context);
+    });
+    fetchLoading = false;
+    notifyListeners();
+  }
+
+  void equipmentProductDetails() {
+    equipmentData = PharmacyProductAddModel(
+      categoryId: categoryId,
+      pharmacyId: pharmacyId,
+      productName: productNameController.text,
+      productBrandName: productBrandNameController.text,
+      productImage: imageProductUrlList,
+      typeOfProduct: typeOfProduct,
+      productMRPRate: num.tryParse(productMRPController.text),
+      productDiscountRate: num.tryParse(productDiscountRateController.text),
+      discountPercentage: discountPercentage,
+      totalQuantity: int.parse(totalQuantityController.text),
+      productType: '',
+      idealFor: idealFor,
+      productBoxContains: productBoxContainsController.text,
+      productMeasurementNumber: int.parse(measurementUnitNumberController.text),
+      productMeasurement: productMeasurementUnit,
+      equipmentWarranty: selectedWarantyOption,
+      equipmentWarrantyNumber: double.tryParse(productWarrantyController.text),
+      productInformation: productInformationController.text,
+      directionToUse: directionToUseController.text,
+      safetyInformation: safetyInformationController.text,
+      specification: keyBenefitController.text,
+      requirePrescription: prescriptionNeeded,
+      createdAt: Timestamp.now(),
+      keywords: keywordProductNameBuilder(),
+    );
+  }
+
+  /// III.) other's  section to add
+
+  PharmacyProductAddModel? otherData;
+  Future<void> addPharmacyOthersDetails({
+    required BuildContext context,
+  }) async {
+    fetchLoading = true;
+    notifyListeners();
+    otherProductDetails();
+    final result = await _iPharmacyFacade.addPharmacyProductDetails(
+        productData: otherData!, productMapData: otherData!.toMapOther());
+    result.fold((failure) {
+      CustomToast.errorToast(
+          text: "Couldn't able to add the product, please try again.");
+      EasyNavigation.pop(context: context);
+    }, (otherReturned) {
+      CustomToast.sucessToast(text: "Added product sucessfully");
+      productList.insert(0, otherReturned);
+      clearProductDetails();
+      notifyListeners();
+      EasyNavigation.pop(context: context);
+      EasyNavigation.pop(context: context);
+    });
+    fetchLoading = false;
+    notifyListeners();
+  }
+
+  void otherProductDetails() {
+    otherData = PharmacyProductAddModel(
+      categoryId: categoryId,
+      pharmacyId: pharmacyId,
+      productName: productNameController.text,
+      productBrandName: productBrandNameController.text,
+      productImage: imageProductUrlList,
+      typeOfProduct: typeOfProduct,
+      productMRPRate: num.tryParse(productMRPController.text),
+      productDiscountRate: num.tryParse(productDiscountRateController.text),
+      discountPercentage: discountPercentage,
+      totalQuantity: int.parse(totalQuantityController.text),
+      storingDegree: storeBelowController.text,
+      idealFor: idealFor,
+      productType: '',
+      expiryDate:
+          Timestamp.fromMillisecondsSinceEpoch(//// want to double check here
+              expiryDate?.millisecondsSinceEpoch ?? 0),
+      createdAt: Timestamp.now(),
+      productFormNumber: int.parse(productFormNumberController.text),
+      productForm: productForm,
+      productPackageNumber: int.parse(productPackageNumberController.text),
+      productPackage: productPackage,
+      productMeasurementNumber: int.parse(measurementUnitNumberController.text),
+      productMeasurement: productMeasurementUnit,
+      productInformation: productInformationController.text,
+      keyIngrdients: keyIngredientController.text,
+      directionToUse: directionToUseController.text,
+      safetyInformation: safetyInformationController.text,
+      keyBenefits: keyBenefitController.text,
+      keywords: keywordProductNameBuilder(),
+    );
+    notifyListeners();
+  }
+
+//// 2.)  Getting product details according to the category and pharmacy-------
+
+  Future<void> getPharmacyProductDetails({String? searchText}) async {
+    fetchLoading = true;
+    notifyListeners();
+    final result = await _iPharmacyFacade.getPharmacyProductDetails(
+        categoryId: categoryId!,
+        pharmacyId: pharmacyId!,
+        searchText: searchText);
+    result.fold((failure) {
+      CustomToast.errorToast(text: "Couldn't able to fetch product's");
+    }, (products) {
+      productList.addAll(products); //// here we are assigning the doctor
+    });
+    fetchLoading = false;
+    notifyListeners();
+  }
+
+  void clearFetchData() {
+    log('CLEAR IS CallED ::::');
+    searchController.clear();
+    productList.clear();
+    _iPharmacyFacade.clearFetchData();
+  }
+
+  final TextEditingController searchController = TextEditingController();
+  void searchProduct(String searchText) {
+    productList.clear();
+    _iPharmacyFacade.clearFetchData();
+    getPharmacyProductDetails(searchText: searchText);
+  }
+
+// /////// 3.) deleting the doctor field
+
+  Future<void> deletePharmacyProductDetails(
+      {required int index,
+      required PharmacyProductAddModel productData}) async {
+    final result = await _iPharmacyFacade.deletePharmacyProductDetails(
+        productId: productData.id ?? '', productData: productData);
+    result.fold((failure) {
+      CustomToast.errorToast(
+          text: "Couldn't able to remove product details, please try again.");
+    }, (doctorsData) {
+      CustomToast.sucessToast(text: "Removed product sucessfully");
+      productList.removeAt(index); //// here we are removing from local list
+    });
+    notifyListeners();
+  }
+
+// /////////////////////////// 3.) update the product field------------------------------
+  void setMedicineEditData(
+      {required PharmacyProductAddModel medicineEditData}) {
+    typeOfProduct = medicineEditData.typeOfProduct;
+    imageProductUrlList.addAll(medicineEditData.productImage ?? []);
+    productNameController.text = medicineEditData.productName ?? '';
+    productBrandNameController.text = medicineEditData.productBrandName ?? '';
+    productMRPController.text = medicineEditData.productMRPRate.toString();
+    discountAvailable = (medicineEditData.productDiscountRate != null);
+    productDiscountRateController.text =
+        medicineEditData.productDiscountRate.toString();
+    idealFor = medicineEditData.idealFor;
+    discountPercentage = medicineEditData.discountPercentage;
+    totalQuantityController.text = medicineEditData.totalQuantity.toString();
+    storeBelowController.text = medicineEditData.storingDegree ?? '';
+    expiryDateController.text =
+        expiryDateSetterFetched(medicineEditData.expiryDate ?? Timestamp.now());
+
+    productFormNumberController.text =
+        '${medicineEditData.productFormNumber ?? ''}';
+    productForm = medicineEditData.productForm;
+    measurementUnitNumberController.text =
+        '${medicineEditData.productMeasurementNumber ?? ''}';
+    productMeasurementUnit = medicineEditData.productMeasurement;
+    productPackageNumberController.text =
+        '${medicineEditData.productPackageNumber ?? ''}';
+    productPackage = medicineEditData.productPackage;
+    keyIngredientController.text = medicineEditData.keyIngrdients ?? '';
+    productInformationController.text =
+        medicineEditData.productInformation ?? '';
+    directionToUseController.text = medicineEditData.directionToUse ?? '';
+    safetyInformationController.text = medicineEditData.safetyInformation ?? '';
+    keyBenefitController.text = medicineEditData.keyBenefits ?? '';
+    prescriptionNeeded = medicineEditData.requirePrescription;
+    notifyListeners();
+  }
+
+  void setEquipmentEditData(
+      {required PharmacyProductAddModel equipmentEditData}) {
+    typeOfProduct = equipmentEditData.typeOfProduct;
+    imageProductUrlList.addAll(equipmentEditData.productImage ?? []);
+    productNameController.text = equipmentEditData.productName ?? '';
+    productBrandNameController.text = equipmentEditData.productBrandName ?? '';
+    productMRPController.text = equipmentEditData.productMRPRate.toString();
+    productDiscountRateController.text =
+        equipmentEditData.productDiscountRate.toString();
+    discountAvailable = (equipmentEditData.productDiscountRate != null);
+    discountPercentage = equipmentEditData.discountPercentage;
+    totalQuantityController.text = equipmentEditData.totalQuantity.toString();
+    equipmentType = equipmentEditData.productType;
+    idealFor = equipmentEditData.idealFor;
+    productBoxContainsController.text =
+        equipmentEditData.productBoxContains ?? '';
+    productWarrantyController.text =
+        '${equipmentEditData.equipmentWarrantyNumber ?? ''}';
+    selectedWarantyOption = equipmentEditData.equipmentWarranty ?? '';
+    measurementUnitNumberController.text =
+        '${equipmentEditData.productMeasurementNumber ?? ''}';
+    productMeasurementUnit = equipmentEditData.productMeasurement;
+    productInformationController.text =
+        equipmentEditData.productInformation ?? '';
+    directionToUseController.text = equipmentEditData.directionToUse ?? '';
+    safetyInformationController.text =
+        equipmentEditData.safetyInformation ?? '';
+    keyBenefitController.text = equipmentEditData.specification ?? '';
+    prescriptionNeeded = equipmentEditData.requirePrescription;
+    notifyListeners();
+  }
+
+  void setOtherEditData({required PharmacyProductAddModel othersEditData}) {
+    typeOfProduct = othersEditData.typeOfProduct;
+    imageProductUrlList.addAll(othersEditData.productImage ?? []);
+    productNameController.text = othersEditData.productName ?? '';
+    productBrandNameController.text = othersEditData.productBrandName ?? '';
+    productMRPController.text = othersEditData.productMRPRate.toString();
+    discountAvailable = (othersEditData.productDiscountRate != null);
+    productDiscountRateController.text =
+        othersEditData.productDiscountRate.toString();
+    idealFor = othersEditData.idealFor;
+    discountPercentage = othersEditData.discountPercentage;
+    totalQuantityController.text = othersEditData.totalQuantity.toString();
+    expiryDateController.text =
+        expiryDateSetterFetched(othersEditData.expiryDate ?? Timestamp.now());
+    productFormNumberController.text =
+        '${othersEditData.productFormNumber ?? ''}';
+    productForm = othersEditData.productForm;
+    measurementUnitNumberController.text =
+        '${othersEditData.productMeasurementNumber ?? ''}';
+    productMeasurementUnit = othersEditData.productMeasurement;
+    productPackageNumberController.text =
+        '${othersEditData.productPackageNumber ?? ''}';
+    productPackage = othersEditData.productPackage;
+    keyIngredientController.text = othersEditData.keyIngrdients ?? '';
+    productInformationController.text = othersEditData.productInformation ?? '';
+    directionToUseController.text = othersEditData.directionToUse ?? '';
+    safetyInformationController.text = othersEditData.safetyInformation ?? '';
+    keyBenefitController.text = othersEditData.keyBenefits ?? '';
+    prescriptionNeeded = othersEditData.requirePrescription;
+    notifyListeners();
+  }
+
+  ///upadting medicine section----------------------------------------------
+  ///
+
+  Future<void> updatePharmacyMedicineDetails({
+    required int index,
+    required PharmacyProductAddModel medicineEditData,
+    required BuildContext context,
+  }) async {
+    fetchLoading = true;
+    notifyListeners();
+    medicineEditProductDetails(medicineEditData);
+    final result = await _iPharmacyFacade.updatePharmacyProductDetails(
+        productId: medicineEditData.id ?? '',
+        productData: medicineData!,
+        productMapData: medicineData!.toMapMedicine());
+    result.fold((failure) {
+      CustomToast.errorToast(
+          text: "Couldn't able to update details, please try again.");
+      EasyNavigation.pop(context: context);
+    }, (productData) async{
+        if (deleteUrlList.isNotEmpty) {
+        await deletePharmacyImageList(imageUrls: deleteUrlList).then((value) {
+          deleteUrlList.clear();
+        });
+      }
+      CustomToast.sucessToast(text: "Updated sucessfully");
+      productList.removeAt(index);
+      productList.insert(
+          index, productData); //// here we are assigning the doctor
+      clearProductDetails();
+      notifyListeners();
+      EasyNavigation.pop(context: context);
+      EasyNavigation.pop(context: context);
+    });
+    fetchLoading = false;
+    notifyListeners();
+  }
+
+  void medicineEditProductDetails(PharmacyProductAddModel medicineEditData) {
+    medicineData = PharmacyProductAddModel(
+      categoryId: categoryId,
+      pharmacyId: pharmacyId,
+      productName: productNameController.text,
+      productBrandName: productBrandNameController.text,
+      productImage: (imageProductUrlList.isEmpty)
+          ? medicineEditData.productImage
+          : imageProductUrlList,
+      typeOfProduct: typeOfProduct,
+      productMRPRate: num.tryParse(productMRPController.text),
+      productDiscountRate: num.tryParse(productDiscountRateController.text),
+      discountPercentage: discountPercentage,
+      totalQuantity: int.parse(totalQuantityController.text),
+      storingDegree: storeBelowController.text,
+      idealFor: idealFor,
+      expiryDate:
+          Timestamp.fromMillisecondsSinceEpoch(//// want to double check here
+              expiryDate?.millisecondsSinceEpoch ?? 0),
+      createdAt: medicineEditData.createdAt,
+      productFormNumber: int.parse(productFormNumberController.text),
+      productForm: productForm,
+      productPackageNumber: int.parse(productPackageNumberController.text),
+      productPackage: productPackage,
+      productMeasurementNumber: int.parse(measurementUnitNumberController.text),
+      productMeasurement: productMeasurementUnit,
+      productInformation: productInformationController.text,
+      keyIngrdients: keyIngredientController.text,
+      directionToUse: directionToUseController.text,
+      safetyInformation: safetyInformationController.text,
+      requirePrescription: prescriptionNeeded,
+      keyBenefits: keyBenefitController.text,
+      keywords: keywordProductNameBuilder(),
+    );
+    notifyListeners();
+  }
+
+  ///upadting equipment section----------------------------------------------
+  Future<void> updatePharmacyEquipmentDetails({
+    required int index,
+    required PharmacyProductAddModel equipmentEditData,
+    required BuildContext context,
+  }) async {
+    fetchLoading = true;
+    notifyListeners();
+    equipmentEditProductDetails(equipmentEditData);
+    final result = await _iPharmacyFacade.updatePharmacyProductDetails(
+        productId: equipmentEditData.id ?? '',
+        productData: equipmentData!,
+        productMapData: equipmentData!.toEquipmentMap());
+    result.fold((failure) {
+      CustomToast.errorToast(
+          text: "Couldn't able to update details, please try again.");
+      EasyNavigation.pop(context: context);
+    }, (productData) async{
+      if (deleteUrlList.isNotEmpty) {
+        await deletePharmacyImageList(imageUrls: deleteUrlList).then((value) {
+          deleteUrlList.clear();
+        });
+      }
+      CustomToast.sucessToast(text: "Updated sucessfully");
+      productList.removeAt(index);
+      productList.insert(
+          index, productData); //// here we are assigning the doctor
+      clearProductDetails();
+      notifyListeners();
+      EasyNavigation.pop(context: context);
+      EasyNavigation.pop(context: context);
+    });
+    fetchLoading = false;
+    notifyListeners();
+  }
+
+  void equipmentEditProductDetails(PharmacyProductAddModel equipmentEditData) {
+    equipmentData = PharmacyProductAddModel(
+      categoryId: categoryId,
+      pharmacyId: pharmacyId,
+      productName: productNameController.text,
+      productBrandName: productBrandNameController.text,
+      productImage: imageProductUrlList,
+      typeOfProduct: typeOfProduct,
+      productMRPRate: num.tryParse(productMRPController.text),
+      productDiscountRate: num.tryParse(productDiscountRateController.text),
+      discountPercentage: discountPercentage,
+      totalQuantity: int.parse(totalQuantityController.text),
+      productType: '',
+      idealFor: idealFor,
+      productBoxContains: productBoxContainsController.text,
+      productMeasurementNumber: int.parse(measurementUnitNumberController.text),
+      productMeasurement: productMeasurementUnit,
+      equipmentWarranty: selectedWarantyOption,
+      equipmentWarrantyNumber: double.tryParse(productWarrantyController.text),
+      productInformation: productInformationController.text,
+      directionToUse: directionToUseController.text,
+      safetyInformation: safetyInformationController.text,
+      specification: keyBenefitController.text,
+      requirePrescription: prescriptionNeeded,
+      createdAt: equipmentEditData.createdAt,
+      keywords: keywordProductNameBuilder(),
+    );
+  }
+
+  ///upadting other section----------------------------------------------
+  Future<void> updatePharmacyOtherDetails({
+    required int index,
+    required PharmacyProductAddModel othersEditData,
+    required BuildContext context,
+  }) async {
+    fetchLoading = true;
+    notifyListeners();
+    otherEditProductDetails(othersEditData);
+    final result = await _iPharmacyFacade.updatePharmacyProductDetails(
+        productId: othersEditData.id ?? '',
+        productData: otherData!,
+        productMapData: otherData!.toMapOther());
+    result.fold((failure) {
+      CustomToast.errorToast(
+          text: "Couldn't able to update details, please try again.");
+      EasyNavigation.pop(context: context);
+    }, (productData) async {
+      if (deleteUrlList.isNotEmpty) {
+        await deletePharmacyImageList(imageUrls: deleteUrlList).then((value) {
+          deleteUrlList.clear();
+        });
+      }
+      CustomToast.sucessToast(text: "Updated sucessfully");
+      productList.removeAt(index);
+      productList.insert(
+          index, productData); //// here we are assigning the doctor
+      clearProductDetails();
+      notifyListeners();
+      EasyNavigation.pop(context: context);
+      EasyNavigation.pop(context: context);
+    });
+    fetchLoading = false;
+    notifyListeners();
+  }
+
+  void otherEditProductDetails(PharmacyProductAddModel othersEditData) {
+    otherData = PharmacyProductAddModel(
+      categoryId: categoryId,
+      pharmacyId: pharmacyId,
+      productName: productNameController.text,
+      productBrandName: productBrandNameController.text,
+      productImage: imageProductUrlList,
+      typeOfProduct: typeOfProduct,
+      productMRPRate: num.tryParse(productMRPController.text),
+      productDiscountRate: num.tryParse(productDiscountRateController.text),
+      discountPercentage: discountPercentage,
+      totalQuantity: int.parse(totalQuantityController.text),
+      storingDegree: storeBelowController.text,
+      idealFor: idealFor,
+      productType: '',
+      expiryDate:
+          Timestamp.fromMillisecondsSinceEpoch(//// want to double check here
+              expiryDate?.millisecondsSinceEpoch ?? 0),
+      createdAt: othersEditData.createdAt,
+      productFormNumber: int.parse(productFormNumberController.text),
+      productForm: productForm,
+      productPackageNumber: int.parse(productPackageNumberController.text),
+      productPackage: productPackage,
+      productMeasurementNumber: int.parse(measurementUnitNumberController.text),
+      productMeasurement: productMeasurementUnit,
+      productInformation: productInformationController.text,
+      keyIngrdients: keyIngredientController.text,
+      directionToUse: directionToUseController.text,
+      safetyInformation: safetyInformationController.text,
+      keyBenefits: keyBenefitController.text,
+      keywords: keywordProductNameBuilder(),
+    );
+    notifyListeners();
+  }
 }

@@ -22,9 +22,9 @@ class BannerScreen extends StatelessWidget {
         builder: (context, addBannerProvider, _) {
       return CustomScrollView(
         slivers: [
-          const SliverToBoxAdapter(
-            child: CustomCurveAppBarWidget(),
-          ),
+         
+          const CustomSliverCurveAppBarWidget(),
+        
           const SliverPadding(
             padding: EdgeInsets.all(16),
             sliver: SliverToBoxAdapter(

@@ -42,7 +42,7 @@ class ILocationImpl implements ILocationFacade {
   }
 
   @override
-  Future<Either<MainFailure, Unit>> setLocationByHospital(
+  Future<Either<MainFailure, Unit>> setLocationByPharmacy(
       PlaceMark placeMark) async {
     try {
       // add Local area

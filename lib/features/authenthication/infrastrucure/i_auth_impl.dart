@@ -7,6 +7,7 @@ import 'package:healthycart_pharmacy/core/general/firebase_collection.dart';
 import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/domain/model/pharmacy_model.dart';
 import 'package:healthycart_pharmacy/features/authenthication/domain/i_auth_facade.dart';
 import 'package:injectable/injectable.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 @LazySingleton(as: IAuthFacade)
 class IAuthImpl implements IAuthFacade {
@@ -52,7 +53,6 @@ class IAuthImpl implements IAuthFacade {
   Future<Either<MainFailure, String>> verifySmsCode({
     required String smsCode,
   }) async {
-    
     try {
       final PhoneAuthCredential phoneAuthCredential =
           PhoneAuthProvider.credential(
@@ -80,14 +80,27 @@ class IAuthImpl implements IAuthFacade {
         .doc(pharmacyId)
         .get();
     if (user.data() != null) {
-      return;
-    } else {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      final fcmToken = await messaging.getToken();
+
       await _firestore
           .collection(FirebaseCollections.pharmacy)
           .doc(pharmacyId)
-          .set(PharmacyModel()
-              .copyWith(id: pharmacyId, phoneNo: phoneNo)
-              .toMap());
+          .update({
+        'fcmToken': fcmToken,
+      });
+    } else {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      final fcmToken = await messaging.getToken();
+
+      await _firestore
+          .collection(FirebaseCollections.pharmacy)
+          .doc(pharmacyId)
+          .set(
+            PharmacyModel()
+                .copyWith(id: pharmacyId, phoneNo: phoneNo, fcmToken: fcmToken)
+                .toMap(),
+          );
     }
   }
 

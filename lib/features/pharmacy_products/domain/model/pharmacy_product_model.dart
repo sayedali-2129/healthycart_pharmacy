@@ -7,21 +7,32 @@ class PharmacyProductAddModel {
   final String? typeOfProduct;
   final num? productMRPRate;
   final num? productDiscountRate;
+  final int? discountPercentage;
   final List<String>? productImage;
   final String? productName;
   final String? productBrandName;
-  final List<String>? quantitiesAvailable;
-
-  final String? productInformation;
-  final String? keyIngrdients;
-  final String? usesProduct;
-  final String? keyBenefits;
-  final String? specification;
-  final String? directionToUse;
-  final String? safetyInformation;
-  final bool? requirePrescription;
+  final int? totalQuantity;
+  final int? productFormNumber;
+  final int? productPackageNumber;
+  final int? productMeasurementNumber;
+  final double? equipmentWarrantyNumber;
+   final String? storingDegree;
+  final String? idealFor;
   final Timestamp? expiryDate;
   final Timestamp? createdAt;
+  final String? productForm;
+ final String? productMeasurement;
+  final String? productInformation;
+  final String? keyIngrdients;
+  final String? directionToUse;
+  final String? safetyInformation;
+  final String? productBoxContains;
+  final String? productPackage;
+  final bool? requirePrescription;
+  final String? productType;
+  final String? keyBenefits;
+  final String? specification;
+  final String? equipmentWarranty;
   final List<String>? keywords;
   PharmacyProductAddModel({
     this.id,
@@ -30,21 +41,32 @@ class PharmacyProductAddModel {
     this.typeOfProduct,
     this.productMRPRate,
     this.productDiscountRate,
+    this.discountPercentage,
     this.productImage,
     this.productName,
     this.productBrandName,
-    this.quantitiesAvailable,
-  
-    this.productInformation,
-    this.keyIngrdients,
-    this.usesProduct,
-    this.keyBenefits,
-    this.specification,
-    this.directionToUse,
-    this.safetyInformation,
-    this.requirePrescription,
+    this.totalQuantity,
+    this.productFormNumber,
+    this.productPackageNumber,
+    this.productMeasurementNumber,
+    this.equipmentWarrantyNumber,
+     this.storingDegree,
+    this.idealFor,
     this.expiryDate,
     this.createdAt,
+    this.productForm,
+    this.productMeasurement,
+    this.productInformation,
+    this.keyIngrdients,
+    this.directionToUse,
+    this.safetyInformation,
+    this.productBoxContains,
+    this.productPackage,
+    this.requirePrescription,
+    this.productType,
+    this.keyBenefits,
+    this.specification,
+    this.equipmentWarranty,
     this.keywords,
   });
 
@@ -55,44 +77,67 @@ class PharmacyProductAddModel {
     String? typeOfProduct,
     num? productMRPRate,
     num? productDiscountRate,
+    int? discountPercentage,
     List<String>? productImage,
     String? productName,
     String? productBrandName,
-    List<String>? quantitiesAvailable,
-   
-    String? productInformation,
-    String? keyIngrdients,
-    String? usesProduct,
-    String? keyBenefits,
-    String? specification,
-    String? directionToUse,
-    String? safetyInformation,
-    bool? requirePrescription,
+    int? totalQuantity,
+    int? productFormNumber,
+    int? productPackageNumber,
+    int? productMeasurementNumber,
+    double? equipmentWarrantyNumber,
+    String? storingDegree,
+    String? idealFor,
     Timestamp? expiryDate,
     Timestamp? createdAt,
+    String? productForm,
+    String? productMeasurement,
+    String? productInformation,
+    String? keyIngrdients,
+    String? directionToUse,
+    String? safetyInformation,
+    String? productBoxContains,
+    String? productPackage,//// want to change
+    bool? requirePrescription,
+    String? productType,
+    String? keyBenefits,
+    String? specification,
+    String? equipmentWarranty,
     List<String>? keywords,
   }) {
     return PharmacyProductAddModel(
       id: id ?? this.id,
       pharmacyId: pharmacyId ?? this.pharmacyId,
       categoryId: categoryId ?? this.categoryId,
+      typeOfProduct: typeOfProduct ?? this.typeOfProduct,
       productMRPRate: productMRPRate ?? this.productMRPRate,
       productDiscountRate: productDiscountRate ?? this.productDiscountRate,
+      discountPercentage: discountPercentage ?? this.discountPercentage,
       productImage: productImage ?? this.productImage,
       productName: productName ?? this.productName,
       productBrandName: productBrandName ?? this.productBrandName,
-      quantitiesAvailable: quantitiesAvailable ?? this.quantitiesAvailable,
-
-      productInformation: productInformation ?? this.productInformation,
-      keyIngrdients: keyIngrdients ?? this.keyIngrdients,
-      usesProduct: usesProduct ?? this.usesProduct,
-      keyBenefits: keyBenefits ?? this.keyBenefits,
-      specification: specification ?? this.specification,
-      directionToUse: directionToUse ?? this.directionToUse,
-      safetyInformation: safetyInformation ?? this.safetyInformation,
-      requirePrescription: requirePrescription ?? this.requirePrescription,
+      totalQuantity: totalQuantity ?? this.totalQuantity,
+      productFormNumber: productFormNumber ?? this.productFormNumber,
+      productPackageNumber: productPackageNumber ?? this.productPackageNumber,
+      productMeasurementNumber: productMeasurementNumber ?? this.productMeasurementNumber,
+      equipmentWarrantyNumber: equipmentWarrantyNumber ?? this.equipmentWarrantyNumber,
+      storingDegree: storingDegree ?? this.storingDegree,
+      idealFor: idealFor ?? this.idealFor,
       expiryDate: expiryDate ?? this.expiryDate,
       createdAt: createdAt ?? this.createdAt,
+      productForm: productForm ?? this.productForm,
+      productMeasurement: productMeasurement ?? this.productMeasurement,
+      productInformation: productInformation ?? this.productInformation,
+      keyIngrdients: keyIngrdients ?? this.keyIngrdients,
+      directionToUse: directionToUse ?? this.directionToUse,
+      safetyInformation: safetyInformation ?? this.safetyInformation,
+      productBoxContains: productBoxContains ?? this.productBoxContains,
+      productPackage: productPackage ?? this.productPackage,
+      requirePrescription: requirePrescription ?? this.requirePrescription,
+      productType: productType ?? this.productType,
+      keyBenefits: keyBenefits ?? this.keyBenefits,
+      specification: specification ?? this.specification,
+      equipmentWarranty: equipmentWarranty ?? this.equipmentWarranty,
       keywords: keywords ?? this.keywords,
     );
   }
@@ -102,23 +147,128 @@ class PharmacyProductAddModel {
       'id': id,
       'pharmacyId': pharmacyId,
       'categoryId': categoryId,
+      'typeOfProduct': typeOfProduct,
       'productMRPRate': productMRPRate,
       'productDiscountRate': productDiscountRate,
+      'discountPercentage': discountPercentage,
       'productImage': productImage,
       'productName': productName,
       'productBrandName': productBrandName,
-      'quantitiesAvailable': quantitiesAvailable,
-     
+      'totalQuantity': totalQuantity,
+      'productFormNumber': productFormNumber,
+      'productPackageNumber': productPackageNumber,
+      'productMeasurementNumber': productMeasurementNumber,
+      'equipmentWarrantyNumber': equipmentWarrantyNumber,
+      'storingDegree': storingDegree,
+      'idealFor': idealFor,
+      'expiryDate': expiryDate,
+      'createdAt': createdAt,
+      'productForm': productForm,
+      'productMeasurement': productMeasurement,
       'productInformation': productInformation,
       'keyIngrdients': keyIngrdients,
-      'usesProduct': usesProduct,
+      'directionToUse': directionToUse,
+      'safetyInformation': safetyInformation,
+      'productBoxContains': productBoxContains,
+      'productPackage': productPackage,
+      'requirePrescription': requirePrescription,
+      'productType': productType,
       'keyBenefits': keyBenefits,
       'specification': specification,
+      'equipmentWarranty': equipmentWarranty,
+      'keywords': keywords,
+    };
+  }
+  Map<String, dynamic> toEquipmentMap() {
+    return <String, dynamic>{
+      'id': id,
+      'pharmacyId': pharmacyId,
+      'categoryId': categoryId,
+      'typeOfProduct': typeOfProduct,
+      'productMRPRate': productMRPRate,
+      'productDiscountRate': productDiscountRate,
+      'discountPercentage': discountPercentage,
+      'productImage': productImage,
+      'productName': productName,
+      'productBrandName': productBrandName,
+      'totalQuantity': totalQuantity,
+      'productMeasurementNumber': productMeasurementNumber,
+      'equipmentWarrantyNumber': equipmentWarrantyNumber,
+      'createdAt': createdAt,
+      'idealFor': idealFor,
+      'productInformation': productInformation,
+      'directionToUse': directionToUse,
+      'safetyInformation': safetyInformation,
+      'productBoxContains': productBoxContains,
+      'productMeasurement': productMeasurement,
+      'requirePrescription': requirePrescription,
+      'productType': productType,
+      'specification': specification,
+      'equipmentWarranty': equipmentWarranty,
+      'keywords': keywords,
+    };
+  }
+  Map<String, dynamic> toMapMedicine() {
+    return <String, dynamic>{
+      'id': id,
+      'pharmacyId': pharmacyId,
+      'categoryId': categoryId,
+      'typeOfProduct': typeOfProduct,
+      'productMRPRate': productMRPRate,
+      'productDiscountRate': productDiscountRate,
+      'discountPercentage': discountPercentage,
+      'productImage': productImage,
+      'productName': productName,
+      'productBrandName': productBrandName,
+      'totalQuantity': totalQuantity,
+      'productFormNumber': productFormNumber,
+      'productPackageNumber': productPackageNumber,
+      'productMeasurementNumber': productMeasurementNumber,
+      'storingDegree': storingDegree,
+      'idealFor': idealFor,
+      'expiryDate': expiryDate,
+      'createdAt': createdAt,
+      'productForm': productForm,
+      'productMeasurement': productMeasurement,
+      'productPackage': productPackage,
+      'productInformation': productInformation,
+      'keyIngrdients': keyIngrdients,
       'directionToUse': directionToUse,
       'safetyInformation': safetyInformation,
       'requirePrescription': requirePrescription,
+      'keyBenefits': keyBenefits,
+      'keywords': keywords,
+    };
+  }
+    Map<String, dynamic> toMapOther() {
+    return <String, dynamic>{
+      'id': id,
+      'pharmacyId': pharmacyId,
+      'categoryId': categoryId,
+      'typeOfProduct': typeOfProduct,
+      'productMRPRate': productMRPRate,
+      'productDiscountRate': productDiscountRate,
+      'discountPercentage': discountPercentage,
+      'productImage': productImage,
+      'productName': productName,
+      'productBrandName': productBrandName,
+      'totalQuantity': totalQuantity,
+      'productType': productType,
+      'productFormNumber': productFormNumber,
+      'productPackageNumber': productPackageNumber,
+      'productMeasurementNumber': productMeasurementNumber,
+      'storingDegree': storingDegree,
+      'idealFor': idealFor,
       'expiryDate': expiryDate,
       'createdAt': createdAt,
+      'productForm': productForm,
+      'productMeasurement': productMeasurement,
+      'productInformation': productInformation,
+      'productPackage': productPackage,
+      'keyIngrdients': keyIngrdients,
+      'directionToUse': directionToUse,
+      'safetyInformation': safetyInformation,
+      'keyBenefits': keyBenefits,
       'keywords': keywords,
     };
   }
@@ -130,10 +280,15 @@ class PharmacyProductAddModel {
           map['pharmacyId'] != null ? map['pharmacyId'] as String : null,
       categoryId:
           map['categoryId'] != null ? map['categoryId'] as String : null,
+      typeOfProduct:
+          map['typeOfProduct'] != null ? map['typeOfProduct'] as String : null,
       productMRPRate:
           map['productMRPRate'] != null ? map['productMRPRate'] as num : null,
       productDiscountRate: map['productDiscountRate'] != null
           ? map['productDiscountRate'] as num
+          : null,
+      discountPercentage: map['discountPercentage'] != null
+          ? map['discountPercentage'] as int
           : null,
       productImage: map['productImage'] != null
           ? List<String>.from((map['productImage'] as List<dynamic>))
@@ -143,34 +298,57 @@ class PharmacyProductAddModel {
       productBrandName: map['productBrandName'] != null
           ? map['productBrandName'] as String
           : null,
-      quantitiesAvailable: map['quantitiesAvailable'] != null
-          ? List<String>.from((map['quantitiesAvailable'] as List<dynamic>))
+      productFormNumber:
+          map['productFormNumber'] != null ? map['productFormNumber'] as int : null,
+       totalQuantity:
+          map['totalQuantity'] != null ? map['totalQuantity'] as int : null,
+        productPackageNumber:
+          map['productPackageNumber'] != null ? map['productPackageNumber'] as int : null,
+         productMeasurementNumber:
+          map['productMeasurementNumber'] != null ? map['productMeasurementNumber'] as int : null,
+         equipmentWarrantyNumber:
+          map['equipmentWarrantyNumber'] != null ? map['equipmentWarrantyNumber'] as double : null,           
+      storingDegree:
+          map['storingDegree'] != null ? map['storingDegree'] as String : null,
+      idealFor:
+          map['idealFor'] != null ? map['idealFor'] as String : null,    
+      expiryDate:
+          map['expiryDate'] != null ? (map['expiryDate'] as Timestamp) : null,
+      createdAt:
+          map['createdAt'] != null ? (map['createdAt'] as Timestamp) : null,
+      productForm:
+          map['productForm'] != null ? map['productForm'] as String : null,
+      productMeasurement: map['productMeasurement'] != null
+          ? map['productMeasurement'] as String
           : null,
-
       productInformation: map['productInformation'] != null
           ? map['productInformation'] as String
           : null,
       keyIngrdients:
           map['keyIngrdients'] != null ? map['keyIngrdients'] as String : null,
-      usesProduct:
-          map['usesProduct'] != null ? map['usesProduct'] as String : null,
-      keyBenefits:
-          map['keyBenefits'] != null ? map['keyBenefits'] as String : null,
-      specification:
-          map['specification'] != null ? map['specification'] as String : null,
       directionToUse: map['directionToUse'] != null
           ? map['directionToUse'] as String
           : null,
       safetyInformation: map['safetyInformation'] != null
           ? map['safetyInformation'] as String
           : null,
+      productBoxContains: map['productBoxContains'] != null
+          ? map['productBoxContains'] as String
+          : null,
+      productPackage: map['productPackage'] != null
+          ? map['productPackage'] as String
+          : null,
       requirePrescription: map['requirePrescription'] != null
           ? map['requirePrescription'] as bool
           : null,
-      expiryDate:
-          map['expiryDate'] != null ? map['expiryDate'] as Timestamp : null,
-      createdAt:
-          map['createdAt'] != null ? map['createdAt'] as Timestamp : null,
+      productType:
+          map['productType'] != null ? map['productType'] as String : null,
+      keyBenefits:
+          map['keyBenefits'] != null ? map['keyBenefits'] as String : null,
+      specification:
+          map['specification'] != null ? map['specification'] as String : null,
+      equipmentWarranty:
+          map['equipmentWarranty'] != null ? map['equipmentWarranty'] as String : null,
       keywords: map['keywords'] != null
           ? List<String>.from((map['keywords'] as List<dynamic>))
           : null,

@@ -6,10 +6,10 @@ import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/application/pharmacy_provider.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_medicine_product/product_pharmacy.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/medicine_category/widgets/add_new_round_widget.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/medicine_category/widgets/get_category_popup.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/medicine_category/widgets/round_text_widget.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_product/product_pharmacy.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/product_category/widgets/add_new_round_widget.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/product_category/widgets/get_category_popup.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/product_category/widgets/round_text_widget.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -37,9 +37,7 @@ class DoctorScreen extends StatelessWidget {
     return Consumer<PharmacyProvider>(builder: (context, pharmacyProvider, _) {
       return CustomScrollView(
         slivers: [
-          const SliverToBoxAdapter(
-            child: CustomCurveAppBarWidget(),
-          ),
+          const CustomSliverCurveAppBarWidget(),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -134,13 +132,14 @@ class DoctorScreen extends StatelessWidget {
                               );
                             });
                       } else {
-                        final doctorCategory =
+                        final productCategory =
                             pharmacyProvider.pharmacyCategoryList[index - 1];
                         return VerticalImageText(
                             onTap: () {
-                              pharmacyProvider.selectedCategoryDetail(
-                                  catId: doctorCategory.id ?? 'No ID',
-                                  catName: doctorCategory.category);
+                              pharmacyProvider.selectedProductType(
+                                  catId: productCategory.id ?? 'No ID',
+                                  selectedCategory: productCategory.category,
+                                  );
                               EasyNavigation.push(
                                 type: PageTransitionType.rightToLeft,
                                 context: context,
@@ -158,14 +157,14 @@ class DoctorScreen extends StatelessWidget {
                                     await pharmacyProvider
                                         .deletePharmacyCategory(
                                             index: index - 1,
-                                            category: doctorCategory)
+                                            category: productCategory)
                                         .then((value) {
                                       EasyNavigation.pop(context: context);
                                     });
                                   });
                             },
-                            image: doctorCategory.image,
-                            title: doctorCategory.category);
+                            image: productCategory.image,
+                            title: productCategory.category);
                       }
                     },
                   ),

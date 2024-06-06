@@ -103,7 +103,7 @@ class _OTPScreenState extends State<OTPScreen> {
                               children: [
                                 TextSpan(
                                     text:
-                                        'Please enter the One Time Password we sent on via sms ',
+                                        'Please enter the One Time Password we sent via message ',
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelMedium!

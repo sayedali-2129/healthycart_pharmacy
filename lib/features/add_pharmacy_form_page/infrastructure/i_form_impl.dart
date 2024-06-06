@@ -57,9 +57,23 @@ class IFormFieldImpl implements IFormFeildFacade {
   }
 
   @override
-  Future<Either<MainFailure, Unit>> deleteImage(
-      {required String imageUrl}) async {
-    return await _imageService.deleteImageUrl(imageUrl: imageUrl);
+  FutureResult<Unit> deleteImage(
+      {required String imageUrl, required String pharmacyId}) async {
+    try {
+      await _imageService.deleteImageUrl(imageUrl: imageUrl).then((value) {
+        value.fold((failure) {
+          return left(failure);
+        }, (sucess) async {
+          await _firebaseFirestore
+              .collection(FirebaseCollections.pharmacy)
+              .doc(pharmacyId)
+              .update({'pharmacyImage': null}).then((value) {});
+        });
+      });
+      return right(unit);
+    } catch (e) {
+      return left(MainFailure.generalException(errMsg: e.toString()));
+    }
   }
 ///////////////////////////////////////////////////////////////////////////
 

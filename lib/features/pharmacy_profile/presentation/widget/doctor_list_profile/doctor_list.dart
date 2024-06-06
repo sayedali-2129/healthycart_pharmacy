@@ -53,7 +53,7 @@ class DoctorProfileList extends StatelessWidget {
                                         borderRadius: BorderRadius.circular(16),
                                         child: CustomCachedNetworkImage(
                                             image: profileProvider
-                                                    .pharamacyProductTotalList[index].productImage![0]
+                                                    .pharamacyProductTotalList[index].productImage?[0]
                                                      ??
                                                 '')),
                                   ),

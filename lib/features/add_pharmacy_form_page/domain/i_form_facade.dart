@@ -15,6 +15,7 @@ abstract class IFormFeildFacade {
     required File imageFile,
   });
   FutureResult<Unit>  deleteImage({
+    required String pharmacyId,
     required String imageUrl,
   });
   FutureResult<String>  updatePharmacyForm({

@@ -35,7 +35,7 @@ class PhoneField extends StatelessWidget {
         filled: true,
         fillColor: BColors.textWhite,
         hintText: "Number goes here",
-        hintStyle: Theme.of(context).textTheme.bodyMedium,
+        hintStyle: Theme.of(context).textTheme.labelMedium!.copyWith(fontSize: 14),
         border: const OutlineInputBorder(
           borderSide: BorderSide(),
           borderRadius: BorderRadius.all(

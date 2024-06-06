@@ -1,22 +1,21 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
-import 'package:healthycart_pharmacy/core/failures/main_failure.dart';
 import 'package:healthycart_pharmacy/core/general/typdef.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_category_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/product_type_model.dart';
 
 abstract class IPharmacyFacade {
-  FutureResult<File> getImage();
-  FutureResult<String>  saveImage({
-    required File imageFile,
+  FutureResult<List<File>> getProductImageList({required int maxImages});
+  FutureResult<List<String>> saveProductImageList({
+    required List<File> imageFileList,
   });
-  FutureResult<Unit>  deleteImage({
+  FutureResult<Unit> deleteImage({
     required String imageUrl,
   });
- FutureResult<List<PharmacyCategoryModel>>  getPharmacyCategoryAll();
+  FutureResult<List<PharmacyCategoryModel>> getPharmacyCategoryAll();
 
-  FutureResult<List<PharmacyCategoryModel>>
-      getpharmacyCategory({
+  FutureResult<List<PharmacyCategoryModel>> getpharmacyCategory({
     required List<String> categoryIdList,
   });
 
@@ -25,7 +24,7 @@ abstract class IPharmacyFacade {
     required PharmacyCategoryModel category,
   });
 
-  FutureResult<PharmacyCategoryModel>deletePharmacyCategory({
+  FutureResult<PharmacyCategoryModel> deletePharmacyCategory({
     required String pharmacyId,
     required PharmacyCategoryModel category,
   });
@@ -35,28 +34,32 @@ abstract class IPharmacyFacade {
     required String pharmacyId,
   });
 
-  Future<Either<MainFailure, PharmacyProductAddModel>> addPharmacyProductDetails({
+  FutureResult<PharmacyProductAddModel> addPharmacyProductDetails({
     required PharmacyProductAddModel productData,
+    required Map<String, dynamic> productMapData,
   });
 
-  Future<Either<MainFailure, List<PharmacyProductAddModel>>> getPharmacyProductDetails({
+  FutureResult<List<PharmacyProductAddModel>> getPharmacyProductDetails({
     required String categoryId,
     required String pharmacyId,
+    required String? searchText,
   });
-
-  Future<Either<MainFailure, PharmacyProductAddModel>> deletePharmacyProductDetails({
-    required String pharmacyId,
+  void clearFetchData();
+  FutureResult<PharmacyProductAddModel> deletePharmacyProductDetails({
+    required String productId,
     required PharmacyProductAddModel productData,
   });
 
-  Future<Either<MainFailure, PharmacyProductAddModel>> updatePharmacyProductDetails({
-    required String pharmacyId,
-    required PharmacyProductAddModel productData,
+  FutureResult<Unit> deletePharmacyImageList({
+    required List<String> imageUrlList,
+    
   });
 
-   FutureResult<List<File>> getProductImageList({required int maxImages});
-     FutureResult<List<String>>  saveProductImageList({
-    required List<File> imageFileList,
+  FutureResult<PharmacyProductAddModel> updatePharmacyProductDetails({
+    required String productId,
+    required PharmacyProductAddModel productData,
+    required Map<String, dynamic> productMapData,
   });
-  
+
+  FutureResult<MedicineData> getMedicineFormAndPackageList();
 }

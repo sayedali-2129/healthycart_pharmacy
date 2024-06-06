@@ -26,7 +26,7 @@ class PharmacyProductChooseButton extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
           child: SizedBox(
-            width: 88,
+            width: 72,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -35,7 +35,7 @@ class PharmacyProductChooseButton extends StatelessWidget {
                 const Gap(8),
                 Text(text,
                     style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          fontSize: 14,
+                          fontSize: 13,
                         )),
               ],
             ),

@@ -89,6 +89,7 @@ class PopOverEditDelete extends StatelessWidget {
                     deleteButton: () {
                       Navigator.pop(context);
                       deleteButton.call();
+                      
                     },
                   ),
               direction: PopoverDirection.bottom,

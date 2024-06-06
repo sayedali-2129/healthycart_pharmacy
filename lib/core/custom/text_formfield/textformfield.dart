@@ -11,11 +11,11 @@ class TextfieldWidget extends StatelessWidget {
     this.maxlines,
     this.minlines,
     this.labelText,
-    required this.style,
+    this.fontSize,
     this.hintText,
     this.textInputAction,
     this.onChanged,
-    this.onSubmit,
+    this.onSubmit, this.prefixText, this.suffixText,
   });
   final TextEditingController? controller;
   final bool? readOnly;
@@ -25,7 +25,9 @@ class TextfieldWidget extends StatelessWidget {
   final int? minlines;
   final String? labelText;
   final String? hintText;
-  final TextStyle style;
+  final String? prefixText;
+  final String? suffixText;
+  final double? fontSize;
   final TextInputAction? textInputAction;
   final void Function(String)? onChanged;
   final void Function(String)? onSubmit;
@@ -46,8 +48,17 @@ class TextfieldWidget extends StatelessWidget {
         readOnly: readOnly!,
         cursorColor: BColors.black,
         onFieldSubmitted: onSubmit,
-        style: style,
+        style:  Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(
+                                      fontSize: fontSize ??16,
+                                    ),
         decoration: InputDecoration(
+          suffixText: suffixText,
+          prefixText:prefixText ,
+          suffixStyle:Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.w600, fontSize: 16) ,
+          prefixStyle:Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.w600, fontSize: 16) ,
           labelStyle: Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.w600),
           hintStyle: Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.w600),
           hintText: hintText,

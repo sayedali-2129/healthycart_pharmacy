@@ -15,7 +15,7 @@ class LocationProvider extends ChangeNotifier {
   bool locationGetLoading = false;
   final ILocationFacade iLocationFacade;
   PlaceMark? selectedPlaceMark;
-  final searchController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   List<PlaceMark> searchResults = [];
   bool searchLoading = false;
@@ -59,13 +59,13 @@ class LocationProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> setLocationByHospital(
+  Future<void> updateUserLocation(
       {required BuildContext context,
-      required bool isHospitaEditProfile,
-      required int? hospitalModelrequestedCount}) async {
+      required bool isPharmacyEditProfile,
+      required int? pharmacyModelrequestedCount}) async {
     log('Location selected::::$selectedPlaceMark');
     final result =
-        await iLocationFacade.setLocationByHospital(selectedPlaceMark!);
+        await iLocationFacade.setLocationByPharmacy(selectedPlaceMark!);
     result.fold((failure) {
       CustomToast.errorToast(text: failure.errMsg);
     }, (sucess) async {
@@ -79,13 +79,13 @@ class LocationProvider extends ChangeNotifier {
       }, (sucess) {
         Navigator.pop(context);
         CustomToast.sucessToast(text: 'Location added sucessfully');
-        (isHospitaEditProfile)
+        (isPharmacyEditProfile)
             ? Navigator.pop(
                 context,
               )
             : EasyNavigation.pushAndRemoveUntil(
                 context: context,
-                page: (hospitalModelrequestedCount == 2)
+                page: (pharmacyModelrequestedCount == 2)
                     ? const SplashScreen()
                     : const PendingPageScreen());
         notifyListeners();
