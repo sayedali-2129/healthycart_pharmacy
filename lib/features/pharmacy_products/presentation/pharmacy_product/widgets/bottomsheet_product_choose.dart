@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/application/pharmacy_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_product/widgets/forms_widget/equipment_add_form.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_product/widgets/forms_widget/medicine_add_form.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_product/widgets/forms_widget/other_add_form.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_product/widgets/product_choose_button_widget.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
+import 'package:provider/provider.dart';
 
 class ChooseProductBottomSheet extends StatelessWidget {
   const ChooseProductBottomSheet({
@@ -13,6 +15,7 @@ class ChooseProductBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pharmacyProvider = Provider.of<PharmacyProvider>(context);
     return SizedBox(
       height: 200,
       child: Column(
@@ -30,8 +33,13 @@ class ChooseProductBottomSheet extends StatelessWidget {
             children: [
               PharmacyProductChooseButton(
                 buttonTap: () {
+                   pharmacyProvider.imageProductUrlList.clear();
                   EasyNavigation.push(
-                      context: context, page: const MedicineAddFormWidget(typeOfProduct: 'Medicine',isEditing: false,));
+                      context: context,
+                      page: const MedicineAddFormWidget(
+                        typeOfProduct: 'Medicine',
+                        isEditing: false,
+                      ));
                 },
                 text: 'Medicine',
                 icon: Icons.medication,
@@ -39,25 +47,34 @@ class ChooseProductBottomSheet extends StatelessWidget {
               ),
               PharmacyProductChooseButton(
                 buttonTap: () {
+                  pharmacyProvider.imageProductUrlList.clear();
                   EasyNavigation.push(
-                      context: context, page: const EquipmentAddFormWidget(typeOfProduct: 'Equipment',isEditing: false,));
+                      context: context,
+                      page: const EquipmentAddFormWidget(
+                        typeOfProduct: 'Equipment',
+                        isEditing: false,
+                      ));
                 },
                 text: 'Equipment',
                 icon: Icons.devices_other_rounded,
                 iconColor: BColors.mainlightColor,
               ),
-                  PharmacyProductChooseButton(
-            buttonTap: () {
-               EasyNavigation.push(
-                      context: context, page: const OtherAddFormWidget(typeOfProduct: "Other's", isEditing: false,));
-            },
-            text: "Other",
-            icon: Icons.shopping_bag_rounded,
-            iconColor: BColors.mainlightColor,
-          ),
+              PharmacyProductChooseButton(
+                buttonTap: () {
+                   pharmacyProvider.imageProductUrlList.clear();
+                  EasyNavigation.push(
+                      context: context,
+                      page: const OtherAddFormWidget(
+                        typeOfProduct: "Other's",
+                        isEditing: false,
+                      ));
+                },
+                text: "Other",
+                icon: Icons.shopping_bag_rounded,
+                iconColor: BColors.mainlightColor,
+              ),
             ],
           ),
-      
         ],
       ),
     );

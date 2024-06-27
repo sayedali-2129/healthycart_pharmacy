@@ -36,7 +36,6 @@ class TextfieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       child: TextFormField(
-  
         onChanged: onChanged,
         textInputAction: textInputAction,
         textCapitalization: TextCapitalization.sentences,
@@ -52,7 +51,7 @@ class TextfieldWidget extends StatelessWidget {
                                     .textTheme
                                     .labelLarge!
                                     .copyWith(
-                                      fontSize: fontSize ??16,
+                                      fontSize: fontSize ??14,
                                     ),
         decoration: InputDecoration(
           suffixText: suffixText,

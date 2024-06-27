@@ -108,7 +108,7 @@ class IAuthImpl implements IAuthFacade {
   Stream<Either<MainFailure, PharmacyModel>> pharmacyStreamFetchedData(
       String pharmacyId) async* {
     final StreamController<Either<MainFailure, PharmacyModel>>
-        hospitalStreamController =
+        pharmacyStreamController =
         StreamController<Either<MainFailure, PharmacyModel>>();
     try {
       _streamSubscription = _firestore
@@ -117,18 +117,18 @@ class IAuthImpl implements IAuthFacade {
           .snapshots()
           .listen((doc) {
         if (doc.exists) {
-          hospitalStreamController.add(
+          pharmacyStreamController.add(
               right(PharmacyModel.fromMap(doc.data() as Map<String, dynamic>)));
         }
       });
     } on FirebaseException catch (e) {
-      hospitalStreamController
+      pharmacyStreamController
           .add(left(MainFailure.firebaseException(errMsg: e.code)));
     } catch (e) {
-      hospitalStreamController
+      pharmacyStreamController
           .add(left(MainFailure.generalException(errMsg: e.toString())));
     }
-    yield* hospitalStreamController.stream;
+    yield* pharmacyStreamController.stream;
   }
 
   @override

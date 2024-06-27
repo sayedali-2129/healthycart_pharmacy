@@ -36,7 +36,8 @@ class PharmacyFormProvider extends ChangeNotifier {
       notifyListeners();
     }, (imageFilesucess) async {
       if (imageUrl != null) {
-        await _iFormFeildFacade.deleteImage(imageUrl: imageUrl!, pharmacyId: pharmacyId?? '');
+        await _iFormFeildFacade.deleteImage(
+            imageUrl: imageUrl!, pharmacyId: pharmacyId ?? '');
         imageUrl = null;
       } // when editing  this will make the url null when we pick a new file
       imageFile = imageFilesucess;
@@ -45,7 +46,7 @@ class PharmacyFormProvider extends ChangeNotifier {
   }
 
   Future<void> saveImage() async {
-    if (imageFile == null) {
+    if (imageFile == null && imageUrl == null) {
       CustomToast.errorToast(text: 'Please check the image selected.');
       return;
     }
@@ -65,6 +66,7 @@ class PharmacyFormProvider extends ChangeNotifier {
       TextEditingController();
   final TextEditingController pharmacyOwnerNameController =
       TextEditingController();
+  final TextEditingController pharmacyEmailController = TextEditingController();
   List<String> keywordHospitalBuider() {
     return keywordsBuilder(pharmacyNameController.text);
   }
@@ -84,6 +86,7 @@ class PharmacyFormProvider extends ChangeNotifier {
       pharmacyName: pharmacyNameController.text,
       pharmacyAddress: pharmacyAddressController.text,
       pharmacyownerName: pharmacyOwnerNameController.text,
+      email: pharmacyEmailController.text,
       pharmacyDocumentLicense: pdfUrl,
       pharmacyImage: imageUrl,
       isActive: true,
@@ -120,6 +123,7 @@ class PharmacyFormProvider extends ChangeNotifier {
     imageUrl = null;
     pharmacyPhoneNumberController.clear();
     pharmacyOwnerNameController.clear();
+    pharmacyEmailController.clear();
     notifyListeners();
   }
 
@@ -194,6 +198,7 @@ class PharmacyFormProvider extends ChangeNotifier {
     pharmacyAddressController.text = pharmacyDataEdit.pharmacyAddress ?? '';
     pharmacyPhoneNumberController.text = pharmacyDataEdit.phoneNo ?? '';
     pharmacyOwnerNameController.text = pharmacyDataEdit.pharmacyownerName ?? '';
+    pharmacyEmailController.text = pharmacyDataEdit.email ?? '';
     pdfUrl = pharmacyDataEdit.pharmacyDocumentLicense;
     imageUrl = pharmacyDataEdit.pharmacyImage;
     notifyListeners();
@@ -209,6 +214,7 @@ class PharmacyFormProvider extends ChangeNotifier {
       pharmacyName: pharmacyNameController.text,
       pharmacyAddress: pharmacyAddressController.text,
       pharmacyownerName: pharmacyOwnerNameController.text,
+      email: pharmacyEmailController.text,
       pharmacyDocumentLicense: pdfUrl,
       pharmacyImage: imageUrl,
     );

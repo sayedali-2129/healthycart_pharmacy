@@ -2,31 +2,31 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HospitalBannerModel {
+class PharmacyBannerModel {
   String? id;
   final String? image;
   final Timestamp? isCreated;
-  final String hospitalId;
-  HospitalBannerModel({
+  final String pharmacyId;
+  PharmacyBannerModel({
     this.id,
     this.image,
     this.isCreated,
-    required this.hospitalId,
+    required this.pharmacyId,
   });
 
 
 
-  HospitalBannerModel copyWith({
+  PharmacyBannerModel copyWith({
     String? id,
     String? image,
     Timestamp? isCreated,
-    String? hospitalId,
+    String? pharmacyId,
   }) {
-    return HospitalBannerModel(
+    return PharmacyBannerModel(
       id: id ?? this.id,
       image: image ?? this.image,
       isCreated: isCreated ?? this.isCreated,
-      hospitalId: hospitalId ?? this.hospitalId,
+      pharmacyId: pharmacyId ?? this.pharmacyId,
     );
   }
 
@@ -35,16 +35,16 @@ class HospitalBannerModel {
       'id': id,
       'image': image,
       'isCreated': isCreated,
-      'hospitalId': hospitalId,
+      'pharmacyId': pharmacyId,
     };
   }
 
-  factory HospitalBannerModel.fromMap(Map<String, dynamic> map) {
-    return HospitalBannerModel(
+  factory PharmacyBannerModel.fromMap(Map<String, dynamic> map) {
+    return PharmacyBannerModel(
       id: map['id'] != null ? map['id'] as String : null,
       image: map['image'] != null ? map['image'] as String : null,
       isCreated: map['isCreated'] != null ? map['isCreated'] as Timestamp : null,
-      hospitalId: map['hospitalId'] as String,
+      pharmacyId: map['pharmacyId'] as String,
     );
   }
 

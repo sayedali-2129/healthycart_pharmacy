@@ -29,6 +29,7 @@ class PharmacyProductAddModel {
   final String? productBoxContains;
   final String? productPackage;
   final bool? requirePrescription;
+  final bool? inStock;
   final String? productType;
   final String? keyBenefits;
   final String? specification;
@@ -63,6 +64,7 @@ class PharmacyProductAddModel {
     this.productBoxContains,
     this.productPackage,
     this.requirePrescription,
+     this.inStock,
     this.productType,
     this.keyBenefits,
     this.specification,
@@ -99,6 +101,7 @@ class PharmacyProductAddModel {
     String? productBoxContains,
     String? productPackage,//// want to change
     bool? requirePrescription,
+     bool? inStock,
     String? productType,
     String? keyBenefits,
     String? specification,
@@ -134,6 +137,7 @@ class PharmacyProductAddModel {
       productBoxContains: productBoxContains ?? this.productBoxContains,
       productPackage: productPackage ?? this.productPackage,
       requirePrescription: requirePrescription ?? this.requirePrescription,
+      inStock: inStock ?? this.inStock,
       productType: productType ?? this.productType,
       keyBenefits: keyBenefits ?? this.keyBenefits,
       specification: specification ?? this.specification,
@@ -172,11 +176,30 @@ class PharmacyProductAddModel {
       'productBoxContains': productBoxContains,
       'productPackage': productPackage,
       'requirePrescription': requirePrescription,
+      'inStock': inStock,
       'productType': productType,
       'keyBenefits': keyBenefits,
       'specification': specification,
       'equipmentWarranty': equipmentWarranty,
       'keywords': keywords,
+    };
+  }
+  
+   Map<String, dynamic> toCartMap() {
+    return <String, dynamic>{
+      'id': id,
+      'pharmacyId': pharmacyId,
+      'categoryId': categoryId,
+      'typeOfProduct': typeOfProduct,
+      'productMRPRate': productMRPRate,
+      'productDiscountRate': productDiscountRate,
+      'discountPercentage': discountPercentage,
+      'productImage': productImage,
+      'productName': productName,
+      'productBrandName': productBrandName,
+      'productFormNumber': productFormNumber,
+      'productPackageNumber': productPackageNumber,
+      'productMeasurementNumber': productMeasurementNumber,
     };
   }
   Map<String, dynamic> toEquipmentMap() {
@@ -202,6 +225,7 @@ class PharmacyProductAddModel {
       'productBoxContains': productBoxContains,
       'productMeasurement': productMeasurement,
       'requirePrescription': requirePrescription,
+      'inStock': inStock,
       'productType': productType,
       'specification': specification,
       'equipmentWarranty': equipmentWarranty,
@@ -236,6 +260,7 @@ class PharmacyProductAddModel {
       'directionToUse': directionToUse,
       'safetyInformation': safetyInformation,
       'requirePrescription': requirePrescription,
+      'inStock': inStock,
       'keyBenefits': keyBenefits,
       'keywords': keywords,
     };
@@ -264,6 +289,7 @@ class PharmacyProductAddModel {
       'productForm': productForm,
       'productMeasurement': productMeasurement,
       'productInformation': productInformation,
+      'inStock': inStock,
       'productPackage': productPackage,
       'keyIngrdients': keyIngrdients,
       'directionToUse': directionToUse,
@@ -341,6 +367,9 @@ class PharmacyProductAddModel {
       requirePrescription: map['requirePrescription'] != null
           ? map['requirePrescription'] as bool
           : null,
+       inStock: map['inStock'] != null
+          ? map['inStock'] as bool
+          : null,    
       productType:
           map['productType'] != null ? map['productType'] as String : null,
       keyBenefits:

@@ -5,7 +5,7 @@ import 'package:healthycart_pharmacy/features/authenthication/application/authen
 import 'package:healthycart_pharmacy/features/pharmacy_banner/application/add_banner_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/application/pharmacy_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/application/profile_provider.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_orders/application/provider/request_doctor_provider.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_orders/application/provider/request_pharmacy_provider.dart';
 import 'package:healthycart_pharmacy/features/location_picker/application/location_provider.dart';
 import 'package:healthycart_pharmacy/features/pending_page/application/pending_provider.dart';
 import 'package:healthycart_pharmacy/features/splash_screen/splash_screen.dart';
@@ -28,7 +28,7 @@ class App extends StatelessWidget {
           create: (context) => sl<PharmacyProvider>(),
         ),
         ChangeNotifierProvider(
-          create: (context) => RequestDoctorProvider(),
+          create: (context) => sl<RequestPharmacyProvider>(),
         ),
         ChangeNotifierProvider(
           create: (context) => sl<AddBannerProvider>(),

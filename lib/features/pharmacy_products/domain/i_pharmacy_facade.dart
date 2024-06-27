@@ -44,13 +44,15 @@ abstract class IPharmacyFacade {
     required String pharmacyId,
     required String? searchText,
   });
+  
   void clearFetchData();
+
   FutureResult<PharmacyProductAddModel> deletePharmacyProductDetails({
     required String productId,
     required PharmacyProductAddModel productData,
   });
 
-  FutureResult<Unit> deletePharmacyImageList({
+  FutureResult<Unit> deleteProductImageList({
     required List<String> imageUrlList,
     
   });

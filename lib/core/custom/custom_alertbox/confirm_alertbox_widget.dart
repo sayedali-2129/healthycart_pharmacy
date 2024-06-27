@@ -7,14 +7,15 @@ class ConfirmAlertBoxWidget {
       {required BuildContext context,
       required VoidCallback confirmButtonTap,
       required String titleText,
-      required String subText}) {
-    showDialog(
+      required String subText}) async{
+    await showDialog(
       context: context,
       builder: (context) {
         return SizedBox(
           width: 260,
           height: 300,
           child: AlertDialog(
+             backgroundColor: BColors.white,
             title:
                 Text(titleText, style: Theme.of(context).textTheme.bodyLarge),
             content: Text(subText,

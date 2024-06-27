@@ -8,7 +8,8 @@ class PharmacyProductChooseButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.icon,
-    required this.iconColor, required this.buttonTap,
+    required this.iconColor,
+    required this.buttonTap,
   });
   final String text;
   final IconData icon;

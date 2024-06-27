@@ -13,7 +13,14 @@ class BColors {
   static Color green = Colors.green.shade700;
   static Color lightGrey = Colors.grey.shade300;
   static const Color grey = Colors.grey;
-   static const Color darkgrey = Color.fromARGB(255, 72, 70, 70);
   static const Color offWhite = Colors.white54;
   static const Color black = Colors.black;
+  static const Color textBlack = Colors.black;
+  static const Color textLightBlack = Colors.black54;
+  static const Color lightgreen = Color(0xFF9BE5AA);
+  static const Color buttonRedShade = Color(0xffDE7F7F);
+  static const Color buttonGreen = Color(0xff9BE5AA);
+  static Color profileButtonGrey = Colors.grey[50]!;
+  static Color acceptButtonGreen = const Color(0xff039E00);
+  static const Color buttonLightBlue = Color(0xff367CBD);
 }

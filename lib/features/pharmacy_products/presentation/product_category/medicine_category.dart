@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/core/custom/app_bar/custom_appbar_curve.dart';
-import 'package:healthycart_pharmacy/core/custom/confirm_alertbox/confirm_alertbox_widget.dart';
+import 'package:healthycart_pharmacy/core/custom/custom_alertbox/confirm_alertbox_widget.dart';
+import 'package:healthycart_pharmacy/core/custom/lottie/circular_loading.dart';
 import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
@@ -101,14 +102,9 @@ class DoctorScreen extends StatelessWidget {
           (pharmacyProvider.fetchLoading)
 
               /// loading is done here
-              ? const SliverToBoxAdapter(
+              ? const SliverFillRemaining(
                   child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: LinearProgressIndicator(
-                        color: BColors.darkblue,
-                      ),
-                    ),
+                    child: LoadingIndicater(),
                   ),
                 )
               : SliverPadding(

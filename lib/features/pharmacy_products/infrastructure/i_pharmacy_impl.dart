@@ -173,7 +173,7 @@ class IPharmacyImpl implements IPharmacyFacade {
     }
   }
 
-  //////////////////////// doctor add section------------------------------------------
+  //////////////////////// product add section------------------------------------------
   @override
   FutureResult<PharmacyProductAddModel> addPharmacyProductDetails({
     required PharmacyProductAddModel productData,
@@ -189,6 +189,7 @@ class IPharmacyImpl implements IPharmacyFacade {
           .collection(FirebaseCollections.pharmacyProduct)
           .doc(id)
           .set(productMapData);
+      log(productData.productImage!.first.toString());
       return right(productData.copyWith(id: id));
     } on FirebaseException catch (e) {
       log(e.message!);
@@ -197,7 +198,7 @@ class IPharmacyImpl implements IPharmacyFacade {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
-
+/* -------------------- GET PRODUCT ACCORDING TO CATEGORY ------------------- */
   DocumentSnapshot<Map<String, dynamic>>? lastDoc;
   bool noMoreData = false;
   @override
@@ -248,7 +249,8 @@ class IPharmacyImpl implements IPharmacyFacade {
     noMoreData = false;
     lastDoc = null;
   }
-
+/* -------------------------------------------------------------------------- */
+/* ----------------------------- DELETE PRODUCT ----------------------------- */
   @override
   FutureResult<PharmacyProductAddModel> deletePharmacyProductDetails({
     required String productId,
@@ -270,13 +272,15 @@ class IPharmacyImpl implements IPharmacyFacade {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
-
+/* -------------------------------------------------------------------------- */
+/* ------------------------- UPDATE PRODUCT DETAILS ------------------------- */
   @override
   FutureResult<PharmacyProductAddModel> updatePharmacyProductDetails({
     required String productId,
     required PharmacyProductAddModel productData,
-    required Map<String, dynamic> productMapData, 
+    required Map<String, dynamic> productMapData,
   }) async {
+    log(productId);
     try {
       await _firebaseFirestore
           .collection(FirebaseCollections.pharmacyProduct)
@@ -284,8 +288,8 @@ class IPharmacyImpl implements IPharmacyFacade {
           .update(productMapData);
 
       log('Updating  of get pharmacy called  :::: ');
-      
-      return right(productData);
+      log(productData.productImage!.first.toString());
+      return right(productData.copyWith(id: productId));
     } on FirebaseException catch (e) {
       log(e.code);
       log(e.message!);
@@ -294,7 +298,8 @@ class IPharmacyImpl implements IPharmacyFacade {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
-
+/* -------------------------------------------------------------------------- */
+/* -------------- MEDICINE EQUIPMENT AND OTHE FORM AND PACKAGE -------------- */
   @override
   FutureResult<MedicineData> getMedicineFormAndPackageList() async {
     try {
@@ -327,9 +332,9 @@ class IPharmacyImpl implements IPharmacyFacade {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
-
+/* -------------------------------------------------------------------------- */
   @override
-  FutureResult<Unit> deletePharmacyImageList(
+  FutureResult<Unit> deleteProductImageList(
       {required List<String> imageUrlList}) async {
     return await _imageService.deleteFirebaseStorageListUrl(imageUrlList);
   }

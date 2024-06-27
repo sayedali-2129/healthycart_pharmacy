@@ -67,7 +67,7 @@ class PharmacyModel {
       pharmacyAddress: pharmacyAddress ?? this.pharmacyAddress,
       pharmacyownerName: pharmacyownerName ?? this.pharmacyownerName,
       pharmacyDocumentLicense:
-          pharmacyDocumentLicense ?? this.pharmacyDocumentLicense,
+      pharmacyDocumentLicense ?? this.pharmacyDocumentLicense,
       pharmacyImage: pharmacyImage ?? this.pharmacyImage,
       selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
       pharmacyRequested: pharmacyRequested ?? this.pharmacyRequested,
@@ -110,7 +110,19 @@ class PharmacyModel {
       'pharmacyownerName': pharmacyownerName,
       'pharmacyDocumentLicense': pharmacyDocumentLicense,
       'pharmacyImage': pharmacyImage,
+       'email': email,
       'pharmacyKeywords': pharmacyKeywords,
+    };
+  }
+  
+  Map<String, dynamic> toProductMap() {
+    return <String, dynamic>{
+      'pharmacyName': pharmacyName,
+      'pharmacyAddress': pharmacyAddress,
+      'pharmacyImage': pharmacyImage,
+      'phoneNo': phoneNo,
+      'fcmToken': fcmToken,
+      'email': email,
     };
   }
 

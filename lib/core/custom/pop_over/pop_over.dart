@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:healthycart_pharmacy/core/custom/confirm_alertbox/confirm_alertbox_widget.dart';
+import 'package:healthycart_pharmacy/core/custom/custom_alertbox/confirm_alertbox_widget.dart';
 import 'package:popover/popover.dart';
 
 //list of edit and delete of popover

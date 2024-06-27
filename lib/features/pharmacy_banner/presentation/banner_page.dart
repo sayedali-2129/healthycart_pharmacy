@@ -31,8 +31,9 @@ class BannerScreen extends StatelessWidget {
               child: AdSlider(),
             ),
           ),
+          
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16,),
             sliver: SliverToBoxAdapter(
               child: Text(
                 "Add or Edit Banner's",

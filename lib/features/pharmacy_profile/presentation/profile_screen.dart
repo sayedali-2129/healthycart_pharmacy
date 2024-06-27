@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/core/custom/app_bar/custom_appbar_curve.dart';
-import 'package:healthycart_pharmacy/core/custom/confirm_alertbox/confirm_alertbox_widget.dart';
+import 'package:healthycart_pharmacy/core/custom/custom_alertbox/confirm_alertbox_widget.dart';
 import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/application/profile_provider.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/widget/doctor_list_profile/doctor_list.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/widget/product_list_profile/product_list.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/widget/profile_header_widget.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/widget/profile_main_container_widget.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
@@ -47,8 +46,8 @@ class ProfileScreen extends StatelessWidget {
                       iconOn: Icons.power_settings_new,
                       animationDuration: const Duration(milliseconds: 300),
                       onChanged: (bool ishospitalON) async {
-                        profileProvider.hospitalStatus(ishospitalON);
-                        await profileProvider.setActiveHospital();
+                        profileProvider.pharmacyStatus(ishospitalON);
+                        await profileProvider.setActivePharmacy();
                       },
                       onDoubleTap: () {},
                       onSwipe: () {},
@@ -59,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       EasyNavigation.push(
-                          context: context, page: const DoctorProfileList());
+                          context: context, page: const PharmacyProfileProductList());
                     },
                     child: const ProfileMainContainer(
                         text: 'Product List',
@@ -68,16 +67,7 @@ class ProfileScreen extends StatelessWidget {
                           child: Icon(Icons.arrow_forward_ios),
                         )),
                   ),
-                  const Gap(4),
-                  GestureDetector(
-                    onTap: () {},
-                    child: const ProfileMainContainer(
-                        text: 'Bookings & History',
-                        sideChild: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(Icons.arrow_forward_ios),
-                        )),
-                  ),
+                  
                   const Gap(4),
                   GestureDetector(
                     onTap: () {},

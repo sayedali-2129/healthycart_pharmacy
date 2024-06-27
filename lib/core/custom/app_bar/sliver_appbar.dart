@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:healthycart_pharmacy/core/custom/custom_buttons_and_search/search_field_button.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 
 class SliverCustomAppbar extends StatelessWidget {

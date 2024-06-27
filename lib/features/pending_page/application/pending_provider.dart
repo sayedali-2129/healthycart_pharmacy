@@ -10,7 +10,6 @@ class PendingProvider extends ChangeNotifier {
   
   Future<void> reDirectToWhatsApp({required message}) async {
     await _iPendingFacade.reDirectToWhatsApp(
-        whatsAppLink:
-            'https://wa.me/${AppDetails.whatsappNumber}?text=$message');
+        whatsAppLink:'https://wa.me/${AppDetails.whatsappNumber}?text=$message');
   }
 }

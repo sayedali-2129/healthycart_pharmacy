@@ -19,7 +19,9 @@ class GalleryImagePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<PharmacyProvider>(builder: (context, pharmacyProvider, _) {
-      return Column(children: [
+
+      return Column(
+        children: [
         AddProductImageWidget(
           addTap: () {
             if (pharmacyProvider.imageProductUrlList.length >= 3) {
@@ -39,7 +41,7 @@ class GalleryImagePicker extends StatelessWidget {
                 )
               : CustomCachedNetworkImage(
                   image: pharmacyProvider
-                      .imageProductUrlList[pharmacyProvider.selectedIndex]),
+                      .imageProductUrlList[pharmacyProvider.selectedIndex], fit: BoxFit.contain,),
         ),
         const Gap(8),
         DividerWidget(
@@ -86,7 +88,7 @@ class GalleryImagePicker extends StatelessWidget {
                                         )
                                       : CustomCachedNetworkImage(
                                           image: pharmacyProvider
-                                              .imageProductUrlList[index])),
+                                              .imageProductUrlList[index], fit: BoxFit.contain,)),
                             ),
                           ),
                           Positioned(
@@ -102,7 +104,7 @@ class GalleryImagePicker extends StatelessWidget {
                                     LoadingLottie.showLoading(
                                         context: context, text: 'Please wait');
                                     pharmacyProvider
-                                        .deleteProductImageList(
+                                        .deleteProductImage(
                                       context: context,
                                       index: index,
                                       selectedImageUrl: pharmacyProvider.imageProductUrlList[index],
@@ -114,7 +116,7 @@ class GalleryImagePicker extends StatelessWidget {
                                 },
                                 child: const Icon(
                                   Icons.cancel,
-                                  color: BColors.darkgrey,
+                                  color: BColors.grey,
                                 ),
                               ))
                         ],

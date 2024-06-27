@@ -7,13 +7,13 @@ import 'package:healthycart_pharmacy/core/general/firebase_collection.dart';
 import 'package:healthycart_pharmacy/core/general/typdef.dart';
 import 'package:healthycart_pharmacy/core/services/image_picker.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_banner/domain/i_banner_facade.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_banner/domain/model/hospital_banner_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_banner/domain/model/pharmacy_banner_model.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: IBannerFacade)
 class IBannerImpl implements IBannerFacade {
-  IBannerImpl(this._repo, this._imageService);
-  final FirebaseFirestore _repo;
+  IBannerImpl(this._firebaseFirestore, this._imageService);
+  final FirebaseFirestore _firebaseFirestore;
   final ImageService _imageService;
 
   @override
@@ -32,11 +32,11 @@ class IBannerImpl implements IBannerFacade {
   }
 
   @override
-  FutureResult<HospitalBannerModel> addHospitalBanner(
-      {required HospitalBannerModel banner}) async {
+  FutureResult<PharmacyBannerModel> addPharmacyBanner(
+      {required PharmacyBannerModel banner}) async {
     try {
       final CollectionReference collRef =
-          _repo.collection(FirebaseCollections.pharmacyBanner);
+          _firebaseFirestore.collection(FirebaseCollections.pharmacyBanner);
       String id = collRef.doc().id;
       banner.id = id;
       await collRef.doc(id).set(banner.toMap());
@@ -49,17 +49,17 @@ class IBannerImpl implements IBannerFacade {
   }
 
   @override
-  FutureResult<List<HospitalBannerModel>> getHospitalBanner(
-      {required String hospitalId}) async {
+  FutureResult<List<PharmacyBannerModel>> getPharmacyBanner(
+      {required String pharmacyId}) async {
     try {
-      final snapshot = await _repo
+      final snapshot = await _firebaseFirestore
           .collection(FirebaseCollections.pharmacyBanner)
           .orderBy('isCreated', descending: true)
-          .where('hospitalId', isEqualTo: hospitalId)
+          .where('pharmacyId', isEqualTo: pharmacyId)
           .get();
       return right([
         ...snapshot.docs.map(
-            (e) => HospitalBannerModel.fromMap(e.data()).copyWith(id: e.id))
+            (e) => PharmacyBannerModel.fromMap(e.data()).copyWith(id: e.id))
       ]);
     } on FirebaseException catch (e) {
       return left(MainFailure.firebaseException(errMsg: e.message.toString()));
@@ -69,12 +69,12 @@ class IBannerImpl implements IBannerFacade {
   }
 
   @override
-  FutureResult<HospitalBannerModel> deleteHospitalBanner(
-      {required HospitalBannerModel banner}) async {
+  FutureResult<PharmacyBannerModel> deletePharmacyBanner(
+      {required PharmacyBannerModel banner}) async {
     try {
       final id = banner.id;
       final CollectionReference collRef =
-          _repo.collection(FirebaseCollections.pharmacyBanner);
+          _firebaseFirestore.collection(FirebaseCollections.pharmacyBanner);
       await collRef.doc(id).delete();
       return right(banner.copyWith(id: id));
     } on FirebaseException catch (e) {

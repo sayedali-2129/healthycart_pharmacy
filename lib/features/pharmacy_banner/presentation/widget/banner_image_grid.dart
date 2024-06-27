@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:healthycart_pharmacy/core/custom/confirm_alertbox/confirm_alertbox_widget.dart';
+import 'package:healthycart_pharmacy/core/custom/custom_alertbox/confirm_alertbox_widget.dart';
 import 'package:healthycart_pharmacy/core/custom/custom_cached_network/custom_cached_network_image.dart';
 import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_banner/application/add_banner_provider.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_banner/domain/model/hospital_banner_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_banner/domain/model/pharmacy_banner_model.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +17,7 @@ class BannerImageWidget extends StatelessWidget {
     required this.index,
   });
   final String indexNumber;
-  final HospitalBannerModel bannerData;
+  final PharmacyBannerModel bannerData;
   final int index;
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class BannerImageWidget extends StatelessWidget {
           Positioned.fill(
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: CustomCachedNetworkImage(image: bannerData.image ?? '')),
+                child: CustomCachedNetworkImage(image: bannerData.image ?? '', fit: BoxFit.contain,)),
           ),
           Positioned.fill(
             child: Container(

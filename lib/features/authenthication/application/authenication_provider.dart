@@ -51,6 +51,7 @@ class AuthenticationProvider extends ChangeNotifier {
         pharmacyDataFetched?.pharmacyImage == null ||
         pharmacyDataFetched?.pharmacyName == null ||
         pharmacyDataFetched?.pharmacyDocumentLicense == null ||
+        pharmacyDataFetched?.email == null ||
         pharmacyDataFetched?.pharmacyownerName == null) {
       EasyNavigation.pushReplacement(
         type: PageTransitionType.bottomToTop,

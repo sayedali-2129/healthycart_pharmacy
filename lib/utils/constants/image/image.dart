@@ -13,4 +13,7 @@ class BImage {
   static const String lottieLoading = 'assets/json/loading_pharmacy_new.json';
   static const String lottieLocation = 'assets/json/location.json';
   static const String lottieReviewRequested = 'assets/json/review.json';
+  static const String circularLoadingLottie ='assets/json/lottie-progress-indicator.json';
+  static const String noDataPng = 'assets/image/no data.png';
+  static const String prescription = 'assets/image/medical-report.png';
 }

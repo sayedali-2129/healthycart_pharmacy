@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_banner/domain/i_banner_facade.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_banner/domain/model/hospital_banner_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_banner/domain/model/pharmacy_banner_model.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
@@ -18,11 +18,11 @@ class AddBannerProvider extends ChangeNotifier {
 
   String? imageUrl;
   File? imageFile;
-  HospitalBannerModel? banner;
-  List<HospitalBannerModel> bannerList = [];
+  PharmacyBannerModel? banner;
+  List<PharmacyBannerModel> bannerList = [];
   bool fetchLoading = false;
   bool saveLoading = false;
-  final hospitalId = FirebaseAuth.instance.currentUser?.uid;
+  final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
 
   Future<void> getImage() async {
     final result = await iBannerFacade.getImage();
@@ -55,12 +55,12 @@ class AddBannerProvider extends ChangeNotifier {
   }
 
   Future<void> deleteBanner(
-      {required HospitalBannerModel bannerToDelete,
+      {required PharmacyBannerModel bannerToDelete,
       required String imageUrl,
       required BuildContext context,
       required int index}) async {
     final result =
-        await iBannerFacade.deleteHospitalBanner(banner: bannerToDelete);
+        await iBannerFacade.deletePharmacyBanner(banner: bannerToDelete);
     result.fold((failure) {
       EasyNavigation.pop(context: context);
       CustomToast.errorToast(text: "Can't able to remove the banner.");
@@ -75,14 +75,14 @@ class AddBannerProvider extends ChangeNotifier {
   }
 
   Future<void> addBanner({required BuildContext context}) async {
-    banner = HospitalBannerModel(
+    banner = PharmacyBannerModel(
       isCreated: Timestamp.now(),
       image: imageUrl,
-      hospitalId: hospitalId ?? '',
+      pharmacyId: pharmacyId?? '',
     );
     saveLoading = true;
     notifyListeners();
-    final result = await iBannerFacade.addHospitalBanner(banner: banner!);
+    final result = await iBannerFacade.addPharmacyBanner(banner: banner!);
     result.fold((failure) {
       CustomToast.errorToast(text: "Can't able to save banner");
     }, (model) {
@@ -100,7 +100,7 @@ class AddBannerProvider extends ChangeNotifier {
     fetchLoading = true;
     notifyListeners();
     final result =
-        await iBannerFacade.getHospitalBanner(hospitalId: hospitalId ?? '');
+        await iBannerFacade.getPharmacyBanner(pharmacyId: pharmacyId ?? '');
     result.fold((failure) {
       log(failure.errMsg);
       CustomToast.errorToast(text: "Couldn't able to get banner");

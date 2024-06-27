@@ -31,7 +31,7 @@ class DropDownProductButton extends StatelessWidget {
                 ),
               ),
               iconEnabledColor: BColors.white,
-              dropdownColor: BColors.darkgrey,
+              dropdownColor: BColors.grey,
               style: Theme.of(context).textTheme.labelLarge,
               underline: const SizedBox(),
               alignment: Alignment.centerLeft,

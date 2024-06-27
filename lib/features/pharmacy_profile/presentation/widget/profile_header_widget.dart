@@ -91,7 +91,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                         width: 32,
                         decoration: BoxDecoration(
                           border: Border.all(color:  BColors.darkblue),
-                            color: BColors.lightGrey.withOpacity(.5),
+                            color: BColors.lightGrey.withOpacity(.8),
                             borderRadius: BorderRadius.circular(8)),
                         child: const Center(
                             child: Icon(

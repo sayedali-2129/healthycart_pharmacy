@@ -202,7 +202,7 @@ class PharmacyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteProductImageList({
+  Future<void> deleteProductImage({
     required BuildContext context,
     required int index,
     required String selectedImageUrl,
@@ -223,9 +223,9 @@ class PharmacyProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> deletePharmacyImageList(
+  Future<void> deleteProductImageList(
       {required List<String> imageUrls}) async {
-    await _iPharmacyFacade.deletePharmacyImageList(imageUrlList: imageUrls);
+    await _iPharmacyFacade.deleteProductImageList(imageUrlList: imageUrls);
   }
 
   ///Medicine form section
@@ -325,8 +325,8 @@ class PharmacyProvider extends ChangeNotifier {
     'Elderly',
     'Men',
     'Women',
-    'For both men & women',
-    'For everyone'
+    'Everyone',
+    'Both men & women',
   ];
   List<String> productFormList = []; //
   List<String> productPackageList = []; // getting from the admin side
@@ -338,6 +338,7 @@ class PharmacyProvider extends ChangeNotifier {
   String? equipmentType;
   String? productType;
   List<String> equipmentTypeList = [];
+
   void setWarantyOption(String text) {
     selectedWarantyOption = text;
     notifyListeners();
@@ -429,9 +430,9 @@ class PharmacyProvider extends ChangeNotifier {
       totalQuantity: int.parse(totalQuantityController.text),
       storingDegree: storeBelowController.text,
       idealFor: idealFor,
-      expiryDate:
-          Timestamp.fromMillisecondsSinceEpoch(//// want to double check here
-              expiryDate?.millisecondsSinceEpoch ?? 0),
+      expiryDate: Timestamp.fromMillisecondsSinceEpoch(
+          expiryDate?.millisecondsSinceEpoch ??
+              0), //// want to double check here
       createdAt: Timestamp.now(),
       productFormNumber: int.parse(productFormNumberController.text),
       productForm: productForm,
@@ -444,6 +445,7 @@ class PharmacyProvider extends ChangeNotifier {
       directionToUse: directionToUseController.text,
       safetyInformation: safetyInformationController.text,
       requirePrescription: prescriptionNeeded,
+      inStock: true,
       keyBenefits: keyBenefitController.text,
       keywords: keywordProductNameBuilder(),
     );
@@ -453,7 +455,7 @@ class PharmacyProvider extends ChangeNotifier {
   void clearProductDetails() {
     productFormList.clear();
     productPackageList.clear();
-    imageProductUrlList.clear();
+    imageProductUrlList = [];
     typeOfProduct = null;
     productNameController.clear();
     productBrandNameController.clear();
@@ -486,6 +488,7 @@ class PharmacyProvider extends ChangeNotifier {
     otherData = null;
     medicineData = null;
     equipmentData = null;
+    deleteUrlList.clear();
     notifyListeners();
   }
 
@@ -541,6 +544,7 @@ class PharmacyProvider extends ChangeNotifier {
       safetyInformation: safetyInformationController.text,
       specification: keyBenefitController.text,
       requirePrescription: prescriptionNeeded,
+      inStock: true,
       createdAt: Timestamp.now(),
       keywords: keywordProductNameBuilder(),
     );
@@ -602,6 +606,7 @@ class PharmacyProvider extends ChangeNotifier {
       keyIngrdients: keyIngredientController.text,
       directionToUse: directionToUseController.text,
       safetyInformation: safetyInformationController.text,
+      inStock: true,
       keyBenefits: keyBenefitController.text,
       keywords: keywordProductNameBuilder(),
     );
@@ -618,7 +623,7 @@ class PharmacyProvider extends ChangeNotifier {
         pharmacyId: pharmacyId!,
         searchText: searchText);
     result.fold((failure) {
-      CustomToast.errorToast(text: "Couldn't able to fetch product's");
+      CustomToast.errorToast(text: "Couldn't able to show products");
     }, (products) {
       productList.addAll(products); //// here we are assigning the doctor
     });
@@ -638,6 +643,7 @@ class PharmacyProvider extends ChangeNotifier {
     productList.clear();
     _iPharmacyFacade.clearFetchData();
     getPharmacyProductDetails(searchText: searchText);
+    notifyListeners();
   }
 
 // /////// 3.) deleting the doctor field
@@ -661,7 +667,7 @@ class PharmacyProvider extends ChangeNotifier {
   void setMedicineEditData(
       {required PharmacyProductAddModel medicineEditData}) {
     typeOfProduct = medicineEditData.typeOfProduct;
-    imageProductUrlList.addAll(medicineEditData.productImage ?? []);
+    imageProductUrlList = medicineEditData.productImage ?? [];
     productNameController.text = medicineEditData.productName ?? '';
     productBrandNameController.text = medicineEditData.productBrandName ?? '';
     productMRPController.text = medicineEditData.productMRPRate.toString();
@@ -777,17 +783,15 @@ class PharmacyProvider extends ChangeNotifier {
       CustomToast.errorToast(
           text: "Couldn't able to update details, please try again.");
       EasyNavigation.pop(context: context);
-    }, (productData) async{
-        if (deleteUrlList.isNotEmpty) {
-        await deletePharmacyImageList(imageUrls: deleteUrlList).then((value) {
+    }, (productData) async {
+      if (deleteUrlList.isNotEmpty) {
+        await deleteProductImageList(imageUrls: deleteUrlList).then((value) {
           deleteUrlList.clear();
         });
       }
-      CustomToast.sucessToast(text: "Updated sucessfully");
-      productList.removeAt(index);
-      productList.insert(
-          index, productData); //// here we are assigning the doctor
       clearProductDetails();
+      CustomToast.sucessToast(text: "Updated sucessfully");
+      productList[index] = productData; //// here we are assigning the doctor
       notifyListeners();
       EasyNavigation.pop(context: context);
       EasyNavigation.pop(context: context);
@@ -798,6 +802,7 @@ class PharmacyProvider extends ChangeNotifier {
 
   void medicineEditProductDetails(PharmacyProductAddModel medicineEditData) {
     medicineData = PharmacyProductAddModel(
+      id: medicineEditData.id,
       categoryId: categoryId,
       pharmacyId: pharmacyId,
       productName: productNameController.text,
@@ -827,6 +832,7 @@ class PharmacyProvider extends ChangeNotifier {
       directionToUse: directionToUseController.text,
       safetyInformation: safetyInformationController.text,
       requirePrescription: prescriptionNeeded,
+      inStock: true,
       keyBenefits: keyBenefitController.text,
       keywords: keywordProductNameBuilder(),
     );
@@ -850,17 +856,18 @@ class PharmacyProvider extends ChangeNotifier {
       CustomToast.errorToast(
           text: "Couldn't able to update details, please try again.");
       EasyNavigation.pop(context: context);
-    }, (productData) async{
+    }, (productData) async {
       if (deleteUrlList.isNotEmpty) {
-        await deletePharmacyImageList(imageUrls: deleteUrlList).then((value) {
+        await deleteProductImageList(imageUrls: deleteUrlList).then((value) {
           deleteUrlList.clear();
         });
       }
       CustomToast.sucessToast(text: "Updated sucessfully");
+      clearProductDetails();
       productList.removeAt(index);
       productList.insert(
           index, productData); //// here we are assigning the doctor
-      clearProductDetails();
+
       notifyListeners();
       EasyNavigation.pop(context: context);
       EasyNavigation.pop(context: context);
@@ -871,11 +878,14 @@ class PharmacyProvider extends ChangeNotifier {
 
   void equipmentEditProductDetails(PharmacyProductAddModel equipmentEditData) {
     equipmentData = PharmacyProductAddModel(
+      id: equipmentEditData.id,
       categoryId: categoryId,
       pharmacyId: pharmacyId,
       productName: productNameController.text,
       productBrandName: productBrandNameController.text,
-      productImage: imageProductUrlList,
+      productImage: (imageProductUrlList.isEmpty)
+          ? equipmentEditData.productImage
+          : imageProductUrlList,
       typeOfProduct: typeOfProduct,
       productMRPRate: num.tryParse(productMRPController.text),
       productDiscountRate: num.tryParse(productDiscountRateController.text),
@@ -893,6 +903,7 @@ class PharmacyProvider extends ChangeNotifier {
       safetyInformation: safetyInformationController.text,
       specification: keyBenefitController.text,
       requirePrescription: prescriptionNeeded,
+      inStock: true,
       createdAt: equipmentEditData.createdAt,
       keywords: keywordProductNameBuilder(),
     );
@@ -917,7 +928,7 @@ class PharmacyProvider extends ChangeNotifier {
       EasyNavigation.pop(context: context);
     }, (productData) async {
       if (deleteUrlList.isNotEmpty) {
-        await deletePharmacyImageList(imageUrls: deleteUrlList).then((value) {
+        await deleteProductImageList(imageUrls: deleteUrlList).then((value) {
           deleteUrlList.clear();
         });
       }
@@ -936,11 +947,14 @@ class PharmacyProvider extends ChangeNotifier {
 
   void otherEditProductDetails(PharmacyProductAddModel othersEditData) {
     otherData = PharmacyProductAddModel(
+      id: othersEditData.id,
       categoryId: categoryId,
       pharmacyId: pharmacyId,
       productName: productNameController.text,
       productBrandName: productBrandNameController.text,
-      productImage: imageProductUrlList,
+      productImage: (imageProductUrlList.isEmpty)
+          ? othersEditData.productImage
+          : imageProductUrlList,
       typeOfProduct: typeOfProduct,
       productMRPRate: num.tryParse(productMRPController.text),
       productDiscountRate: num.tryParse(productDiscountRateController.text),
@@ -963,6 +977,7 @@ class PharmacyProvider extends ChangeNotifier {
       keyIngrdients: keyIngredientController.text,
       directionToUse: directionToUseController.text,
       safetyInformation: safetyInformationController.text,
+      inStock: true,
       keyBenefits: keyBenefitController.text,
       keywords: keywordProductNameBuilder(),
     );

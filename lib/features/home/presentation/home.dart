@@ -6,18 +6,8 @@ import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/prof
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/request_page.dart';
 import 'package:healthycart_pharmacy/utils/constants/image/icon.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

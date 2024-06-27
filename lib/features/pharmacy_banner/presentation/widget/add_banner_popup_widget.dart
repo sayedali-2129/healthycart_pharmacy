@@ -99,7 +99,7 @@ class AddBannerAlertWidget extends StatelessWidget {
                       height: 48,
                       width: double.infinity,
                       child: ElevatedButton(
-                          onPressed: buttonTap,
+                          onPressed:value.saveLoading?(){} : buttonTap,
                           style: ElevatedButton.styleFrom(
                               backgroundColor: BColors.buttonLightColor,
                               shape: RoundedRectangleBorder(
