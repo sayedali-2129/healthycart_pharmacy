@@ -48,7 +48,7 @@ class EasyNavigation {
         duration: const Duration(milliseconds: 300),
         reverseDuration: const Duration(milliseconds: 300),
       ),
-       (Route<dynamic> route) => false,
+      (Route<dynamic> route) => false,
     );
   }
   static Future<void> pop({

@@ -13,7 +13,6 @@ class UserModel {
   String? userAge;
   String? gender;
   String? userEmail;
-
   String? fcmToken;
   UserModel({
     this.id,

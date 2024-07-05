@@ -62,6 +62,9 @@ abstract class IPharmacyFacade {
     required PharmacyProductAddModel productData,
     required Map<String, dynamic> productMapData,
   });
-
-  FutureResult<MedicineData> getMedicineFormAndPackageList();
+  FutureResult<bool> setStatusOfProductStock({
+    required bool isProductInStock,
+    required String productId,
+  });
+  FutureResult<MedicineData> getproductFormAndPackageList();
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/core/custom/app_bar/sliver_appbar.dart';
@@ -33,7 +35,8 @@ class EquipmentAddFormWidget extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((timestamp) {
       final pharmacyProvider = context.read<PharmacyProvider>();
       pharmacyProvider.typeOfProduct = typeOfProduct;
-      pharmacyProvider.getMedicineFormAndPackageList();
+      log('Product type:::::${pharmacyProvider.productType}');
+      log('Product type List:::::${pharmacyProvider.equipmentTypeList}');
     });
 
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -132,7 +135,6 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                 controller:
                                     pharmacyProvider.productBrandNameController,
                               ),
-
                               const Gap(8),
                               const TextAboveFormFieldWidget(
                                 text: "Equipment MRP (₹)",
@@ -168,7 +170,7 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                       keyboardType: TextInputType.number,
                                       textInputAction: TextInputAction.next,
                                       hintText:
-                                          'Enter the price in rupees eg : 2000',
+                                          'Enter the price in rupees eg : 1000',
                                       validator: BValidator.validate,
                                       controller: pharmacyProvider
                                           .productDiscountRateController,
@@ -197,21 +199,21 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                   ],
                                 ),
                               const Gap(8),
-                              const TextAboveFormFieldWidget(
-                                starText: true,
-                                text: "Total Quantity",
-                              ),
-                              TextfieldWidget(
-                                suffixText: 'Nos',
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.next,
-                                hintText:
-                                    'Enter the total quantity available eg : 25 Nos',
-                                validator: BValidator.validate,
-                                controller:
-                                    pharmacyProvider.totalQuantityController,
-                              ),
-                              const Gap(8),
+                              // const TextAboveFormFieldWidget(
+                              //   starText: true,
+                              //   text: "Total Quantity",
+                              // ),
+                              // TextfieldWidget(
+                              //   suffixText: 'Nos',
+                              //   keyboardType: TextInputType.number,
+                              //   textInputAction: TextInputAction.next,
+                              //   hintText:
+                              //       'Enter the total quantity available eg : 25 Nos',
+                              //   validator: BValidator.validate,
+                              //   controller:
+                              //       pharmacyProvider.totalQuantityController,
+                              // ),
+                              // const Gap(8),
                               const TextAboveFormFieldWidget(
                                 text: "Box / Package contains ",
                               ),
@@ -224,24 +226,24 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                 controller: pharmacyProvider
                                     .productBoxContainsController,
                               ),
-
                               const Gap(16),
-
-                              const HelpButtonWidget(text: ''),
-
+                              const HelpButtonWidget(
+                                  text:
+                                      "Following number text fields {Equipment weight, Equipment type} needed to be filled if only required for displaying product."),
                               const Gap(8),
                               const TextAboveFormFieldWidget(
                                 starText: true,
                                 text: "Equipment Type",
                               ),
                               DropDownProductButton(
-                                  value: pharmacyProvider.productForm,
+                                  value:pharmacyProvider.equipmentTypeList.contains(pharmacyProvider.productType)? pharmacyProvider.productType : '',
                                   hintText: 'Equipment type',
                                   onChanged: (value) {
                                     pharmacyProvider
-                                        .setDropFormText(value ?? '');
+                                        .setDropProductTypeText(value ?? '');
                                   },
-                                  optionList: pharmacyProvider.productFormList),
+                                  optionList:
+                                      pharmacyProvider.equipmentTypeList),
                               const Gap(8),
                               const TextAboveFormFieldWidget(
                                 starText: true,
@@ -256,7 +258,6 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                   },
                                   optionList:
                                       pharmacyProvider.idealForOptionList),
-
                               const Gap(8),
                               const TextAboveFormFieldWidget(
                                 starText: true,
@@ -271,7 +272,7 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                     fit: FlexFit.tight,
                                     child: TextfieldWidget(
                                       keyboardType: TextInputType.number,
-                                      hintText: 'Eg: 5 years',
+                                      hintText: 'Eg: 18 months',
                                       textInputAction: TextInputAction.next,
                                       validator: BValidator.validate,
                                       controller: pharmacyProvider
@@ -333,19 +334,6 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                 ],
                               ),
                               const Gap(24),
-                              // const TextAboveFormFieldWidget(
-                              //   starText: true,
-                              //   text: "Salt Composition / Key Ingredients",
-                              // ),
-                              // TextfieldWidget(
-                              //   hintText:
-                              //       'Enter the salt composition eg : Cetrizon(5mg)',
-                              //   textInputAction: TextInputAction.next,
-                              //   validator: BValidator.validate,
-                              //   controller:
-                              //       pharmacyProvider.keyIngredientController,
-                              // ),
-                              // const Gap(8),
                               const TextAboveFormFieldWidget(
                                 text: "Product Information",
                                 starText: true,
@@ -420,6 +408,13 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                           text: 'Pick product images.');
                                       return;
                                     }
+                                      if (pharmacyProvider
+                                            .productType ==
+                                        null) {
+                                      CustomToast.errorToast(
+                                          text: 'Pick a product type.');
+                                      return;
+                                    }
                                     if (pharmacyProvider
                                             .selectedWarantyOption ==
                                         null) {
@@ -427,6 +422,7 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                           text: 'Pick a warranty period.');
                                       return;
                                     }
+                                     
                                     if (pharmacyProvider
                                             .productMeasurementUnit ==
                                         null) {

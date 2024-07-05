@@ -10,6 +10,7 @@ class HorizontalTabBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      forceElevated: true,
         titleSpacing: 0,
         automaticallyImplyLeading: false,
         toolbarHeight: 80,
@@ -80,3 +81,4 @@ class CustomElevatedTabButton extends StatelessWidget {
     );
   }
 }
+

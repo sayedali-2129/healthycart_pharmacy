@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:healthycart_pharmacy/features/pending_page/application/pending_provider.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
+import 'package:provider/provider.dart';
 
 class HelpButtonWidget extends StatelessWidget {
   const HelpButtonWidget({
-    super.key, required this.text,
+    super.key,
+    required this.text,
   });
   final String text;
   @override
   Widget build(BuildContext context) {
+    final pendingPageProvider = Provider.of<PendingProvider>(context);
     return GestureDetector(
       onTap: () {
         showDialog(
@@ -24,7 +28,7 @@ class HelpButtonWidget extends StatelessWidget {
                   children: [
                     Text(
                         textAlign: TextAlign.center,
-                       text,
+                        text,
                         maxLines: 4,
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(
                               fontSize: 12,
@@ -32,14 +36,18 @@ class HelpButtonWidget extends StatelessWidget {
                     const Gap(6),
                     Text(
                         textAlign: TextAlign.center,
-                        "Need any futher clarification tap to",
+                        "Need any futher clarification on adding product tap to",
                         maxLines: 4,
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(
                               fontSize: 13,
                             )),
                     const Gap(8),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                    pendingPageProvider.reDirectToWhatsApp(
+                      message:
+                          'Hi, I like to know the details how to add products in pharmacy.');
+                      },
                       child: Text(
                           textAlign: TextAlign.center,
                           "Contact us",

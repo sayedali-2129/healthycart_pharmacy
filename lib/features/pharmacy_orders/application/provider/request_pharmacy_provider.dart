@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
-import 'package:healthycart_pharmacy/features/home/presentation/home.dart';
+import 'package:healthycart_pharmacy/core/services/fcm_notification.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/i_order_facade.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharmacy_order_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/product_quantity_model.dart';
@@ -38,6 +38,9 @@ class RequestPharmacyProvider extends ChangeNotifier {
   String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
   List<ProductAndQuantityModel> pharmacyUserProducts = [];
   List<PharmacyOrderModel> newOrderList = [];
+  List<PharmacyOrderModel> onProcessOrderList = [];
+  List<PharmacyOrderModel> completedOrderList = [];
+  List<PharmacyOrderModel> cancelledOrderList = [];
   num totalAmount = 0;
   num totalFinalAmount = 0;
 
@@ -83,12 +86,22 @@ class RequestPharmacyProvider extends ChangeNotifier {
   }
 
 /* -------------------------------------------------------------------------- */
-/* ------------------------------ DELIVERY TYPE ----------------------------- */
+/* ------------------------------ DELIVERY  AND PAYMENT TYPE ----------------------------- */
   String deliveryType(String delivery) {
     if (delivery == "Home") {
       return 'Home Delivery';
     } else {
       return 'Pick-Up at pharmacy';
+    }
+  }
+
+  String paymentType(String paymentType) {
+    if (paymentType == "COD") {
+      return 'Cash on delivery';
+    } else if (paymentType == "Online") {
+      return 'Online';
+    } else {
+      return 'Pending';
     }
   }
 
@@ -107,7 +120,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
   }
 
 /* ------------------------ PRODUCT NEW ORDER STREAM SECTION ----------------------- */
-  void getNewOrders() {
+  void getPharmacyNewOrders() {
     fetchloading = true;
     notifyListeners();
     _iOrderFacade
@@ -130,7 +143,36 @@ class RequestPharmacyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> cancelStream() async {
+    await _iOrderFacade.cancelStream();
+  }
 /* -------------------------------------------------------------------------- */
+
+/* ------------------------ PRODUCT ON PROCESS ORDER STREAM SECTION ----------------------- */
+  void getpharmacyOnProcessData() {
+    fetchloading = true;
+    notifyListeners();
+    _iOrderFacade
+        .pharmacyOnProcessData(pharmacyId: pharmacyId ?? '')
+        .listen((event) {
+      event.fold(
+        (err) {
+          CustomToast.errorToast(text: err.errMsg);
+          fetchloading = false;
+          notifyListeners();
+        },
+        (newOrders) {
+          onProcessOrderList = newOrders;
+          fetchloading = false;
+          notifyListeners();
+        },
+      );
+    });
+
+    notifyListeners();
+  }
+
+  /* -------------------------------------------------------------------------- */
 /* -------------------------- UPDATE PENDING ORDER -------------------------- */
   final reasonController = TextEditingController();
   final rejectionReasonController = TextEditingController();
@@ -162,17 +204,17 @@ class RequestPharmacyProvider extends ChangeNotifier {
     deliveryController.clear();
     rejectionReasonController.clear();
     pharmacyUserProducts.clear();
-    productMap.clear();// clearing in the case of prescription
+    productMap.clear(); // clearing in the case of prescription
     notifyListeners();
   }
 
-  Future<void> updateProductOrderDetails(
+  Future<void> updateNewOrderDetails(
       {required PharmacyOrderModel productData,
       required int cancelOrApprove,
       required BuildContext context}) async {
     detailsPageProductsDetails(
         productData: productData, cancelOrApprove: cancelOrApprove);
-    final result = await _iOrderFacade.updateProductOrderDetails(
+    final result = await _iOrderFacade.updateProductOrderPendingDetails(
       orderId: productData.id ?? '',
       orderProducts: orderProducts!,
     );
@@ -183,13 +225,27 @@ class RequestPharmacyProvider extends ChangeNotifier {
         notifyListeners();
       },
       (orderProduct) {
-        clearFiledAndData();
+        if (cancelOrApprove == 1) {
+          sendFcmMessage(
+              token: orderProduct.userDetails?.fcmToken ?? '',
+              body:
+                  'Your Order is approved by ${orderProduct.userDetails?.userName ?? 'Pharmacy'}, Click to check details!!',
+              title: 'Healthy Cart Order Approved!!');
+        } else {
+          sendFcmMessage(
+              token: orderProduct.userDetails?.fcmToken ?? '',
+              body:
+                  'Your Order is rejected by ${orderProduct.userDetails?.userName ?? 'Pharmacy'}, Click to check details!!',
+              title: 'Healthy Cart Order Rejected!!');
+        }
         CustomToast.sucessToast(
             text: (cancelOrApprove == 1)
                 ? "The order is sent to user"
                 : "The order is sucessfully cancelled.");
         EasyNavigation.pop(context: context);
-        EasyNavigation.push(context: context, page: const HomeScreen());
+        EasyNavigation.pop(context: context);
+        // EasyNavigation.pushAndRemoveUntil(context: context, page: const HomeScreen());
+        clearFiledAndData();
         notifyListeners();
       },
     );
@@ -198,29 +254,27 @@ class RequestPharmacyProvider extends ChangeNotifier {
   void detailsPageProductsDetails(
       {required PharmacyOrderModel productData, required int cancelOrApprove}) {
     orderProducts = PharmacyOrderModel(
-      pharmacyId: productData.pharmacyId,
-      userId: productData.userId,
-      userDetails: productData.userDetails,
-      addresss: productData.addresss,
-      productId: productData.productId,
-      productDetails: pharmacyUserProducts,
+      productDetails: (cancelOrApprove == 3)
+          ? productData.productDetails
+          : pharmacyUserProducts,
       orderStatus: cancelOrApprove,
       paymentStatus: 0,
       deliveryCharge: deliveryCharge,
-      pharmacyDetails: productData.pharmacyDetails,
-      deliveryType: productData.deliveryType,
-      totalDiscountAmount: (deliveryCharge == 0 || deliveryCharge == null)
-          ? totalFinalAmount
-          : totalFinalAmount - deliveryCharge!,
-      totalAmount: totalAmount,
-      finalAmount: totalFinalAmount,
-      createdAt: productData.createdAt,
-      prescription: productData.prescription,
+      totalDiscountAmount: (cancelOrApprove == 3)
+          ? productData.totalDiscountAmount
+          : (deliveryCharge == 0 || deliveryCharge == null)
+              ? totalFinalAmount
+              : totalFinalAmount - deliveryCharge!,
+      totalAmount:
+          (cancelOrApprove == 3) ? productData.totalAmount : totalAmount,
+      finalAmount:
+          (cancelOrApprove == 3) ? productData.finalAmount : totalFinalAmount,
       rejectReason: reasonController.text.isEmpty
           ? rejectionReasonController.text
           : reasonController.text,
       acceptedAt: (cancelOrApprove == 1) ? Timestamp.now() : null,
       rejectedAt: (cancelOrApprove == 3) ? Timestamp.now() : null,
+      isRejectedByUser: (cancelOrApprove == 3) ? false : null,
     );
   }
 
@@ -238,16 +292,14 @@ class RequestPharmacyProvider extends ChangeNotifier {
           productData: productDetail,
           productId: productDetail.id,
           quantity: quantityCount);
-      productMap[productDetail.id!] =
-          productPrescriptionAdd ?? ProductAndQuantityModel();
+      productMap[productDetail.id!] = productPrescriptionAdd ?? ProductAndQuantityModel();
     } else {
       quantityCount = 1;
       productPrescriptionAdd = ProductAndQuantityModel(
           productData: productDetail,
           productId: productDetail.id,
           quantity: quantityCount);
-      productMap[productDetail.id!] =
-          productPrescriptionAdd ?? ProductAndQuantityModel();
+      productMap[productDetail.id!] =  productPrescriptionAdd ?? ProductAndQuantityModel();
     }
     notifyListeners();
   }
@@ -278,5 +330,146 @@ class RequestPharmacyProvider extends ChangeNotifier {
   void addProductsFromMap() {
     pharmacyUserProducts = productMap.values.toList();
     notifyListeners();
+  }
+  /* ------------------------- UPDATE COMPLETED ORDER ------------------------- */
+
+  Future<void> updateOrderCompletedDetails({
+    required PharmacyOrderModel productData,
+  }) async {
+    final data = productData.copyWith(
+      orderStatus: 2,
+      completedAt: Timestamp.now(),
+    );
+    final result = await _iOrderFacade.updateProductOrderOnProcessDetails(
+      orderId: productData.id ?? '',
+      orderProducts: data,
+      pharmacyId: pharmacyId ??'',
+    );
+    result.fold(
+      (failure) {
+        CustomToast.errorToast(text: failure.errMsg);
+        notifyListeners();
+      },
+      (orderProduct) {
+        sendFcmMessage(
+            token: orderProduct.userDetails?.fcmToken ?? '',
+            body:
+                'Your Order by ${orderProduct.userDetails?.userName ?? 'Pharmacy'} is approved, Click to check details!!',
+            title: 'Healthy Cart Order Completed!!');
+        CustomToast.sucessToast(text: "The order is sucessfully delivered, We always care about your health.");
+        notifyListeners();
+      },
+    );
+  }
+
+/* -----------------------------GET COMPLETED ORDER ---------------------------- */
+
+  Future<void> getCompletedOrderDetails({required int limit}) async {
+    fetchloading = true;
+    notifyListeners();
+    final result = await _iOrderFacade.getCompletedOrderDetails(
+        pharmacyId: pharmacyId ?? '', limit: limit);
+    result.fold((failure) {
+      CustomToast.errorToast(text: "Couldn't able to get completed orders");
+    }, (completedOrders) {
+      log(completedOrders.length.toString());
+      completedOrderList
+          .addAll(completedOrders); //// here we are assigning the doctor
+    });
+    fetchloading = false;
+    notifyListeners();
+  }
+
+  void clearCompletedOrderFetchData() {
+    completedOrderList.clear();
+    _iOrderFacade.clearFetchData();
+  }
+
+/* ------------------------- CANCELLED ORDER SECTION ------------------------ */
+  Future<void> getCancelledOrderDetails() async {
+    fetchloading = true;
+    notifyListeners();
+    final result = await _iOrderFacade.getCancelledOrderDetails(
+      pharmacyId: pharmacyId ?? '',
+    );
+    result.fold((failure) {
+      CustomToast.errorToast(text: "Couldn't able to get completed orders");
+    }, (cancelledOrders) {
+      log(cancelledOrders.length.toString());
+      cancelledOrderList
+          .addAll(cancelledOrders); //// here we are assigning the doctor
+    });
+    fetchloading = false;
+    notifyListeners();
+  }
+
+  void clearCancelledOrderFetchData() {
+    cancelledOrderList.clear();
+    _iOrderFacade.clearFetchData();
+  }
+
+/* --------------------- ORDER COMPLETION STATUS UPDATE --------------------- */
+
+  Future<void> updateOrderStatusToDeliverDetails(
+      {required PharmacyOrderModel productData, required int value, required bool updateValue}) async {
+    PharmacyOrderModel? data;
+    if (value == 1) {
+       data = productData.copyWith(
+         isOrderPacked: updateValue,
+      );
+    } else if (value == 2) {
+             data = productData.copyWith(
+      isOrderDelivered: updateValue
+      );
+    } else {
+        data = productData.copyWith(
+       isPaymentRecieved: updateValue,
+       paymentStatus:updateValue? 1 : 0,
+      );
+    }
+
+    final result = await _iOrderFacade.updateProductOrderOnProcessDetails(
+      orderId: productData.id ?? '',
+      orderProducts: data,
+      pharmacyId: pharmacyId ??'',
+    );
+    result.fold(
+      (failure) {
+        CustomToast.errorToast(text: failure.errMsg);
+        notifyListeners();
+      },
+      (orderProduct) {
+         if (value == 1 && updateValue ==true) {
+              
+        CustomToast.sucessToast(text: "Order status updated to packed.");
+               sendFcmMessage(
+            token: orderProduct.userDetails?.fcmToken ?? '',
+            body:
+                'Your Order by ${orderProduct.userDetails?.userName ?? 'Pharmacy'} is packed, getting ready for delivery!!',
+            title: 'Your Healthy Cart Order Packed!!');
+    } else if(value == 1&& updateValue ==false) {
+      
+         CustomToast.sucessToast(text: "Order status updated to Unpacked.");
+    }
+
+    if (value == 2 && updateValue ==true) {
+      
+        CustomToast.sucessToast(text: "Order is sucessfully delivered.");
+              sendFcmMessage(
+            token: orderProduct.userDetails?.fcmToken ?? '',
+            body:
+                'Your Order by ${orderProduct.userDetails?.userName ?? 'Pharmacy'} is delivered !!',
+            title: 'Your Healthy Cart Order delivered!!');
+    }else if(value == 2 && updateValue ==false) {
+         CustomToast.sucessToast(text: "Order status is removed from delivered.");
+    }
+    if(value == 3 && updateValue ==true){
+     CustomToast.sucessToast(text: "Order status updated as payment received.");
+    }else if(value == 3 && updateValue ==false) {
+     CustomToast.sucessToast(text: "Order payment is not received.");
+    }
+        notifyListeners();
+      },
+    );
   }
 }

@@ -34,7 +34,6 @@ class OtherAddFormWidget extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((timestamp) {
       final pharmacyProvider = context.read<PharmacyProvider>();
       pharmacyProvider.typeOfProduct = typeOfProduct;
-      pharmacyProvider.getMedicineFormAndPackageList();
     });
 
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -42,21 +41,20 @@ class OtherAddFormWidget extends StatelessWidget {
     return Scaffold(body:
         Consumer<PharmacyProvider>(builder: (context, pharmacyProvider, _) {
       return PopScope(
-        canPop:  (isEditing == false &&
-                  pharmacyProvider.imageProductUrlList.isEmpty),
-         onPopInvoked: (didPop) {
-            if (isEditing == false &&
-                  pharmacyProvider.imageProductUrlList.isNotEmpty) {
-                CustomToast.errorToast(text: 'Please remove the image selected');
-                return;
-              }
-         },         
+        canPop: (isEditing == false && pharmacyProvider.imageProductUrlList.isEmpty),
+        onPopInvoked: (didPop) {
+          if (isEditing == false && pharmacyProvider.imageProductUrlList.isNotEmpty) {
+            CustomToast.errorToast(text: 'Please remove the image selected');
+            return;
+          }
+        },
         child: CustomScrollView(slivers: [
           SliverCustomAppbar(
             onBackTap: () {
               if (isEditing == false &&
                   pharmacyProvider.imageProductUrlList.isNotEmpty) {
-                CustomToast.errorToast(text: 'Please remove the image selected');
+                CustomToast.errorToast(
+                    text: 'Please remove the image selected');
                 return;
               }
               if (isEditing == true &&
@@ -115,7 +113,8 @@ class OtherAddFormWidget extends StatelessWidget {
                                 starText: true,
                               ),
                               TextfieldWidget(
-                                hintText: 'Enter the name eg : Himalaya Facewash',
+                                hintText:
+                                    'Enter the name eg : Himalaya Facewash',
                                 textInputAction: TextInputAction.next,
                                 validator: BValidator.validate,
                                 controller:
@@ -144,7 +143,8 @@ class OtherAddFormWidget extends StatelessWidget {
                                 keyboardType: TextInputType.number,
                                 hintText: 'Enter the price in rupees eg : 200',
                                 validator: BValidator.validate,
-                                controller: pharmacyProvider.productMRPController,
+                                controller:
+                                    pharmacyProvider.productMRPController,
                               ),
                               CheckboxTextWidget(
                                   text:
@@ -183,7 +183,8 @@ class OtherAddFormWidget extends StatelessWidget {
                                           child: Padding(
                                             padding: const EdgeInsets.only(
                                                 right: 8, bottom: 8, top: 8),
-                                            child: PercentageShowContainerWidget(
+                                            child:
+                                                PercentageShowContainerWidget(
                                               text:
                                                   '${pharmacyProvider.discountPercentage}% off',
                                               textColor: BColors.white,
@@ -194,22 +195,22 @@ class OtherAddFormWidget extends StatelessWidget {
                                           )),
                                   ],
                                 ),
-                              const Gap(8),
-                              const TextAboveFormFieldWidget(
-                                starText: true,
-                                text: "Total Quantity",
-                              ),
-                              TextfieldWidget(
-                                suffixText: 'Nos',
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.next,
-                                hintText:
-                                    'Enter the total quantity available eg : 150 Nos',
-                                validator: BValidator.validate,
-                                controller:
-                                    pharmacyProvider.totalQuantityController,
-                              ),
-        
+                              // const Gap(8),
+                              // const TextAboveFormFieldWidget(
+                              //   starText: true,
+                              //   text: "Total Quantity",
+                              // ),
+                              // TextfieldWidget(
+                              //   suffixText: 'Nos',
+                              //   keyboardType: TextInputType.number,
+                              //   textInputAction: TextInputAction.next,
+                              //   hintText:
+                              //       'Enter the total quantity available eg : 150 Nos',
+                              //   validator: BValidator.validate,
+                              //   controller:
+                              //       pharmacyProvider.totalQuantityController,
+                              // ),
+
                               ///// expiry section
                               const Gap(8),
                               const TextAboveFormFieldWidget(
@@ -217,7 +218,8 @@ class OtherAddFormWidget extends StatelessWidget {
                                 text: "Expiry Date",
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
                                     flex: 2,
@@ -264,9 +266,9 @@ class OtherAddFormWidget extends StatelessWidget {
                                   ),
                                 ],
                               ),
-        
+
                               const Gap(16),
-        
+
                               const HelpButtonWidget(
                                 text:
                                     "Following number fields {Product Form, Product Package} needed to be filled if only required for displaying product.",
@@ -277,12 +279,15 @@ class OtherAddFormWidget extends StatelessWidget {
                                 text: "Category type",
                               ),
                               DropDownProductButton(
-                                  value: pharmacyProvider.productForm,
+                                  value: pharmacyProvider.othersCategoryTypeList
+                              .contains(pharmacyProvider.productType) ? pharmacyProvider.productType : '',
                                   hintText: 'Category type',
                                   onChanged: (value) {
-                                    pharmacyProvider.setDropFormText(value ?? '');
+                                    pharmacyProvider
+                                        .setDropProductTypeText(value ?? '');
                                   },
-                                  optionList: pharmacyProvider.productFormList),
+                                  optionList:
+                                      pharmacyProvider.othersCategoryTypeList),
                               const Gap(8),
                               const TextAboveFormFieldWidget(
                                 text: "Ideal for",
@@ -291,7 +296,8 @@ class OtherAddFormWidget extends StatelessWidget {
                                   value: pharmacyProvider.idealFor,
                                   hintText: 'Ideal for',
                                   onChanged: (value) {
-                                    pharmacyProvider.setIdealForText(value ?? '');
+                                    pharmacyProvider
+                                        .setIdealForText(value ?? '');
                                   },
                                   optionList:
                                       pharmacyProvider.idealForOptionList),
@@ -301,7 +307,8 @@ class OtherAddFormWidget extends StatelessWidget {
                                 text: "Product Form",
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
                                     flex: 1,
@@ -318,25 +325,25 @@ class OtherAddFormWidget extends StatelessWidget {
                                     flex: 2,
                                     fit: FlexFit.loose,
                                     child: DropDownProductButton(
-                                        value: pharmacyProvider.productForm,
+                                        value:pharmacyProvider.othersFormList.contains(pharmacyProvider.productForm)? pharmacyProvider.productForm : '',
                                         hintText: 'Product Form',
                                         onChanged: (value) {
                                           pharmacyProvider
                                               .setDropFormText(value ?? '');
                                         },
-                                        optionList:
-                                            pharmacyProvider.productFormList),
+                                        optionList:pharmacyProvider.othersFormList),
                                   ),
                                 ],
                               ),
-        
+
                               const Gap(8),
                               const TextAboveFormFieldWidget(
                                 starText: true,
                                 text: "Product weight",
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
                                     flex: 1,
@@ -358,8 +365,9 @@ class OtherAddFormWidget extends StatelessWidget {
                                             .productMeasurementUnit,
                                         hintText: 'Product Unit',
                                         onChanged: (value) {
-                                          pharmacyProvider.setDropMeasurementText(
-                                              value ?? '');
+                                          pharmacyProvider
+                                              .setDropMeasurementText(
+                                                  value ?? '');
                                         },
                                         optionList: pharmacyProvider
                                             .measurmentOptionList),
@@ -367,13 +375,14 @@ class OtherAddFormWidget extends StatelessWidget {
                                 ],
                               ),
                               const Gap(8),
-        
+
                               const TextAboveFormFieldWidget(
                                 starText: true,
                                 text: "Product Package",
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
                                     flex: 1,
@@ -391,18 +400,18 @@ class OtherAddFormWidget extends StatelessWidget {
                                     flex: 2,
                                     fit: FlexFit.loose,
                                     child: DropDownProductButton(
-                                        value: pharmacyProvider.productPackage,
+                                        value: pharmacyProvider.othersPackageList.contains(pharmacyProvider.productPackage)? pharmacyProvider.productPackage : '',
                                         hintText: 'Product Package',
                                         onChanged: (value) {
                                           pharmacyProvider
                                               .setDropPackageText(value ?? '');
                                         },
                                         optionList:
-                                            pharmacyProvider.productPackageList),
+                                            pharmacyProvider.othersPackageList),
                                   ),
                                 ],
                               ),
-        
+
                               const Gap(24),
                               const TextAboveFormFieldWidget(
                                 starText: true,
@@ -427,8 +436,8 @@ class OtherAddFormWidget extends StatelessWidget {
                                     'Enter the product details eg : Face Cleansing Foam contains a gentle cleanser and salt-free wash dynamic substance that reduces sebum and dirt without drying the skin. ',
                                 validator: BValidator.validate,
                                 maxlines: 6,
-                                controller:
-                                    pharmacyProvider.productInformationController,
+                                controller: pharmacyProvider
+                                    .productInformationController,
                               ),
                               const Gap(8),
                               const TextAboveFormFieldWidget(
@@ -451,8 +460,8 @@ class OtherAddFormWidget extends StatelessWidget {
                                 hintText:
                                     'Enter the safety information eg : Read the label carefully before use. Keep out of reach of children',
                                 maxlines: 6,
-                                controller:
-                                    pharmacyProvider.safetyInformationController,
+                                controller: pharmacyProvider
+                                    .safetyInformationController,
                               ),
                               const Gap(8),
                               const TextAboveFormFieldWidget(
@@ -463,10 +472,11 @@ class OtherAddFormWidget extends StatelessWidget {
                                 hintText:
                                     "Enter the key benefits eg : It supports the skin's characteristic obstruction with pH 5.5,It adequately enters the pores for gentle pore-profound purging",
                                 maxlines: 6,
-                                controller: pharmacyProvider.keyBenefitController,
+                                controller:
+                                    pharmacyProvider.keyBenefitController,
                               ),
                               const Gap(16),
-        
+
                               const Gap(16),
                               SizedBox(
                                 height: 48,
@@ -484,31 +494,39 @@ class OtherAddFormWidget extends StatelessWidget {
                                           text: 'Pick a product form.');
                                       return;
                                     }
-                                    if (pharmacyProvider.productPackage == null) {
+                                    if (pharmacyProvider.productPackage ==
+                                        null) {
                                       CustomToast.errorToast(
                                           text: 'Pick a product package.');
                                       return;
                                     }
-                                    if (pharmacyProvider.productMeasurementUnit ==
+                                    if (pharmacyProvider.productType == null) {
+                                      CustomToast.errorToast(
+                                          text: 'Pick a product type.');
+                                      return;
+                                    }
+                                    if (pharmacyProvider
+                                            .productMeasurementUnit ==
                                         null) {
                                       CustomToast.errorToast(
                                           text: 'Pick a product unit.');
                                       return;
                                     }
-                                    
+
                                     if (!formKey.currentState!.validate()) {
                                       formKey.currentState!.validate();
                                       return;
                                     }
                                     LoadingLottie.showLoading(
-                                        context: context, text: 'Please wait...');
+                                        context: context,
+                                        text: 'Please wait...');
                                     if (productDetails == null &&
                                         isEditing == false) {
                                       if (pharmacyProvider.expiryDate == null) {
-                                      CustomToast.errorToast(
-                                          text: 'Pick the expiry date.');
-                                      return;
-                                    }    
+                                        CustomToast.errorToast(
+                                            text: 'Pick the expiry date.');
+                                        return;
+                                      }
                                       await pharmacyProvider
                                           .addPharmacyOthersDetails(
                                               context: context);

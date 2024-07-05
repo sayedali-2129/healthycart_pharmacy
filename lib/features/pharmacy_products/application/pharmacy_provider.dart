@@ -188,15 +188,15 @@ class PharmacyProvider extends ChangeNotifier {
     });
   }
 
-  int selectedIndex = 0;
-  void selectedImageIndex(int index) {
-    selectedIndex = index;
+  int selectedImageIndex = 0;
+  void setselectedImageIndex(int index) {
+    selectedImageIndex = index;
     notifyListeners();
   }
 
   List<String> deleteUrlList = [];
   void deletedUrl({required String selectedImageUrl}) {
-    selectedIndex = 0;
+    selectedImageIndex = 0;
     imageProductUrlList.remove(selectedImageUrl);
     deleteUrlList.add(selectedImageUrl);
     notifyListeners();
@@ -215,7 +215,7 @@ class PharmacyProvider extends ChangeNotifier {
       value.fold((failure) {
         CustomToast.errorToast(text: failure.errMsg);
       }, (sucess) {
-        selectedIndex = 0;
+        selectedImageIndex = 0;
         imageProductUrlList.removeAt(index);
         notifyListeners();
         CustomToast.sucessToast(text: 'Sucessfully removed');
@@ -223,8 +223,7 @@ class PharmacyProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> deleteProductImageList(
-      {required List<String> imageUrls}) async {
+  Future<void> deleteProductImageList({required List<String> imageUrls}) async {
     await _iPharmacyFacade.deleteProductImageList(imageUrlList: imageUrls);
   }
 
@@ -235,7 +234,7 @@ class PharmacyProvider extends ChangeNotifier {
   final TextEditingController productMRPController = TextEditingController();
   final TextEditingController productDiscountRateController =
       TextEditingController();
-  final TextEditingController totalQuantityController = TextEditingController();
+ // final TextEditingController totalQuantityController = TextEditingController();
   final TextEditingController storeBelowController = TextEditingController();
   final TextEditingController expiryDateController = TextEditingController();
   final TextEditingController productFormNumberController =
@@ -263,7 +262,31 @@ class PharmacyProvider extends ChangeNotifier {
   DateTime? expiryDate;
   String? selectedCategoryText;
 
-//bool setter
+//bool for setting instock or out of stock;
+  Future<void> setSelectedProductStock({required String id}) async {
+    PharmacyProductAddModel getProd =
+        productList.firstWhere((element) => element.id == id);
+    getProd = getProd.copyWith(inStock: !(getProd.inStock ?? true));
+    final index = productList.indexWhere((element) => element.id == id);
+
+    final result = await _iPharmacyFacade.setStatusOfProductStock(isProductInStock: getProd.inStock ?? true, productId: id);
+
+    result.fold(
+      (failure) {
+        CustomToast.errorToast(text: failure.errMsg);
+      },
+      (sucesss) {
+        CustomToast.sucessToast(
+            text: sucesss
+                ? 'Updated item as in stock'
+                : 'Updated item as out of stock');
+        productList[index] = getProd;
+        notifyListeners();
+      },
+    );
+  }
+
+//bool setter for discout
   void discountAvailableboolSetter(bool? value) {
     discountAvailable = value ?? false;
     notifyListeners();
@@ -276,11 +299,11 @@ class PharmacyProvider extends ChangeNotifier {
 
 //calculating the discount
   void discountPercentageCalculator() {
-    double value = double.tryParse(productDiscountRateController.text)! /
-        double.tryParse(productMRPController.text)!;
-    double decimal = (1 - value);
+    double discountRate = double.tryParse(productDiscountRateController.text)!;
+    double mrp = double.tryParse(productMRPController.text)!;
+    double discountAmount = mrp - discountRate;
+    double decimal = discountAmount / mrp;
     discountPercentage = (decimal * 100).toInt();
-    log(discountAvailable.toString());
     notifyListeners();
   }
 
@@ -328,16 +351,23 @@ class PharmacyProvider extends ChangeNotifier {
     'Everyone',
     'Both men & women',
   ];
-  List<String> productFormList = []; //
-  List<String> productPackageList = []; // getting from the admin side
+  /* -------------------------------------------------------------------------- */
+  // getting from the admin side
+  List<String> medicineFormList = [];
+  List<String> medicinePackageList = [];
+  List<String> equipmentTypeList = [];
+  List<String> othersCategoryTypeList = [];
+  List<String> othersPackageList = [];
+  List<String> othersFormList = [];
+  /* -------------------------------------------------------------------------- */
+
   String? productForm;
   String? productPackage;
+  String? productType;
+
   String? productMeasurementUnit;
   String? selectedWarantyOption;
   String? idealFor;
-  String? equipmentType;
-  String? productType;
-  List<String> equipmentTypeList = [];
 
   void setWarantyOption(String text) {
     selectedWarantyOption = text;
@@ -346,6 +376,11 @@ class PharmacyProvider extends ChangeNotifier {
 
   void setDropFormText(String text) {
     productForm = text;
+    notifyListeners();
+  }
+
+  void setDropProductTypeText(String text) {
+    productType = text;
     notifyListeners();
   }
 
@@ -365,16 +400,28 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
 // getting the two list The package  and form of medicine
-  MedicineData? medicineFormAndPackage;
-  Future<void> getMedicineFormAndPackageList() async {
-    if (productFormList.isNotEmpty && productPackageList.isNotEmpty) return;
-    await _iPharmacyFacade.getMedicineFormAndPackageList().then((value) {
+  MedicineData? productFormAndPackage;
+  Future<void> getproductFormAndPackageList() async {
+    log('CALLED PRODUCT FORM CALLED:::');
+    if (medicineFormList.isNotEmpty &&
+        medicinePackageList.isNotEmpty &&
+        equipmentTypeList.isNotEmpty &&
+        othersCategoryTypeList.isNotEmpty &&
+        othersPackageList.isNotEmpty &&
+        othersFormList.isNotEmpty) return;
+    await _iPharmacyFacade.getproductFormAndPackageList().then((value) {
       value.fold((failure) {
         CustomToast.errorToast(text: failure.errMsg);
       }, (data) {
-        medicineFormAndPackage = data;
-        productFormList = medicineFormAndPackage?.productForm ?? [];
-        productPackageList = medicineFormAndPackage?.productPackage ?? [];
+        log('CALLED PRODUCT FORM GOT:::');
+        productFormAndPackage = data;
+        medicineFormList = productFormAndPackage?.medicineForm ?? [];
+        medicinePackageList = productFormAndPackage?.medicinePackage ?? [];
+        equipmentTypeList = productFormAndPackage?.equipmentType ?? [];
+        othersCategoryTypeList =
+            productFormAndPackage?.othersCategoryType ?? [];
+        othersPackageList = productFormAndPackage?.othersPackage ?? [];
+        othersFormList = productFormAndPackage?.othersForm ?? [];
         notifyListeners();
       });
     });
@@ -420,6 +467,7 @@ class PharmacyProvider extends ChangeNotifier {
     medicineData = PharmacyProductAddModel(
       categoryId: categoryId,
       pharmacyId: pharmacyId,
+      category: selectedCategoryText,
       productName: productNameController.text,
       productBrandName: productBrandNameController.text,
       productImage: imageProductUrlList,
@@ -427,7 +475,7 @@ class PharmacyProvider extends ChangeNotifier {
       productMRPRate: num.tryParse(productMRPController.text),
       productDiscountRate: num.tryParse(productDiscountRateController.text),
       discountPercentage: discountPercentage,
-      totalQuantity: int.parse(totalQuantityController.text),
+    //  totalQuantity: int.parse(totalQuantityController.text),
       storingDegree: storeBelowController.text,
       idealFor: idealFor,
       expiryDate: Timestamp.fromMillisecondsSinceEpoch(
@@ -452,16 +500,26 @@ class PharmacyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearPackageAndFormDetails() {
+    log('CALLED PRODUCT FROM CLEAR:::');
+    medicineFormList = [];
+    medicinePackageList = [];
+    equipmentTypeList = [];
+    othersCategoryTypeList = [];
+    othersPackageList = [];
+    othersFormList = [];
+    notifyListeners();
+  }
+
   void clearProductDetails() {
-    productFormList.clear();
-    productPackageList.clear();
+    log('CALLED PRODUCT DATA CLEAR:::');
     imageProductUrlList = [];
     typeOfProduct = null;
     productNameController.clear();
     productBrandNameController.clear();
     productMRPController.clear();
     productDiscountRateController.clear();
-    totalQuantityController.clear();
+   // totalQuantityController.clear();
     storeBelowController.clear();
     expiryDateController.clear();
     productFormNumberController.clear();
@@ -483,7 +541,6 @@ class PharmacyProvider extends ChangeNotifier {
     productMeasurementUnit = null;
     expiryDate = null;
     idealFor = null;
-    equipmentType = null;
     productType = null;
     otherData = null;
     medicineData = null;
@@ -524,6 +581,7 @@ class PharmacyProvider extends ChangeNotifier {
     equipmentData = PharmacyProductAddModel(
       categoryId: categoryId,
       pharmacyId: pharmacyId,
+      category: selectedCategoryText,
       productName: productNameController.text,
       productBrandName: productBrandNameController.text,
       productImage: imageProductUrlList,
@@ -531,8 +589,8 @@ class PharmacyProvider extends ChangeNotifier {
       productMRPRate: num.tryParse(productMRPController.text),
       productDiscountRate: num.tryParse(productDiscountRateController.text),
       discountPercentage: discountPercentage,
-      totalQuantity: int.parse(totalQuantityController.text),
-      productType: '',
+   //   totalQuantity: int.parse(totalQuantityController.text),
+      productType: productType,
       idealFor: idealFor,
       productBoxContains: productBoxContainsController.text,
       productMeasurementNumber: int.parse(measurementUnitNumberController.text),
@@ -581,6 +639,7 @@ class PharmacyProvider extends ChangeNotifier {
     otherData = PharmacyProductAddModel(
       categoryId: categoryId,
       pharmacyId: pharmacyId,
+      category: selectedCategoryText,
       productName: productNameController.text,
       productBrandName: productBrandNameController.text,
       productImage: imageProductUrlList,
@@ -588,10 +647,10 @@ class PharmacyProvider extends ChangeNotifier {
       productMRPRate: num.tryParse(productMRPController.text),
       productDiscountRate: num.tryParse(productDiscountRateController.text),
       discountPercentage: discountPercentage,
-      totalQuantity: int.parse(totalQuantityController.text),
+   //   totalQuantity: int.parse(totalQuantityController.text),
       storingDegree: storeBelowController.text,
       idealFor: idealFor,
-      productType: '',
+      productType: productType,
       expiryDate:
           Timestamp.fromMillisecondsSinceEpoch(//// want to double check here
               expiryDate?.millisecondsSinceEpoch ?? 0),
@@ -619,8 +678,8 @@ class PharmacyProvider extends ChangeNotifier {
     fetchLoading = true;
     notifyListeners();
     final result = await _iPharmacyFacade.getPharmacyProductDetails(
-        categoryId: categoryId!,
-        pharmacyId: pharmacyId!,
+        categoryId: categoryId ?? '',
+        pharmacyId: pharmacyId ?? '',
         searchText: searchText);
     result.fold((failure) {
       CustomToast.errorToast(text: "Couldn't able to show products");
@@ -632,7 +691,6 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   void clearFetchData() {
-    log('CLEAR IS CallED ::::');
     searchController.clear();
     productList.clear();
     _iPharmacyFacade.clearFetchData();
@@ -672,15 +730,15 @@ class PharmacyProvider extends ChangeNotifier {
     productBrandNameController.text = medicineEditData.productBrandName ?? '';
     productMRPController.text = medicineEditData.productMRPRate.toString();
     discountAvailable = (medicineEditData.productDiscountRate != null);
-    productDiscountRateController.text =
-        medicineEditData.productDiscountRate.toString();
+    productDiscountRateController.text = (medicineEditData.productDiscountRate != null)? medicineEditData.productDiscountRate.toString(): '';
     idealFor = medicineEditData.idealFor;
-    discountPercentage = medicineEditData.discountPercentage;
-    totalQuantityController.text = medicineEditData.totalQuantity.toString();
+    discountPercentage = (medicineEditData.discountPercentage != null)
+        ? medicineEditData.discountPercentage
+        : 0;
+   // totalQuantityController.text = medicineEditData.totalQuantity.toString();
     storeBelowController.text = medicineEditData.storingDegree ?? '';
     expiryDateController.text =
         expiryDateSetterFetched(medicineEditData.expiryDate ?? Timestamp.now());
-
     productFormNumberController.text =
         '${medicineEditData.productFormNumber ?? ''}';
     productForm = medicineEditData.productForm;
@@ -707,12 +765,13 @@ class PharmacyProvider extends ChangeNotifier {
     productNameController.text = equipmentEditData.productName ?? '';
     productBrandNameController.text = equipmentEditData.productBrandName ?? '';
     productMRPController.text = equipmentEditData.productMRPRate.toString();
-    productDiscountRateController.text =
-        equipmentEditData.productDiscountRate.toString();
+    productDiscountRateController.text =(equipmentEditData.productDiscountRate != null)? equipmentEditData.productDiscountRate.toString(): '';
     discountAvailable = (equipmentEditData.productDiscountRate != null);
-    discountPercentage = equipmentEditData.discountPercentage;
-    totalQuantityController.text = equipmentEditData.totalQuantity.toString();
-    equipmentType = equipmentEditData.productType;
+    discountPercentage = (equipmentEditData.discountPercentage != null)
+        ? equipmentEditData.discountPercentage
+        : 0;
+  //  totalQuantityController.text = equipmentEditData.totalQuantity.toString();
+    productType = equipmentEditData.productType;
     idealFor = equipmentEditData.idealFor;
     productBoxContainsController.text =
         equipmentEditData.productBoxContains ?? '';
@@ -739,11 +798,12 @@ class PharmacyProvider extends ChangeNotifier {
     productBrandNameController.text = othersEditData.productBrandName ?? '';
     productMRPController.text = othersEditData.productMRPRate.toString();
     discountAvailable = (othersEditData.productDiscountRate != null);
-    productDiscountRateController.text =
-        othersEditData.productDiscountRate.toString();
+    productDiscountRateController.text = (othersEditData.productDiscountRate != null)? othersEditData.productDiscountRate.toString(): '';
     idealFor = othersEditData.idealFor;
-    discountPercentage = othersEditData.discountPercentage;
-    totalQuantityController.text = othersEditData.totalQuantity.toString();
+    discountPercentage = (othersEditData.discountPercentage != null)
+        ? othersEditData.discountPercentage
+        : 0;
+  //  totalQuantityController.text = othersEditData.totalQuantity.toString();
     expiryDateController.text =
         expiryDateSetterFetched(othersEditData.expiryDate ?? Timestamp.now());
     productFormNumberController.text =
@@ -755,12 +815,14 @@ class PharmacyProvider extends ChangeNotifier {
     productPackageNumberController.text =
         '${othersEditData.productPackageNumber ?? ''}';
     productPackage = othersEditData.productPackage;
+    productType = othersEditData.productType;
     keyIngredientController.text = othersEditData.keyIngrdients ?? '';
     productInformationController.text = othersEditData.productInformation ?? '';
     directionToUseController.text = othersEditData.directionToUse ?? '';
     safetyInformationController.text = othersEditData.safetyInformation ?? '';
     keyBenefitController.text = othersEditData.keyBenefits ?? '';
     prescriptionNeeded = othersEditData.requirePrescription;
+
     notifyListeners();
   }
 
@@ -789,9 +851,9 @@ class PharmacyProvider extends ChangeNotifier {
           deleteUrlList.clear();
         });
       }
-      clearProductDetails();
       CustomToast.sucessToast(text: "Updated sucessfully");
-      productList[index] = productData; //// here we are assigning the doctor
+      productList[index] = productData;
+      clearProductDetails(); //// here we are assigning the product
       notifyListeners();
       EasyNavigation.pop(context: context);
       EasyNavigation.pop(context: context);
@@ -805,6 +867,7 @@ class PharmacyProvider extends ChangeNotifier {
       id: medicineEditData.id,
       categoryId: categoryId,
       pharmacyId: pharmacyId,
+      category: selectedCategoryText,
       productName: productNameController.text,
       productBrandName: productBrandNameController.text,
       productImage: (imageProductUrlList.isEmpty)
@@ -814,7 +877,7 @@ class PharmacyProvider extends ChangeNotifier {
       productMRPRate: num.tryParse(productMRPController.text),
       productDiscountRate: num.tryParse(productDiscountRateController.text),
       discountPercentage: discountPercentage,
-      totalQuantity: int.parse(totalQuantityController.text),
+    //  totalQuantity: int.parse(totalQuantityController.text),
       storingDegree: storeBelowController.text,
       idealFor: idealFor,
       expiryDate:
@@ -862,11 +925,10 @@ class PharmacyProvider extends ChangeNotifier {
           deleteUrlList.clear();
         });
       }
+
+      productList[index] = productData; //// here we are assigning the product
       CustomToast.sucessToast(text: "Updated sucessfully");
       clearProductDetails();
-      productList.removeAt(index);
-      productList.insert(
-          index, productData); //// here we are assigning the doctor
 
       notifyListeners();
       EasyNavigation.pop(context: context);
@@ -881,6 +943,7 @@ class PharmacyProvider extends ChangeNotifier {
       id: equipmentEditData.id,
       categoryId: categoryId,
       pharmacyId: pharmacyId,
+      category: selectedCategoryText,
       productName: productNameController.text,
       productBrandName: productBrandNameController.text,
       productImage: (imageProductUrlList.isEmpty)
@@ -890,8 +953,8 @@ class PharmacyProvider extends ChangeNotifier {
       productMRPRate: num.tryParse(productMRPController.text),
       productDiscountRate: num.tryParse(productDiscountRateController.text),
       discountPercentage: discountPercentage,
-      totalQuantity: int.parse(totalQuantityController.text),
-      productType: '',
+   //   totalQuantity: int.parse(totalQuantityController.text),
+      productType: productType,
       idealFor: idealFor,
       productBoxContains: productBoxContainsController.text,
       productMeasurementNumber: int.parse(measurementUnitNumberController.text),
@@ -933,9 +996,7 @@ class PharmacyProvider extends ChangeNotifier {
         });
       }
       CustomToast.sucessToast(text: "Updated sucessfully");
-      productList.removeAt(index);
-      productList.insert(
-          index, productData); //// here we are assigning the doctor
+      productList[index] = productData; //// here we are assigning the product
       clearProductDetails();
       notifyListeners();
       EasyNavigation.pop(context: context);
@@ -950,6 +1011,7 @@ class PharmacyProvider extends ChangeNotifier {
       id: othersEditData.id,
       categoryId: categoryId,
       pharmacyId: pharmacyId,
+      category: selectedCategoryText,
       productName: productNameController.text,
       productBrandName: productBrandNameController.text,
       productImage: (imageProductUrlList.isEmpty)
@@ -959,10 +1021,10 @@ class PharmacyProvider extends ChangeNotifier {
       productMRPRate: num.tryParse(productMRPController.text),
       productDiscountRate: num.tryParse(productDiscountRateController.text),
       discountPercentage: discountPercentage,
-      totalQuantity: int.parse(totalQuantityController.text),
+  //    totalQuantity: int.parse(totalQuantityController.text),
       storingDegree: storeBelowController.text,
       idealFor: idealFor,
-      productType: '',
+      productType: productType,
       expiryDate:
           Timestamp.fromMillisecondsSinceEpoch(//// want to double check here
               expiryDate?.millisecondsSinceEpoch ?? 0),

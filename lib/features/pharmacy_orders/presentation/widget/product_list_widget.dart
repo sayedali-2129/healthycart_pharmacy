@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthycart_pharmacy/core/custom/custom_alertbox/confirm_alertbox_widget.dart';
 import 'package:healthycart_pharmacy/core/custom/custom_cached_network/custom_cached_network_image.dart';
-import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/application/provider/request_pharmacy_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/product_quantity_model.dart';
@@ -38,8 +37,7 @@ class ProductDetailsWidget extends StatelessWidget {
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(56),
                   child: CustomCachedNetworkImage(
-                      image:
-                          productData.productData?.productImage?.first ?? '')),
+                      image:  productData.productData?.productImage?.first ?? '')),
             ),
             Flexible(
               flex: 4,
@@ -172,10 +170,10 @@ class ProductDetailsWidget extends StatelessWidget {
                             ]),
                           ),
                     RichText(
-                      text: TextSpan(children: [
+                      text: TextSpan(
+                        children: [
                         TextSpan(
-                          text: (productData.productData?.productFormNumber !=
-                                  null)
+                          text: (productData.productData?.productFormNumber != null)
                               ? '${productData.productData?.productFormNumber} '
                               : '',
                           style: Theme.of(context)
@@ -188,7 +186,7 @@ class ProductDetailsWidget extends StatelessWidget {
                         ),
                         TextSpan(
                           text: (productData.productData?.productForm != null)
-                              ? ' ${productData.productData?.productForm}, '
+                              ? '${productData.productData?.productForm}, '
                               : '',
                           style: Theme.of(context)
                               .textTheme
@@ -199,11 +197,8 @@ class ProductDetailsWidget extends StatelessWidget {
                                   fontSize: 11),
                         ),
                         TextSpan(
-                          text: (productData
-                                      .productData?.productPackageNumber !=
-                                  null)
-                              ? '${productData.productData?.productPackageNumber} '
-                              : '',
+                          text: (productData.productData?.productPackageNumber != null)
+                              ? '${productData.productData?.productPackageNumber} ' : '',
                           style: Theme.of(context)
                               .textTheme
                               .labelSmall!
@@ -213,8 +208,7 @@ class ProductDetailsWidget extends StatelessWidget {
                                   fontSize: 11),
                         ),
                         TextSpan(
-                          text: (productData.productData?.productPackage !=
-                                  null)
+                          text: (productData.productData?.productPackage != null)
                               ? '${productData.productData?.productPackage}, '
                               : '',
                           style: Theme.of(context)

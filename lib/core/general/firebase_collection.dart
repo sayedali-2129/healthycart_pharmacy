@@ -5,6 +5,8 @@ class FirebaseCollections {
   static const String pharmacycategory = 'pharmacy_category';
   static const String pharmacyLocation = 'pharmacy_locations';
   static const String pharmacyBanner = 'pharmacy_banner';
-   static const String pharmacyOrder = 'pharmacy_order';
+  static const String pharmacyOrder = 'pharmacy_order';
   static const String counts = 'counts';
+  static String transactionCollection = 'pharmacy_transactions';
+  static String transactionSubCollection = 'pharmacy_transfers';
 }

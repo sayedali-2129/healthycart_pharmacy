@@ -26,16 +26,18 @@ class _PharmacyProductScreenState extends State<PharmacyProductScreen> {
   void initState() {
     final pharmacyProvider = context.read<PharmacyProvider>();
     WidgetsBinding.instance.addPostFrameCallback((timestamp) {
+      pharmacyProvider.getproductFormAndPackageList();
       pharmacyProvider.clearFetchData();
       pharmacyProvider.getPharmacyProductDetails();
+
     });
 
     _scrollcontroller.addListener(() {
       if (_scrollcontroller.position.atEdge &&
           _scrollcontroller.position.pixels != 0 &&
           pharmacyProvider.fetchLoading == false) {
-            pharmacyProvider.getPharmacyProductDetails();
-          }
+        pharmacyProvider.getPharmacyProductDetails();
+      }
     });
 
     super.initState();
@@ -52,76 +54,86 @@ class _PharmacyProductScreenState extends State<PharmacyProductScreen> {
     return Scaffold(
         body:
             Consumer<PharmacyProvider>(builder: (context, pharmacyProvider, _) {
-          return CustomScrollView(
-            controller: _scrollcontroller,
-            slivers: [
-              SliverCustomAppbar(
-                title: pharmacyProvider.selectedCategoryText ?? 'Product List',
-                onBackTap: () {
-                  EasyNavigation.pop(context : context);
-                },
-                child: PreferredSize(
-                  preferredSize: const Size(double.infinity, 68),
+          return PopScope(
+            onPopInvoked: (didPop) {
+                 pharmacyProvider.clearPackageAndFormDetails();
+                 
+            },
+            child: CustomScrollView(
+              controller: _scrollcontroller,
+              slivers: [
+                SliverCustomAppbar(
+                  title: pharmacyProvider.selectedCategoryText ?? 'Product List',
+                  onBackTap: () {
+                    EasyNavigation.pop(context: context);
+                  },
+                  child: PreferredSize(
+                    preferredSize: const Size(double.infinity, 68),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, bottom: 8, top: 4),
+                      child: SearchTextFieldButton(
+                        text: "Search products...",
+                        controller: pharmacyProvider.searchController,
+                        onChanged: (value) {
+                          EasyDebounce.debounce(
+                              'searchproduct', const Duration(milliseconds: 500),
+                              () {
+                            pharmacyProvider.searchProduct(value);
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, right: 16, bottom: 8, top: 4),
-                    child: SearchTextFieldButton(
-                                          text: "Search product's...",
-                                          controller: pharmacyProvider.searchController,
-                                          onChanged: (value) {
-                    EasyDebounce.debounce('searchproduct',
-                        const Duration(milliseconds: 500), () {
-                      pharmacyProvider.searchProduct(value);
-                    });
-                                          },
-                                        ),
+                        top: 16, bottom: 8, left: 16, right: 16),
+                    child: Text(
+                      "Products List",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                   ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 16, bottom: 8, left: 16, right: 16),
-                  child: Text(
-                    "Product's List",
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-              ),
-              (pharmacyProvider.fetchLoading && pharmacyProvider.productList.isEmpty)
-                  /// loading is done here
-                  ? const SliverFillRemaining(
-                  child: Center(
-                    child: LoadingIndicater(),
-                  ),
-                )
-                  : (pharmacyProvider.productList.isEmpty)
-                      ? const ErrorOrNoDataPage(text: "No Product's added in this category.",)
-                      : SliverPadding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          sliver: SliverList.builder(
-                            itemCount: pharmacyProvider.productList.length,
-                            itemBuilder: (context, index) {
-                              return ProductListWidget(
-                                index: index,
-                              );
-                            },
-                          ),
+                (pharmacyProvider.fetchLoading &&
+                        pharmacyProvider.productList.isEmpty)
+            
+                    /// loading is done here
+                    ? const SliverFillRemaining(
+                        child: Center(
+                          child: LoadingIndicater(),
                         ),
-              SliverToBoxAdapter(
-                  child: (pharmacyProvider.fetchLoading == true &&
-                          pharmacyProvider.productList.isNotEmpty)
-                      ? const Center(
-                          child: LoadingIndicater()
-                        )
-                      : null),
-            ],
+                      )
+                    : (pharmacyProvider.productList.isEmpty)
+                        ? const ErrorOrNoDataPage(
+                            text: "No Products added in this category.",
+                          )
+                        : SliverPadding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            sliver: SliverList.builder(
+                              itemCount: pharmacyProvider.productList.length,
+                              itemBuilder: (context, index) {
+                                return ProductListWidget(
+                                  index: index,
+                                );
+                              },
+                            ),
+                          ),
+                          const SliverGap(80),
+                SliverToBoxAdapter(
+                    child: (pharmacyProvider.fetchLoading == true &&
+                            pharmacyProvider.productList.isNotEmpty)
+                        ? const Center(child: LoadingIndicater())
+                        : null),
+              ],
+            ),
           );
         }),
         floatingActionButton: Padding(
           padding: const EdgeInsets.only(
-            bottom: 16,
+            bottom: 24,
           ),
           child: SizedBox(
             width: 136,

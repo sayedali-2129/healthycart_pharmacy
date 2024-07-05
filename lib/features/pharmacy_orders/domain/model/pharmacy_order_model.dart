@@ -5,7 +5,6 @@ import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/produ
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/user_address_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/user_model.dart';
 
-
 class PharmacyOrderModel {
   String? id;
   final String? pharmacyId;
@@ -20,7 +19,7 @@ class PharmacyOrderModel {
   final num? deliveryCharge;
   final String? deliveryType;
   final num? totalAmount;
-    final num? totalDiscountAmount;
+  final num? totalDiscountAmount;
   final num? finalAmount;
   final String? rejectReason;
   final Timestamp? createdAt;
@@ -29,7 +28,12 @@ class PharmacyOrderModel {
   final Timestamp? completedAt;
   final String? prescription;
   final bool? isUserAccepted;
+  final bool? isRejectedByUser;
+  final bool? isOrderPacked;
+  final bool? isOrderDelivered;
+  final bool? isPaymentRecieved;
   final String? productBillPdf;
+  final String? paymentType;
   PharmacyOrderModel({
     this.id,
     this.pharmacyId,
@@ -53,7 +57,12 @@ class PharmacyOrderModel {
     this.completedAt,
     this.prescription,
     this.isUserAccepted,
+    this.isRejectedByUser,
+    this.isOrderPacked,
+    this.isOrderDelivered,
+    this.isPaymentRecieved,
     this.productBillPdf,
+    this.paymentType,
   });
 
   PharmacyOrderModel copyWith({
@@ -79,7 +88,12 @@ class PharmacyOrderModel {
     Timestamp? completedAt,
     String? prescription,
     bool? isUserAccepted,
+    bool? isRejectedByUser,
+    bool? isOrderPacked,
+    bool? isOrderDelivered,
+    bool? isPaymentRecieved,
     String? productBillPdf,
+    String? paymentType,
   }) {
     return PharmacyOrderModel(
       id: id ?? this.id,
@@ -104,7 +118,12 @@ class PharmacyOrderModel {
       completedAt: completedAt ?? this.completedAt,
       prescription: prescription ?? this.prescription,
       isUserAccepted: isUserAccepted ?? this.isUserAccepted,
+      isRejectedByUser: isRejectedByUser ?? this.isRejectedByUser,
+      isOrderPacked: isOrderPacked ?? this.isOrderPacked,
+      isOrderDelivered: isOrderDelivered ?? this.isOrderDelivered,
+      isPaymentRecieved: isPaymentRecieved ?? this.isPaymentRecieved,
       productBillPdf: productBillPdf ?? this.productBillPdf,
+      paymentType: paymentType ?? this.paymentType,
     );
   }
 
@@ -132,7 +151,31 @@ class PharmacyOrderModel {
       'completedAt': completedAt,
       'prescription': prescription,
       'isUserAccepted': isUserAccepted,
+      'isRejectedByUser': isRejectedByUser,
+      'isOrderPacked': isOrderPacked,
+      'isOrderDelivered': isOrderDelivered,
+      'isPaymentRecieved': isPaymentRecieved,
       'productBillPdf': productBillPdf,
+      'paymentType': paymentType,
+    };
+  }
+
+  Map<String, dynamic> toEditMap() {
+    return <String, dynamic>{
+      'productDetails': productDetails?.map((e) => e.toMap()).toList(),
+      'orderStatus': orderStatus,
+      'paymentStatus': paymentStatus,
+      'deliveryCharge': deliveryCharge,
+      'totalAmount': totalAmount,
+      'totalDiscountAmount': totalDiscountAmount,
+      'finalAmount': finalAmount,
+      'rejectReason': rejectReason,
+      'acceptedAt': acceptedAt,
+      'rejectedAt': rejectedAt,
+      'isRejectedByUser': isRejectedByUser,
+      'isOrderPacked': isOrderPacked,
+      'isOrderDelivered': isOrderDelivered,
+      'isPaymentRecieved': isPaymentRecieved,
     };
   }
 
@@ -165,7 +208,8 @@ class PharmacyOrderModel {
           ? UserAddressModel.fromMap(map['addresss'] as Map<String, dynamic>)
           : null,
       pharmacyDetails: map['pharmacyDetails'] != null
-          ? PharmacyModel.fromMap(map['pharmacyDetails'] as Map<String, dynamic>)
+          ? PharmacyModel.fromMap(
+              map['pharmacyDetails'] as Map<String, dynamic>)
           : null,
       deliveryCharge:
           map['deliveryCharge'] != null ? map['deliveryCharge'] as num : null,
@@ -173,8 +217,9 @@ class PharmacyOrderModel {
           map['deliveryType'] != null ? map['deliveryType'] as String : null,
       totalAmount:
           map['totalAmount'] != null ? map['totalAmount'] as num : null,
-            totalDiscountAmount:
-          map['totalDiscountAmount'] != null ? map['totalDiscountAmount'] as num : null,    
+      totalDiscountAmount: map['totalDiscountAmount'] != null
+          ? map['totalDiscountAmount'] as num
+          : null,
       finalAmount:
           map['finalAmount'] != null ? map['finalAmount'] as num : null,
       rejectReason:
@@ -191,10 +236,22 @@ class PharmacyOrderModel {
           map['prescription'] != null ? map['prescription'] as String : null,
       isUserAccepted:
           map['isUserAccepted'] != null ? map['isUserAccepted'] as bool : null,
+      isRejectedByUser: map['isRejectedByUser'] != null
+          ? map['isRejectedByUser'] as bool
+          : null,
+      isOrderPacked:
+          map['isOrderPacked'] != null ? map['isOrderPacked'] as bool : null,
+      isOrderDelivered: map['isOrderDelivered'] != null
+          ? map['isOrderDelivered'] as bool
+          : null,
+      isPaymentRecieved: map['isPaymentRecieved'] != null
+          ? map['isPaymentRecieved'] as bool
+          : null,
       productBillPdf: map['productBillPdf'] != null
           ? map['productBillPdf'] as String
           : null,
+      paymentType:
+          map['paymentType'] != null ? map['paymentType'] as String : null,
     );
   }
 }
-

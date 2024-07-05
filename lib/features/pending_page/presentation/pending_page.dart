@@ -25,7 +25,7 @@ class PendingPageScreen extends StatelessWidget {
             page: const SplashScreen());
       }
     });
-    return Consumer2< PendingProvider, AuthenticationProvider>(builder: (context, pendingProvider,authProviderPharamacyDetails, _) {
+    return Consumer2<PendingProvider, AuthenticationProvider>(builder: (context, pendingProvider,authProviderPharamacyDetails, _) {
       return Scaffold(
           body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -68,7 +68,7 @@ class PendingPageScreen extends StatelessWidget {
                 onPressed: () {
                   pendingProvider.reDirectToWhatsApp(
                       message:
-                          'Hi, I like to know the details of the request regarding hospital approval through your application.');
+                          'Hi, I like to know the details of the request regarding pharmacy approval through your application.');
                 },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(

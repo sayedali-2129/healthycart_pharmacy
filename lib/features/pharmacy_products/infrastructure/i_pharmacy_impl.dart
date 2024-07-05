@@ -198,6 +198,7 @@ class IPharmacyImpl implements IPharmacyFacade {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
+
 /* -------------------- GET PRODUCT ACCORDING TO CATEGORY ------------------- */
   DocumentSnapshot<Map<String, dynamic>>? lastDoc;
   bool noMoreData = false;
@@ -249,6 +250,7 @@ class IPharmacyImpl implements IPharmacyFacade {
     noMoreData = false;
     lastDoc = null;
   }
+
 /* -------------------------------------------------------------------------- */
 /* ----------------------------- DELETE PRODUCT ----------------------------- */
   @override
@@ -272,6 +274,7 @@ class IPharmacyImpl implements IPharmacyFacade {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
+
 /* -------------------------------------------------------------------------- */
 /* ------------------------- UPDATE PRODUCT DETAILS ------------------------- */
   @override
@@ -298,13 +301,19 @@ class IPharmacyImpl implements IPharmacyFacade {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
+
 /* -------------------------------------------------------------------------- */
 /* -------------- MEDICINE EQUIPMENT AND OTHE FORM AND PACKAGE -------------- */
   @override
-  FutureResult<MedicineData> getMedicineFormAndPackageList() async {
+  FutureResult<MedicineData> getproductFormAndPackageList() async {
     try {
-      List<String>? productPackage;
-      List<String>? productForm;
+      List<String>? medicineForm;
+      List<String>? medicinePackage;
+      List<String>? equipmentType;
+      List<String>? othersCategoryType;
+      List<String>? othersPackage;
+      List<String>? othersForm;
+
       await _firebaseFirestore
           .collection(FirebaseCollections.productsForm)
           .doc('medicine')
@@ -313,29 +322,64 @@ class IPharmacyImpl implements IPharmacyFacade {
         var data = value.data() as Map<String, dynamic>;
         List<dynamic> medicineFormList = data['medicineFormList'];
         List<dynamic> medicinePackageList = data['medicinePackageList'];
-        productForm = medicineFormList.map((item) {
+        List<dynamic> equipmentTypeList = data['equipmentTypeList'];
+        List<dynamic> otherCategoryTypeList = data['otherCategoryTypeList'];
+        List<dynamic> otherProductFormList = data['otherProductFormList'];
+        List<dynamic> otherProductPackageList = data['otherProductPackageList'];
+
+        medicineForm = medicineFormList.map((item) {
           return item['medicineForm'] as String;
         }).toList();
-        productPackage = medicinePackageList.map((item) {
+        medicinePackage = medicinePackageList.map((item) {
           return item['medicinePackage'] as String;
         }).toList();
+        othersCategoryType = otherCategoryTypeList.map((item) {
+          return item['otherCategoryType'] as String;
+        }).toList();
+        equipmentType = equipmentTypeList.map((item) {
+          return item['equipmentType'] as String;
+        }).toList();
+        othersForm = otherProductFormList.map((item) {
+          return item['otherProductForm'] as String;
+        }).toList();
+        othersPackage = otherProductPackageList.map((item) {
+          return item['otherProductPackage'] as String;
+        }).toList();
       });
-      if (productPackage != null && productForm != null) {
-        return right(MedicineData(
-            productForm: productForm ?? [],
-            productPackage: productPackage ?? []));
-      } else {
-        return left(const MainFailure.generalException(
-            errMsg: "Couldn't able to get the data."));
-      }
+
+      return right(MedicineData(
+        equipmentType: equipmentType ?? [],
+        othersCategoryType: othersCategoryType ?? [],
+        othersPackage: othersPackage ?? [],
+        othersForm: othersForm ?? [],
+        medicineForm: medicineForm ?? [],
+        medicinePackage: medicinePackage ?? [],
+      ));
     } catch (e) {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
+
 /* -------------------------------------------------------------------------- */
   @override
   FutureResult<Unit> deleteProductImageList(
       {required List<String> imageUrlList}) async {
     return await _imageService.deleteFirebaseStorageListUrl(imageUrlList);
+  }
+
+  @override
+  FutureResult<bool> setStatusOfProductStock(
+      {required bool isProductInStock, required String productId}) async {
+    try {
+      await _firebaseFirestore
+          .collection(FirebaseCollections.pharmacyProduct)
+          .doc(productId)
+          .update({'inStock': isProductInStock});
+      return right(isProductInStock);
+    } on FirebaseException catch (e) {
+      return left(MainFailure.firebaseException(errMsg: e.code));
+    } catch (e) {
+      return left(MainFailure.generalException(errMsg: e.toString()));
+    }
   }
 }

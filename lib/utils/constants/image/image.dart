@@ -16,4 +16,5 @@ class BImage {
   static const String circularLoadingLottie ='assets/json/lottie-progress-indicator.json';
   static const String noDataPng = 'assets/image/no data.png';
   static const String prescription = 'assets/image/medical-report.png';
+  static const String userAvatar = 'assets/image/user avatar.png';
 }

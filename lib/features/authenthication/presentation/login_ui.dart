@@ -16,6 +16,10 @@ class LoginScreen extends StatelessWidget {
     return Consumer<AuthenticationProvider>(
         builder: (context, authenticationProvider, _) {
       return Scaffold(
+        appBar: AppBar(
+          surfaceTintColor: BColors.white,
+          backgroundColor: BColors.white,
+        ),
         body: GestureDetector(
           onTap: (){
              FocusScope.of(context).unfocus();
@@ -28,7 +32,7 @@ class LoginScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Gap(88),
+                     
                       SizedBox(
                         child: Center(
                           child: Image.asset(

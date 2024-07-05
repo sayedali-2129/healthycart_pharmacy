@@ -54,6 +54,18 @@ class _OTPScreenState extends State<OTPScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+
+          surfaceTintColor: BColors.white,
+          leading:                      GestureDetector(
+                        // back to previous page
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(Icons.arrow_back_ios),
+                      ) ,
+         ),
         resizeToAvoidBottomInset: true,
         body: Consumer<AuthenticationProvider>(
             builder: (context, authenticationProvider, _) {
@@ -63,23 +75,13 @@ class _OTPScreenState extends State<OTPScreen> {
             },
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Gap(32),
-                      GestureDetector(
-                        // back to previous page
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Icon(Icons.arrow_back_ios)),
-                      ),
-                      const Gap(56),
+                    
                       SizedBox(
                         child: Center(
                           child: Image.asset(

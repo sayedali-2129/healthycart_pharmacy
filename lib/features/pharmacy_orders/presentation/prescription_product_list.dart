@@ -63,7 +63,7 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
           controller: _scrollcontroller,
           slivers: [
             SliverCustomAppbar(
-              title: 'All Product',
+              title: 'Select Products',
               onBackTap: () {
                 EasyNavigation.pop(context: context);
               },
@@ -73,7 +73,7 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                   padding: const EdgeInsets.only(
                       left: 16, right: 16, bottom: 8, top: 4),
                   child: SearchTextFieldButton(
-                    text: "Search product's...",
+                    text: "Search products...",
                     controller: profileProvider.searchController,
                     onChanged: (value) {
                       EasyDebounce.debounce(

@@ -211,16 +211,20 @@ class ProductListWidget extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 (pharmacyProvider.productList[index]
-                                        .productDiscountRate !=
-                                    null)?
-                                  PercentageShowContainerWidget(
-                                    text:
-                                        '${pharmacyProvider.productList[index].discountPercentage}% off',
-                                    textColor: BColors.white,
-                                    boxColor: BColors.offRed,
-                                    width: 74,
-                                    height: 26,
-                                  ):const SizedBox(height: 26, width: 74,),
+                                            .productDiscountRate !=
+                                        null)
+                                    ? PercentageShowContainerWidget(
+                                        text:
+                                            '${pharmacyProvider.productList[index].discountPercentage}% off',
+                                        textColor: BColors.white,
+                                        boxColor: BColors.offRed,
+                                        width: 74,
+                                        height: 26,
+                                      )
+                                    : const SizedBox(
+                                        height: 26,
+                                        width: 74,
+                                      ),
                                 Row(
                                   children: [
                                     Text(
@@ -234,11 +238,36 @@ class ProductListWidget extends StatelessWidget {
                                     ),
                                     const Gap(8),
                                     SizedBox(
-                                      height: 24,
-                                      width: 48,
-                                      child: FittedBox(
-                                        fit: BoxFit.cover,
-                                        child: Switch(value: true, onChanged: (_){},)))
+                                        height: 24,
+                                        width: 48,
+                                        child: FittedBox(
+                                            fit: BoxFit.cover,
+                                            child: Switch(
+                                              inactiveThumbColor:
+                                                  BColors.offRed,
+                                              inactiveTrackColor: BColors.white,
+                                              activeColor: BColors.green,
+                                              value: pharmacyProvider
+                                                      .productList[index]
+                                                      .inStock ??
+                                                  false,
+                                              onChanged: (value) {
+                                                LoadingLottie.showLoading(
+                                                    context: context,
+                                                    text: 'Please wait');
+                                                pharmacyProvider
+                                                    .setSelectedProductStock(
+                                                        id: pharmacyProvider
+                                                            .productList[index]
+                                                            .id!)
+                                                    .whenComplete(
+                                                  () {
+                                                    EasyNavigation.pop(
+                                                        context: context);
+                                                  },
+                                                );
+                                              },
+                                            )))
                                   ],
                                 ),
                               ],
@@ -258,6 +287,7 @@ class ProductListWidget extends StatelessWidget {
               child: PopOverEditDelete(editButton: () {
                 if (pharmacyProvider.productList[index].typeOfProduct ==
                     'Medicine') {
+                   pharmacyProvider.clearProductDetails();
                   pharmacyProvider.setMedicineEditData(
                       medicineEditData: pharmacyProvider.productList[index]);
                   EasyNavigation.push(
@@ -273,6 +303,7 @@ class ProductListWidget extends StatelessWidget {
                       ));
                 } else if (pharmacyProvider.productList[index].typeOfProduct ==
                     'Equipment') {
+                  pharmacyProvider.clearProductDetails();
                   pharmacyProvider.setEquipmentEditData(
                       equipmentEditData: pharmacyProvider.productList[index]);
                   EasyNavigation.push(
@@ -287,6 +318,7 @@ class ProductListWidget extends StatelessWidget {
                         index: index,
                       ));
                 } else {
+                     pharmacyProvider.clearProductDetails();
                   pharmacyProvider.setOtherEditData(
                       othersEditData: pharmacyProvider.productList[index]);
                   EasyNavigation.push(

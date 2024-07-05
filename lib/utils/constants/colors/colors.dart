@@ -13,6 +13,7 @@ class BColors {
   static Color green = Colors.green.shade700;
   static Color lightGrey = Colors.grey.shade300;
   static const Color grey = Colors.grey;
+  static  Color darkGrey = Colors.grey.shade800;
   static const Color offWhite = Colors.white54;
   static const Color black = Colors.black;
   static const Color textBlack = Colors.black;

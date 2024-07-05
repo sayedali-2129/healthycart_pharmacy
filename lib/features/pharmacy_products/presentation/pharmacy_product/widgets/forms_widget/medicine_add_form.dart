@@ -34,7 +34,6 @@ class MedicineAddFormWidget extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((timestamp) {
       final pharmacyProvider = context.read<PharmacyProvider>();
       pharmacyProvider.typeOfProduct = typeOfProduct;
-      pharmacyProvider.getMedicineFormAndPackageList();
     });
 
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -93,7 +92,7 @@ class MedicineAddFormWidget extends StatelessWidget {
                                       fontSize: 12,
                                     )),
                             TextSpan(
-                                text: typeOfProduct,
+                                text: typeOfProduct, /// it determines if it is  equipment or other
                                 style: Theme.of(context)
                                     .textTheme
                                     .labelLarge!
@@ -193,21 +192,21 @@ class MedicineAddFormWidget extends StatelessWidget {
                                   ],
                                 ),
                               const Gap(8),
-                              const TextAboveFormFieldWidget(
-                                starText: true,
-                                text: "Total Quantity",
-                              ),
-                              TextfieldWidget(
-                                suffixText: 'Nos',
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.next,
-                                hintText:
-                                    'Enter the total quantity available eg : 250 Nos',
-                                validator: BValidator.validate,
-                                controller:
-                                    pharmacyProvider.totalQuantityController,
-                              ),
-                              const Gap(8),
+                              // const TextAboveFormFieldWidget(
+                              //   starText: true,
+                              //   text: "Total Quantity",
+                              // ),
+                              // TextfieldWidget(
+                              //   suffixText: 'Nos',
+                              //   keyboardType: TextInputType.number,
+                              //   textInputAction: TextInputAction.next,
+                              //   hintText:
+                              //       'Enter the total quantity available eg : 250 Nos',
+                              //   validator: BValidator.validate,
+                              //   controller:
+                              //       pharmacyProvider.totalQuantityController,
+                              // ),
+                              // const Gap(8),
                               const TextAboveFormFieldWidget(
                                 text: "Store Below Celsius",
                               ),
@@ -295,7 +294,7 @@ class MedicineAddFormWidget extends StatelessWidget {
         
                               const HelpButtonWidget(
                                 text:
-                                    "Following number fields {Product Form, Product Package} needed to be filled if only required for displaying product.",
+                                    "Following number text fields {Product Form, Product Package} needed to be filled if only required for displaying product.",
                               ),
         
                               const TextAboveFormFieldWidget(
@@ -321,14 +320,14 @@ class MedicineAddFormWidget extends StatelessWidget {
                                     flex: 2,
                                     fit: FlexFit.loose,
                                     child: DropDownProductButton(
-                                        value: pharmacyProvider.productForm,
+                                        value: pharmacyProvider.medicineFormList.contains(pharmacyProvider.productForm) ?pharmacyProvider.productForm : '',
                                         hintText: 'Medicine Form',
                                         onChanged: (value) {
                                           pharmacyProvider
                                               .setDropFormText(value ?? '');
                                         },
                                         optionList:
-                                            pharmacyProvider.productFormList),
+                                            pharmacyProvider.medicineFormList),
                                   ),
                                 ],
                               ),
@@ -348,8 +347,7 @@ class MedicineAddFormWidget extends StatelessWidget {
                                       hintText: 'Eg: 20 ml',
                                       textInputAction: TextInputAction.next,
                                       validator: BValidator.validate,
-                                      controller: pharmacyProvider
-                                          .measurementUnitNumberController,
+                                      controller: pharmacyProvider.measurementUnitNumberController,
                                     ),
                                   ),
                                   Flexible(
@@ -393,14 +391,15 @@ class MedicineAddFormWidget extends StatelessWidget {
                                     flex: 2,
                                     fit: FlexFit.loose,
                                     child: DropDownProductButton(
-                                        value: pharmacyProvider.productPackage,
+                                        value:pharmacyProvider.medicinePackageList
+                              .contains(pharmacyProvider.productPackage)? pharmacyProvider.productPackage : '',
                                         hintText: 'Medicine Package',
                                         onChanged: (value) {
                                           pharmacyProvider
                                               .setDropPackageText(value ?? '');
                                         },
                                         optionList:
-                                            pharmacyProvider.productPackageList),
+                                            pharmacyProvider.medicinePackageList),
                                   ),
                                 ],
                               ),

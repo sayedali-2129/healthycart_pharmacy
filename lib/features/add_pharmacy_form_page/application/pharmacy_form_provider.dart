@@ -90,6 +90,7 @@ class PharmacyFormProvider extends ChangeNotifier {
       pharmacyDocumentLicense: pdfUrl,
       pharmacyImage: imageUrl,
       isActive: true,
+      isHomeDelivery: false,
       isPharmacyON: false,
       pharmacyRequested: 1,
     );

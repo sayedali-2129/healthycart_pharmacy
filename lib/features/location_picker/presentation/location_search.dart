@@ -75,7 +75,7 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
             onTap: () async {
               if (locationProvider.selectedPlaceMark == null) return;
               LoadingLottie.showLoading(
-                  context: context, text: 'Getting Location..');
+                  context: context, text: 'Saving Location..');
               await locationProvider.updateUserLocation(context: context, isPharmacyEditProfile: widget.isHospitaEditProfile ?? false, pharmacyModelrequestedCount: authProviderPharamacyDetails.pharmacyDataFetched?.pharmacyRequested);
               },
             child: Padding(
@@ -83,9 +83,10 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
                   const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 4),
               child: SizedBox(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      mainAxisSize: MainAxisSize.min,
+                  
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Icon(
@@ -125,7 +126,7 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
                                 (locationProvider.searchLoading)
                                     ? "Getting location, please wait..."
                                     : "Tap to save the location above.",
-                                style: Theme.of(context).textTheme.labelSmall,
+                                style: Theme.of(context).textTheme.labelSmall!.copyWith(color:  BColors.green),
                               ),
                             ],
                           ),

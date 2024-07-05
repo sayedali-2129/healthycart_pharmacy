@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
@@ -23,8 +26,6 @@ class AuthenticationProvider extends ChangeNotifier {
   String? phoneNumber;
   String? pharmacyId;
   int? isRequsetedPendingPage;
-
-
 
   void setNumber() {
     phoneNumber = '$countryCode${phoneNumberController.text.trim()}';
@@ -56,7 +57,10 @@ class AuthenticationProvider extends ChangeNotifier {
       EasyNavigation.pushReplacement(
         type: PageTransitionType.bottomToTop,
         context: context,
-        page: PharmacyFormScreen( pharmacyModel: pharmacyDataFetched , isEditing: false,),
+        page: PharmacyFormScreen(
+          pharmacyModel: pharmacyDataFetched,
+          isEditing: false,
+        ),
       );
       notifyListeners();
     } else if (pharmacyDataFetched?.placemark == null) {
@@ -117,7 +121,7 @@ class AuthenticationProvider extends ChangeNotifier {
 
   Future<void> pharmacyLogOut({required BuildContext context}) async {
     final result = await iAuthFacade.pharmacyLogOut();
-    result.fold((failure) {   
+    result.fold((failure) {
       EasyNavigation.pop(context: context);
       CustomToast.errorToast(text: failure.errMsg);
     }, (sucess) {
@@ -126,5 +130,56 @@ class AuthenticationProvider extends ChangeNotifier {
       EasyNavigation.pushReplacement(
           context: context, page: const SplashScreen());
     });
+  }
+
+/* ------------------------------ NOTIFICATION ------------------------------ */
+
+  Future<void> notificationPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      log('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      log('User granted provisional permission');
+    } else {
+      log('User declined or has not accepted permission');
+    }
+    notifyListeners();
+  }
+
+/* ------------------------------ EXIT FROM APP ----------------------------- */
+  DateTime? currentBackPressTime;
+  int requiredSeconds = 2;
+  bool canPopNow = false;
+
+  void onPopInvoked(bool didPop) {
+    DateTime currentTime = DateTime.now();
+    if (currentBackPressTime == null ||
+        currentTime.difference(currentBackPressTime!) >
+            Duration(seconds: requiredSeconds)) {
+      currentBackPressTime = currentTime;
+      CustomToast.errorToast(text: 'Press again to exit');
+      Future.delayed(
+        Duration(seconds: requiredSeconds),
+        () {
+          canPopNow = false;
+          notifyListeners();
+        },
+      );
+
+      canPopNow = true;
+      notifyListeners();
+    }
   }
 }

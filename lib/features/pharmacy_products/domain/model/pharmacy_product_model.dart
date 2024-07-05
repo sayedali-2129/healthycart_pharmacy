@@ -4,6 +4,7 @@ class PharmacyProductAddModel {
   String? id;
   final String? pharmacyId;
   final String? categoryId;
+  final String? category;
   final String? typeOfProduct;
   final num? productMRPRate;
   final num? productDiscountRate;
@@ -39,6 +40,7 @@ class PharmacyProductAddModel {
     this.id,
     this.pharmacyId,
     this.categoryId,
+    this.category,
     this.typeOfProduct,
     this.productMRPRate,
     this.productDiscountRate,
@@ -76,6 +78,7 @@ class PharmacyProductAddModel {
     String? id,
     String? pharmacyId,
     String? categoryId,
+    String? category,
     String? typeOfProduct,
     num? productMRPRate,
     num? productDiscountRate,
@@ -112,6 +115,7 @@ class PharmacyProductAddModel {
       id: id ?? this.id,
       pharmacyId: pharmacyId ?? this.pharmacyId,
       categoryId: categoryId ?? this.categoryId,
+       category: category ?? this.category,
       typeOfProduct: typeOfProduct ?? this.typeOfProduct,
       productMRPRate: productMRPRate ?? this.productMRPRate,
       productDiscountRate: productDiscountRate ?? this.productDiscountRate,
@@ -151,6 +155,7 @@ class PharmacyProductAddModel {
       'id': id,
       'pharmacyId': pharmacyId,
       'categoryId': categoryId,
+      'category': category,
       'typeOfProduct': typeOfProduct,
       'productMRPRate': productMRPRate,
       'productDiscountRate': productDiscountRate,
@@ -190,6 +195,7 @@ class PharmacyProductAddModel {
       'id': id,
       'pharmacyId': pharmacyId,
       'categoryId': categoryId,
+      'category': category,
       'typeOfProduct': typeOfProduct,
       'productMRPRate': productMRPRate,
       'productDiscountRate': productDiscountRate,
@@ -200,6 +206,10 @@ class PharmacyProductAddModel {
       'productFormNumber': productFormNumber,
       'productPackageNumber': productPackageNumber,
       'productMeasurementNumber': productMeasurementNumber,
+      'productMeasurement': productMeasurement,
+      'productForm': productForm,
+       'productPackage': productPackage,
+        'productType': productType,
     };
   }
   Map<String, dynamic> toEquipmentMap() {
@@ -207,6 +217,7 @@ class PharmacyProductAddModel {
       'id': id,
       'pharmacyId': pharmacyId,
       'categoryId': categoryId,
+      'category': category,
       'typeOfProduct': typeOfProduct,
       'productMRPRate': productMRPRate,
       'productDiscountRate': productDiscountRate,
@@ -237,6 +248,7 @@ class PharmacyProductAddModel {
       'id': id,
       'pharmacyId': pharmacyId,
       'categoryId': categoryId,
+      'category': category,
       'typeOfProduct': typeOfProduct,
       'productMRPRate': productMRPRate,
       'productDiscountRate': productDiscountRate,
@@ -270,6 +282,7 @@ class PharmacyProductAddModel {
       'id': id,
       'pharmacyId': pharmacyId,
       'categoryId': categoryId,
+      'category': category,
       'typeOfProduct': typeOfProduct,
       'productMRPRate': productMRPRate,
       'productDiscountRate': productDiscountRate,
@@ -306,6 +319,8 @@ class PharmacyProductAddModel {
           map['pharmacyId'] != null ? map['pharmacyId'] as String : null,
       categoryId:
           map['categoryId'] != null ? map['categoryId'] as String : null,
+      category:
+          map['category'] != null ? map['category'] as String : null,     
       typeOfProduct:
           map['typeOfProduct'] != null ? map['typeOfProduct'] as String : null,
       productMRPRate:

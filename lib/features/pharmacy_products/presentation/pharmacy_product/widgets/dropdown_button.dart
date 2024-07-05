@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 
+
 class DropDownProductButton extends StatelessWidget {
   const DropDownProductButton({
-    super.key, required this.hintText,this.value, required this.onChanged, required this.optionList,
+    super.key,
+    required this.hintText,
+    this.value,
+    required this.onChanged,
+    required this.optionList,
   });
   final String hintText;
-   final String? value;
+  final String? value;
   final void Function(String?) onChanged;
   final List<String> optionList;
   @override
   Widget build(BuildContext context) {
-  
-      return Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: Material(
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
           borderRadius: BorderRadius.circular(12),
           color: BColors.darkblue,
           child: DropdownButton(
-            iconSize: 32,
-              value:(value != null)? value: null,
+              iconSize: 32,
+              value: (value != null && value != '')  ? value  : null,
               hint: Padding(
-              padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Text(
                   hintText,
                   style: Theme.of(context)
@@ -31,7 +35,7 @@ class DropDownProductButton extends StatelessWidget {
                 ),
               ),
               iconEnabledColor: BColors.white,
-              dropdownColor: BColors.grey,
+              dropdownColor: BColors.darkGrey,
               style: Theme.of(context).textTheme.labelLarge,
               underline: const SizedBox(),
               alignment: Alignment.centerLeft,
@@ -49,8 +53,7 @@ class DropDownProductButton extends StatelessWidget {
                               .copyWith(color: BColors.white)),
                     ));
               }).toList(),
-              onChanged: onChanged)
-        ),
-      );
-    }
+              onChanged: onChanged)),
+    );
   }
+}

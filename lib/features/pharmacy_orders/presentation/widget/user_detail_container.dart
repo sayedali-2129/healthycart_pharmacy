@@ -24,8 +24,7 @@ class UserDetailsContainer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              userData.userName ?? 'Unknown Name',
+            Text(userData.userName ?? 'Unknown Name',
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
               style: Theme.of(context)
@@ -64,26 +63,27 @@ class UserDetailsContainer extends StatelessWidget {
                 Flexible(
                   flex: 1,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      PhysicalModel(
-                        elevation: 2,
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        child: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Center(
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.location_on_sharp,
-                                size: 24,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // PhysicalModel(
+                      //   elevation: 2,
+                      //   color: Colors.white,
+                      //   borderRadius: BorderRadius.circular(16),
+                      //   child: SizedBox(
+                      //     width: 40,
+                      //     height: 40,
+                      //     child: Center(
+                      //       child: IconButton(
+                      //         onPressed: () {},
+                      //         icon: const Icon(
+                      //           Icons.location_on_sharp,
+                      //           size: 24,
+                      //           color: Colors.blue,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       const Gap(12),
                       PhysicalModel(
                         elevation: 2,
@@ -129,6 +129,7 @@ class RowTwoTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           text1,
@@ -140,14 +141,16 @@ class RowTwoTextWidget extends StatelessWidget {
               .copyWith(fontWeight: FontWeight.w600),
         ),
         Gap(gap),
-        Text(
-          text2,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 2,
-          style: Theme.of(context)
-              .textTheme
-              .labelMedium!
-              .copyWith(fontWeight: FontWeight.w700),
+        Expanded(
+          child: Text(
+            text2,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 3,
+            style: Theme.of(context)
+                .textTheme
+                .labelMedium!
+                .copyWith(fontWeight: FontWeight.w700),
+          ),
         ),
       ],
     );

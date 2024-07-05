@@ -33,7 +33,7 @@ class ChooseProductBottomSheet extends StatelessWidget {
             children: [
               PharmacyProductChooseButton(
                 buttonTap: () {
-                   pharmacyProvider.imageProductUrlList.clear();
+                     pharmacyProvider.clearProductDetails();
                   EasyNavigation.push(
                       context: context,
                       page: const MedicineAddFormWidget(
@@ -47,7 +47,7 @@ class ChooseProductBottomSheet extends StatelessWidget {
               ),
               PharmacyProductChooseButton(
                 buttonTap: () {
-                  pharmacyProvider.imageProductUrlList.clear();
+                  pharmacyProvider.clearProductDetails();
                   EasyNavigation.push(
                       context: context,
                       page: const EquipmentAddFormWidget(
@@ -61,7 +61,7 @@ class ChooseProductBottomSheet extends StatelessWidget {
               ),
               PharmacyProductChooseButton(
                 buttonTap: () {
-                   pharmacyProvider.imageProductUrlList.clear();
+                     pharmacyProvider.clearProductDetails();
                   EasyNavigation.push(
                       context: context,
                       page: const OtherAddFormWidget(

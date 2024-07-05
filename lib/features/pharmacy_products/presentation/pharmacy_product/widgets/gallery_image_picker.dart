@@ -41,7 +41,7 @@ class GalleryImagePicker extends StatelessWidget {
                 )
               : CustomCachedNetworkImage(
                   image: pharmacyProvider
-                      .imageProductUrlList[pharmacyProvider.selectedIndex], fit: BoxFit.contain,),
+                      .imageProductUrlList[pharmacyProvider.selectedImageIndex], fit: BoxFit.contain,),
         ),
         const Gap(8),
         DividerWidget(
@@ -63,7 +63,7 @@ class GalleryImagePicker extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 6),
                             child: Container(
-                              decoration: (pharmacyProvider.selectedIndex ==
+                              decoration: (pharmacyProvider.selectedImageIndex ==
                                       index)
                                   ? BoxDecoration(
                                       border: Border.all(
@@ -74,7 +74,7 @@ class GalleryImagePicker extends StatelessWidget {
                                   : null,
                               child: AddProductImageWidget(
                                   addTap: () {
-                                    pharmacyProvider.selectedImageIndex(index);
+                                    pharmacyProvider.setselectedImageIndex(index);
                                   },
                                   height: 56,
                                   width: 64,
@@ -114,9 +114,9 @@ class GalleryImagePicker extends StatelessWidget {
                                     });
                                   }
                                 },
-                                child: const Icon(
+                                child:  Icon(
                                   Icons.cancel,
-                                  color: BColors.grey,
+                                  color: BColors.darkGrey,
                                 ),
                               ))
                         ],

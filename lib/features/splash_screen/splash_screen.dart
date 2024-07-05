@@ -18,16 +18,16 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-       final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    context.read<AuthenticationProvider>().notificationPermission();
+    final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-
-      if(pharmacyId!=null){
-          context.read<AuthenticationProvider>()
-          .pharmacyStreamFetchedData(pharmacyId: pharmacyId);
-
+      if (pharmacyId != null) {
+        context
+            .read<AuthenticationProvider>()
+            .pharmacyStreamFetchedData(pharmacyId: pharmacyId);
       }
     });
-    Future.delayed(const Duration(seconds: 4)).then((value) {
+    Future.delayed(const Duration(seconds: 5)).then((value) {
       if (pharmacyId == null) {
         EasyNavigation.pushReplacement(
             context: context, page: const LoginScreen());

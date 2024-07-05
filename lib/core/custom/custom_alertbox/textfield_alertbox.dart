@@ -27,6 +27,7 @@ class TextFieldAlertBoxWidget {
                 Text(titleText, style: Theme.of(context).textTheme.bodyLarge),
             content: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   subText,
@@ -35,7 +36,7 @@ class TextFieldAlertBoxWidget {
                         fontWeight: FontWeight.w600,
                       ),
                 ),
-                const Gap(8),
+                const Gap(4),
                 TextfieldWidget(
                   hintText: hintText,
                   keyboardType:keyboardType,

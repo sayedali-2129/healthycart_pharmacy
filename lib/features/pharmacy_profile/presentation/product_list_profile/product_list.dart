@@ -66,7 +66,7 @@ class _PharmacyProfileProductListState
                 padding: const EdgeInsets.only(
                     left: 16, right: 16, bottom: 8, top: 4),
                 child: SearchTextFieldButton(
-                  text: "Search product's...",
+                  text: "Search products...",
                   controller: profileProvider.searchController,
                   onChanged: (value) {
                     EasyDebounce.debounce(

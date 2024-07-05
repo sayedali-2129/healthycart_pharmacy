@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/domain/i_profile_facade.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_profile/domain/model/transaction_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 
@@ -15,6 +16,7 @@ class ProfileProvider extends ChangeNotifier {
   final IProfileFacade iProfileFacade;
   final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
   bool isPharmacyON = false;
+  bool isHomeDeliveryON = false;
 
   void pharmacyStatus(bool status) {
     isPharmacyON = status;
@@ -25,7 +27,21 @@ class ProfileProvider extends ChangeNotifier {
     final result = await iProfileFacade.setActivePharmacy(
         isPharmacyON: isPharmacyON, pharmacyId: pharmacyId ?? '');
     result.fold((failure) {
-      CustomToast.errorToast(text: "Couldn't able to update hospital state");
+      CustomToast.errorToast(text: "Couldn't able to update pharmacy status");
+    }, (sucess) {
+      CustomToast.sucessToast(text: sucess);
+    });
+    notifyListeners();
+  }
+  void homeDeliveryStatus(bool status) {
+    isHomeDeliveryON = status;
+    notifyListeners();
+  }
+  Future<void> setPharmacyHomeDelivery() async {
+    final result = await iProfileFacade.setPharmacyHomeDelivery(
+        isHomeDeliveryON: isHomeDeliveryON, pharmacyId: pharmacyId ?? '');
+    result.fold((failure) {
+      CustomToast.errorToast(text: "Couldn't able to update delivery status");
     }, (sucess) {
       CustomToast.sucessToast(text: sucess);
     });
@@ -73,4 +89,40 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
   /* -------------------------------------------------------------------------- */
+
+/* --------------------------- TRANSCATION SECTION -------------------------- */
+
+  List<TransferTransactionsModel> adminTransactionList = [];
+  Future<void> getAdminTransactions() async {
+    fetchLoading = true;
+    notifyListeners();
+    final result = await iProfileFacade.getAdminTransactionList(pharmacyId: pharmacyId ?? '');
+    result.fold((err) {
+      log('ERROR :;  ${err.errMsg}');
+    }, (succes) {
+      adminTransactionList.addAll(succes);
+    });
+    fetchLoading = false;
+    notifyListeners();
+  }
+
+  void transactionInit(
+      {required ScrollController scrollController,}) {
+    scrollController.addListener(
+      () {
+        if (scrollController.position.atEdge &&
+            scrollController.position.pixels != 0 &&
+            fetchLoading == false) {
+          getAdminTransactions();
+        }
+      },
+    );
+  }
+
+  void clearTransactionData() {
+    iProfileFacade.clearTransactionData();
+    adminTransactionList = [];
+    notifyListeners();
+  }
+
 }
