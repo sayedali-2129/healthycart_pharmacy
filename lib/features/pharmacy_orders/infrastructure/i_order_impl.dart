@@ -6,16 +6,18 @@ import 'package:dartz/dartz.dart';
 import 'package:healthycart_pharmacy/core/failures/main_failure.dart';
 import 'package:healthycart_pharmacy/core/general/firebase_collection.dart';
 import 'package:healthycart_pharmacy/core/general/typdef.dart';
+import 'package:healthycart_pharmacy/core/services/get_network_time.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/i_order_facade.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/day_transaction_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharmacy_order_model.dart';
 
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: IOrderFacade)
 class IOrderImpl implements IOrderFacade {
-  IOrderImpl(this._firebaseFirestore);
+  IOrderImpl(this._firebaseFirestore, this._networkTimeService);
   final FirebaseFirestore _firebaseFirestore;
-
+  final NetworkTimeService _networkTimeService;
   late StreamSubscription _streamSubscription;
   @override
   Stream<Either<MainFailure, List<PharmacyOrderModel>>> pharmacyNewOrderData({
@@ -114,21 +116,27 @@ class IOrderImpl implements IOrderFacade {
     }
   }
 
-
   /* ------------------------- UPDATE IN PENDING ORDER ------------------------ */
   @override
-  FutureResult<PharmacyOrderModel> updateProductOrderOnProcessDetails(
-      {required String orderId,
-      required String pharmacyId,
-      required PharmacyOrderModel orderProducts}) async {
+  FutureResult<PharmacyOrderModel> updateProductOrderOnProcessDetails({
+    required String orderId,
+    required String pharmacyId,
+    required PharmacyOrderModel orderProducts,
+    DayTransactionModel? dayTransactionModel,
+    String? dayTransactionDate,
+  }) async {
     try {
-      if(orderProducts.orderStatus != 2){
-            await _firebaseFirestore
-          .collection(FirebaseCollections.pharmacyOrder)
-          .doc(orderId)
-          .update(orderProducts.toMap());
-      }else{
+      /* ------------------------------ ACCEPT ORDER ------------------------------ */
+      if (orderProducts.orderStatus != 2) {
+        await _firebaseFirestore
+            .collection(FirebaseCollections.pharmacyOrder)
+            .doc(orderId)
+            .update(orderProducts.toMap());
+      } else {
+        /* ----------------------------- COMPLETE ORDER ----------------------------- */
         final batch = _firebaseFirestore.batch();
+        final formattedDate =
+            await _networkTimeService.getFormattedNetworkTime();
 
         final bookingDoc = _firebaseFirestore
             .collection(FirebaseCollections.pharmacyOrder)
@@ -136,13 +144,52 @@ class IOrderImpl implements IOrderFacade {
         final transactionDoc = _firebaseFirestore
             .collection(FirebaseCollections.transactionCollection)
             .doc(pharmacyId);
+        final dayTransactionDoc = _firebaseFirestore
+            .collection(FirebaseCollections.pharmacy)
+            .doc(pharmacyId)
+            .collection(FirebaseCollections.dayTransaction)
+            .doc(formattedDate);
+        final pharmacyDoc = _firebaseFirestore
+            .collection(FirebaseCollections.pharmacy)
+            .doc(pharmacyId);
 
         batch.update(bookingDoc, orderProducts.toMap());
-        batch.update(transactionDoc,
-            {'totalTransactionAmt': FieldValue.increment(orderProducts.finalAmount!)});
+        batch.update(transactionDoc, {
+          'totalTransactionAmt':
+              FieldValue.increment(orderProducts.finalAmount!)
+        });
+
+        if (orderProducts.paymentType == 'Online') {
+          batch.update(transactionDoc, {
+            'onlinePayment':
+                FieldValue.increment(orderProducts.finalAmount ?? 0)
+          });
+        } else {
+          batch.update(transactionDoc, {
+            'offlinePayment':
+                FieldValue.increment(orderProducts.finalAmount ?? 0)
+          });
+        }
+        batch.update(pharmacyDoc, {'dayTransaction': formattedDate});
+
+        if (dayTransactionDate == formattedDate) {
+          log('same');
+          batch.update(dayTransactionDoc, {
+            'totalAmount': FieldValue.increment(orderProducts.finalAmount ?? 0),
+            'offlinePayment': orderProducts.paymentType != 'Online'
+                ? FieldValue.increment(orderProducts.finalAmount ?? 0)
+                : FieldValue.increment(0),
+            'onlinePayment': orderProducts.paymentType == 'Online'
+                ? FieldValue.increment(orderProducts.finalAmount ?? 0)
+                : FieldValue.increment(0),
+          });
+        } else {
+          final networkTime = await _networkTimeService.getNetworkTime();
+          dayTransactionModel?.createdAt = Timestamp.fromDate(networkTime);
+          batch.set(dayTransactionDoc, dayTransactionModel?.toMap());
+        }
         await batch.commit();
       }
-
 
       return right(orderProducts.copyWith(id: orderId));
     } on FirebaseException catch (e) {
@@ -151,13 +198,13 @@ class IOrderImpl implements IOrderFacade {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
+
   /* ---------------------------- GET COMPLETED ORDER---------------------------- */
   DocumentSnapshot<Map<String, dynamic>>? lastDoc;
   bool noMoreData = false;
   @override
-  FutureResult<List<PharmacyOrderModel>> getCompletedOrderDetails({
-    required String pharmacyId,required int limit
-  }) async {
+  FutureResult<List<PharmacyOrderModel>> getCompletedOrderDetails(
+      {required String pharmacyId, required int limit}) async {
     try {
       if (noMoreData) return right([]);
       Query query = _firebaseFirestore
@@ -196,8 +243,9 @@ class IOrderImpl implements IOrderFacade {
     noMoreData = false;
     lastDoc = null;
   }
+
 /* ------------------------- CANCELLED ORDER SECTION ------------------------ */
-   @override
+  @override
   FutureResult<List<PharmacyOrderModel>> getCancelledOrderDetails({
     required String pharmacyId,
   }) async {
@@ -234,5 +282,4 @@ class IOrderImpl implements IOrderFacade {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }
   }
-
 }

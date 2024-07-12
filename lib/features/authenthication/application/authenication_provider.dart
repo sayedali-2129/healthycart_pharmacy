@@ -87,19 +87,22 @@ class AuthenticationProvider extends ChangeNotifier {
     }
   }
 
-  void verifyPhoneNumber({required BuildContext context}) {
+  void verifyPhoneNumber({required BuildContext context, required bool resend}) {
     iAuthFacade.verifyPhoneNumber(phoneNumber!).listen((result) {
       result.fold((failure) {
         Navigator.pop(context);
         CustomToast.errorToast(text: failure.errMsg);
       }, (isVerified) {
         Navigator.pop(context);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: ((context) => OTPScreen(
-                      phoneNumber: phoneNumber ?? 'No Number',
-                    ))));
+        if(resend == false){
+           EasyNavigation.push(
+            type: PageTransitionType.rightToLeft,
+            context: context,
+            page: OTPScreen(
+              phoneNumber: phoneNumber ?? 'No Number',
+            ));
+        }
+        
       });
     });
   }

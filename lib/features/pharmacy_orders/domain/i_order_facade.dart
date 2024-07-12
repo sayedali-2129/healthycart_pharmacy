@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:healthycart_pharmacy/core/failures/main_failure.dart';
 import 'package:healthycart_pharmacy/core/general/typdef.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/day_transaction_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharmacy_order_model.dart';
 
 abstract class IOrderFacade {
@@ -14,7 +15,7 @@ abstract class IOrderFacade {
   FutureResult<PharmacyOrderModel> updateProductOrderPendingDetails(
       {required String orderId, required PharmacyOrderModel orderProducts,});
   FutureResult<PharmacyOrderModel> updateProductOrderOnProcessDetails(
-      {required String orderId, required PharmacyOrderModel orderProducts,required String pharmacyId,});
+      {required String orderId, required PharmacyOrderModel orderProducts,required String pharmacyId,DayTransactionModel? dayTransactionModel,String? dayTransactionDate,});
   FutureResult<List<PharmacyOrderModel>> getCompletedOrderDetails({
     required String pharmacyId, required int limit,
   });
@@ -23,3 +24,5 @@ abstract class IOrderFacade {
   });
   void clearFetchData();
 }
+
+

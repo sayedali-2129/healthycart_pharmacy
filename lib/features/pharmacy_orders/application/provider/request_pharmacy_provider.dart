@@ -2,15 +2,19 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/core/services/fcm_notification.dart';
+import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/i_order_facade.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/day_transaction_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharmacy_order_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/product_quantity_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 @injectable
@@ -35,7 +39,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
   ];
 
   /* ----------------------------- PRODUCT SECTION ---------------------------- */
-  String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+
   List<ProductAndQuantityModel> pharmacyUserProducts = [];
   List<PharmacyOrderModel> newOrderList = [];
   List<PharmacyOrderModel> onProcessOrderList = [];
@@ -121,6 +125,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
 
 /* ------------------------ PRODUCT NEW ORDER STREAM SECTION ----------------------- */
   void getPharmacyNewOrders() {
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     _iOrderFacade
@@ -150,6 +155,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
 
 /* ------------------------ PRODUCT ON PROCESS ORDER STREAM SECTION ----------------------- */
   void getpharmacyOnProcessData() {
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     _iOrderFacade
@@ -229,13 +235,13 @@ class RequestPharmacyProvider extends ChangeNotifier {
           sendFcmMessage(
               token: orderProduct.userDetails?.fcmToken ?? '',
               body:
-                  'Your Order is approved by ${orderProduct.userDetails?.userName ?? 'Pharmacy'}, Click to check details!!',
+                  'Your Order is approved by ${orderProduct.pharmacyDetails?.pharmacyName ?? 'Pharmacy'}, Click to check details!!',
               title: 'Healthy Cart Order Approved!!');
         } else {
           sendFcmMessage(
               token: orderProduct.userDetails?.fcmToken ?? '',
               body:
-                  'Your Order is rejected by ${orderProduct.userDetails?.userName ?? 'Pharmacy'}, Click to check details!!',
+                  'Your Order is rejected by ${orderProduct.pharmacyDetails?.pharmacyName ?? 'Pharmacy'}, Click to check details!!',
               title: 'Healthy Cart Order Rejected!!');
         }
         CustomToast.sucessToast(
@@ -334,8 +340,10 @@ class RequestPharmacyProvider extends ChangeNotifier {
   /* ------------------------- UPDATE COMPLETED ORDER ------------------------- */
 
   Future<void> updateOrderCompletedDetails({
-    required PharmacyOrderModel productData,
+    required PharmacyOrderModel productData, required BuildContext context,
   }) async {
+   final pharmacyData =  context.read<AuthenticationProvider>().pharmacyDataFetched;
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     final data = productData.copyWith(
       orderStatus: 2,
       completedAt: Timestamp.now(),
@@ -344,6 +352,13 @@ class RequestPharmacyProvider extends ChangeNotifier {
       orderId: productData.id ?? '',
       orderProducts: data,
       pharmacyId: pharmacyId ??'',
+      dayTransactionDate:pharmacyData?.dayTransaction ?? ''  ,
+      dayTransactionModel: DayTransactionModel(
+          totalAmount: data.finalAmount,
+          offlinePayment: data.paymentType != 'Online' ? data.finalAmount : 0,
+          onlinePayment: data.paymentType == 'Online' ? data.finalAmount : 0,
+        )
+
     );
     result.fold(
       (failure) {
@@ -353,10 +368,9 @@ class RequestPharmacyProvider extends ChangeNotifier {
       (orderProduct) {
         sendFcmMessage(
             token: orderProduct.userDetails?.fcmToken ?? '',
-            body:
-                'Your Order by ${orderProduct.userDetails?.userName ?? 'Pharmacy'} is approved, Click to check details!!',
+            body: 'Your Order by ${orderProduct.pharmacyDetails?.pharmacyName ?? 'Pharmacy'} is completed, We always care about your health.!!',
             title: 'Healthy Cart Order Completed!!');
-        CustomToast.sucessToast(text: "The order is sucessfully delivered, We always care about your health.");
+        CustomToast.sucessToast(text: "Order is sucessfully delivered.");
         notifyListeners();
       },
     );
@@ -365,6 +379,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
 /* -----------------------------GET COMPLETED ORDER ---------------------------- */
 
   Future<void> getCompletedOrderDetails({required int limit}) async {
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     final result = await _iOrderFacade.getCompletedOrderDetails(
@@ -387,6 +402,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
 
 /* ------------------------- CANCELLED ORDER SECTION ------------------------ */
   Future<void> getCancelledOrderDetails() async {
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     final result = await _iOrderFacade.getCancelledOrderDetails(
@@ -412,6 +428,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
 
   Future<void> updateOrderStatusToDeliverDetails(
       {required PharmacyOrderModel productData, required int value, required bool updateValue}) async {
+          String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     PharmacyOrderModel? data;
     if (value == 1) {
        data = productData.copyWith(
@@ -445,11 +462,11 @@ class RequestPharmacyProvider extends ChangeNotifier {
                sendFcmMessage(
             token: orderProduct.userDetails?.fcmToken ?? '',
             body:
-                'Your Order by ${orderProduct.userDetails?.userName ?? 'Pharmacy'} is packed, getting ready for delivery!!',
+                'Your Order by ${orderProduct.pharmacyDetails?.pharmacyName ?? 'Pharmacy'} is packed, getting ready for delivery!!',
             title: 'Your Healthy Cart Order Packed!!');
     } else if(value == 1&& updateValue ==false) {
       
-         CustomToast.sucessToast(text: "Order status updated to Unpacked.");
+         CustomToast.errorToast(text: "Order status updated to not packed.");
     }
 
     if (value == 2 && updateValue ==true) {
@@ -458,15 +475,15 @@ class RequestPharmacyProvider extends ChangeNotifier {
               sendFcmMessage(
             token: orderProduct.userDetails?.fcmToken ?? '',
             body:
-                'Your Order by ${orderProduct.userDetails?.userName ?? 'Pharmacy'} is delivered !!',
+                'Your Order by ${orderProduct.pharmacyDetails?.pharmacyName  ?? 'Pharmacy'} is delivered !!',
             title: 'Your Healthy Cart Order delivered!!');
     }else if(value == 2 && updateValue ==false) {
-         CustomToast.sucessToast(text: "Order status is removed from delivered.");
+         CustomToast.errorToast(text: "Order status is removed from delivered.");
     }
     if(value == 3 && updateValue ==true){
      CustomToast.sucessToast(text: "Order status updated as payment received.");
     }else if(value == 3 && updateValue ==false) {
-     CustomToast.sucessToast(text: "Order payment is not received.");
+     CustomToast.errorToast(text: "Order payment is not received.");
     }
         notifyListeners();
       },

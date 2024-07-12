@@ -30,6 +30,7 @@ class PharmacyFormProvider extends ChangeNotifier {
   bool fetchLoading = false;
 
   Future<void> getImage() async {
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     final result = await _iFormFeildFacade.getImage();
     result.fold((failure) {
       CustomToast.errorToast(text: failure.errMsg);
@@ -72,11 +73,12 @@ class PharmacyFormProvider extends ChangeNotifier {
   }
 
   PharmacyModel? pharmacyData;
-  String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+
   Placemark? placemark;
   Future<void> addPharmacyDetails({
     required BuildContext context,
   }) async {
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     keywordHospitalBuider();
     pharmacyData = PharmacyModel(
       id: pharmacyId,
@@ -135,6 +137,7 @@ class PharmacyFormProvider extends ChangeNotifier {
   String? pdfUrl;
 
   Future<void> getPDF({required BuildContext context}) async {
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     final result = await _iFormFeildFacade.getPDF();
     result.fold((failure) {
       CustomToast.errorToast(text: failure.errMsg);
@@ -174,6 +177,7 @@ class PharmacyFormProvider extends ChangeNotifier {
   }
 
   Future<void> deletePDF() async {
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     if ((pdfUrl ?? '').isEmpty) {
       pdfFile = null;
       CustomToast.errorToast(text: 'PDF removed.');
@@ -208,6 +212,7 @@ class PharmacyFormProvider extends ChangeNotifier {
   Future<void> updatePharmacyForm({
     required BuildContext context,
   }) async {
+      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     keywordHospitalBuider();
     pharmacyData = PharmacyModel(
       pharmacyKeywords: keywordHospitalBuider(),

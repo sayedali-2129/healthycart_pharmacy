@@ -22,7 +22,11 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class PrescriptionOrderDetailsScreen extends StatelessWidget {
-  const PrescriptionOrderDetailsScreen({super.key, required this.data, required this.index, });
+  const PrescriptionOrderDetailsScreen({
+    super.key,
+    required this.data,
+    required this.index,
+  });
 
   final PharmacyOrderModel data;
   final int index;
@@ -77,12 +81,15 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Container(
                         decoration: BoxDecoration(
-                            boxShadow: const [BoxShadow(
-                            color: Colors.grey,
-                            blurRadius: 6.0,
-                          ),]  ,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 6.0,
+                            ),
+                          ],
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 16),
@@ -91,14 +98,13 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               OrderIDAndDateSection(
-                                  orderData: orderData,
-                                  date: orderProvider.dateFromTimeStamp(
-                                      orderData.createdAt!),
-                                ),
+                                orderData: orderData,
+                                date: orderProvider
+                                    .dateFromTimeStamp(orderData.createdAt!),
+                              ),
                               const Gap(8),
                               const Divider(),
-                              if (orderProvider
-                                  .pharmacyUserProducts.isNotEmpty)
+                              if (orderProvider.pharmacyUserProducts.isNotEmpty)
                                 Column(
                                   children: [
                                     ListView.separated(
@@ -138,75 +144,123 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                     .labelMedium!
                                     .copyWith(
                                         color: BColors.black,
-                                        fontWeight: FontWeight.w700),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14),
                                 icon: Icons.add,
-                                iconSize: 24,
+                                iconSize: 28,
                                 iconColor: BColors.black,
                               ),
-                                 Column(
-                                    children: [
-                                      const Divider(),
-                                      (orderData.addresss != null
-                                      &&
-                                     orderData.deliveryType == "Home")
-                                  ? Row(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              if(orderData.description != '' || orderData.description != null)
+                              
+                              Column(
+                                children: [
+                                   const Gap(16),
+                                   
+                                 
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: BColors.offRed),
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: RichText(
+                                      text: TextSpan(children: [
+                                        TextSpan(
+                                          text: 'Customer Note : ',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .copyWith(
+                                                  fontSize: 12,
+                                                ),
+                                        ),
+                                        TextSpan(
+                                            text: ' ${orderData.description}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelLarge!
+                                                .copyWith(
+                                                    fontSize: 13,
+                                                    color: BColors.textBlack,
+                                                    fontWeight: FontWeight.w600)),
+
+                                      ]),
+                                    ),
+                                  ),
+                                  const Gap(8),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  const Divider(),
+                                  (orderData.addresss != null &&
+                                          orderData.deliveryType == "Home")
+                                      ? Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                          
                                             Text(
                                               'Delivery Address : ',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .labelLarge!
                                                   .copyWith(
-                                                      color:
-                                                          BColors.textLightBlack,
-                                                      fontWeight: FontWeight.w600,
+                                                      color: BColors
+                                                          .textLightBlack,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                       fontSize: 12),
                                             ),
                                             const Gap(8),
                                             Expanded(
                                               child: AddressCard(
-                                                  addressData: orderData.addresss!),
+                                                  addressData:
+                                                      orderData.addresss!),
                                             ),
                                           ],
-                                        ):Row(
-                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Pick-Up Address : ',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge!
-                                              .copyWith(
-                                                  color:
-                                                      BColors.textLightBlack,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12),
-                                        ),
-                                        const Gap(8),
-                                        Expanded(
-                                          child: Text(
-                                            '${orderData.pharmacyDetails?.pharmacyName ?? 'Pharmacy'}-${orderData.pharmacyDetails?.pharmacyAddress ?? 'Pharmacy'}',
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelLarge!
-                                                .copyWith(
-                                                    color: BColors.textBlack,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 12),
-                                          ),
                                         )
-                                      ],
-                                    ),
-                                    const Divider(),
-                                    ],
-                                  ),
+                                      : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Pick-Up Address : ',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelLarge!
+                                                  .copyWith(
+                                                      color: BColors
+                                                          .textLightBlack,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12),
+                                            ),
+                                            const Gap(8),
+                                            Expanded(
+                                              child: Text(
+                                                '${orderData.pharmacyDetails?.pharmacyName ?? 'Pharmacy'}-${orderData.pharmacyDetails?.pharmacyAddress ?? 'Pharmacy'}',
+                                                maxLines: 3,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelLarge!
+                                                    .copyWith(
+                                                        color:
+                                                            BColors.textBlack,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 12),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                  const Divider(),
+                                ],
+                              ),
                               const Divider(),
                               Row(
                                 mainAxisAlignment:
@@ -239,8 +293,8 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                                   RowTextContainerWidget(
                                                     text1: 'Prescription :',
                                                     text2: 'Included',
-                                                    text1Color: BColors
-                                                        .textLightBlack,
+                                                    text1Color:
+                                                        BColors.textLightBlack,
                                                     fontSizeText1: 12,
                                                     fontSizeText2: 12,
                                                     fontWeightText1:
@@ -329,8 +383,7 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                                           .deliveryController,
                                                       maxlines: 1,
                                                       keyboardType:
-                                                          TextInputType
-                                                              .number,
+                                                          TextInputType.number,
                                                     );
                                                   },
                                                   child: Text(
@@ -342,8 +395,8 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                                         .textTheme
                                                         .bodyLarge!
                                                         .copyWith(
-                                                          color: BColors
-                                                              .darkblue,
+                                                          color:
+                                                              BColors.darkblue,
                                                           decoration:
                                                               TextDecoration
                                                                   .underline,
@@ -399,8 +452,7 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                 ),
                               const Gap(12),
                               UserDetailsContainer(
-                                userData:
-                                    orderData.userDetails ?? UserModel(),
+                                userData: orderData.userDetails ?? UserModel(),
                               ),
                               const Gap(16),
                               Row(
@@ -436,8 +488,7 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                                               orderData,
                                                           cancelOrApprove: 3);
                                                 },
-                                                titleText:
-                                                    'Confirm To Cancel',
+                                                titleText: 'Confirm To Cancel',
                                                 hintText:
                                                     'Enter the reason for cancel',
                                                 subText:
@@ -459,8 +510,7 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                               .labelMedium!
                                               .copyWith(
                                                   color: Colors.black,
-                                                  fontWeight:
-                                                      FontWeight.w700)),
+                                                  fontWeight: FontWeight.w700)),
                                     ),
                                   ),
                                   SizedBox(
@@ -488,8 +538,7 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                                               orderData,
                                                           cancelOrApprove: 1);
                                                 },
-                                                titleText:
-                                                    'Confirm the order',
+                                                titleText: 'Confirm the order',
                                                 subText: (orderData
                                                             .deliveryType ==
                                                         'Home')
@@ -508,8 +557,7 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                               .labelMedium!
                                               .copyWith(
                                                   color: Colors.white,
-                                                  fontWeight:
-                                                      FontWeight.w700)),
+                                                  fontWeight: FontWeight.w700)),
                                     ),
                                   ),
                                 ],

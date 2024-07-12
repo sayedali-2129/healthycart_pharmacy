@@ -14,7 +14,6 @@ import 'package:intl/intl.dart';
 class ProfileProvider extends ChangeNotifier {
   ProfileProvider(this.iProfileFacade);
   final IProfileFacade iProfileFacade;
-  final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
   bool isPharmacyON = false;
   bool isHomeDeliveryON = false;
 
@@ -24,6 +23,7 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<void> setActivePharmacy() async {
+      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     final result = await iProfileFacade.setActivePharmacy(
         isPharmacyON: isPharmacyON, pharmacyId: pharmacyId ?? '');
     result.fold((failure) {
@@ -38,6 +38,7 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
   Future<void> setPharmacyHomeDelivery() async {
+      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     final result = await iProfileFacade.setPharmacyHomeDelivery(
         isHomeDeliveryON: isHomeDeliveryON, pharmacyId: pharmacyId ?? '');
     result.fold((failure) {
@@ -61,6 +62,7 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<void> getPharmacyProductDetails({String? searchText}) async {
+      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchLoading = true;
     notifyListeners();
     final result = await iProfileFacade.getPharmacyAllProductDetails(
@@ -94,6 +96,7 @@ class ProfileProvider extends ChangeNotifier {
 
   List<TransferTransactionsModel> adminTransactionList = [];
   Future<void> getAdminTransactions() async {
+      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchLoading = true;
     notifyListeners();
     final result = await iProfileFacade.getAdminTransactionList(pharmacyId: pharmacyId ?? '');

@@ -22,7 +22,7 @@ class AddBannerProvider extends ChangeNotifier {
   List<PharmacyBannerModel> bannerList = [];
   bool fetchLoading = false;
   bool saveLoading = false;
-  final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+
 
   Future<void> getImage() async {
     final result = await iBannerFacade.getImage();
@@ -75,6 +75,7 @@ class AddBannerProvider extends ChangeNotifier {
   }
 
   Future<void> addBanner({required BuildContext context}) async {
+      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     banner = PharmacyBannerModel(
       isCreated: Timestamp.now(),
       image: imageUrl,
@@ -96,6 +97,7 @@ class AddBannerProvider extends ChangeNotifier {
   }
 
   Future<void> getBanner() async {
+      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     if (bannerList.isNotEmpty) return;
     fetchLoading = true;
     notifyListeners();

@@ -28,7 +28,7 @@ class IFormFieldImpl implements IFormFeildFacade {
           _firebaseFirestore
               .collection(FirebaseCollections.pharmacy)
               .doc(pharmacyId),
-          pharmacyDetails.toMap());
+          pharmacyDetails.toFormMap());
       batch.update(
           _firebaseFirestore
               .collection(FirebaseCollections.counts)

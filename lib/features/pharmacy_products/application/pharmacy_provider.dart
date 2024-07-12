@@ -101,10 +101,12 @@ class PharmacyProvider extends ChangeNotifier {
 
   /// update the category in pharmacy
   Future<void> updatePharmacyCategoryDetails(
-      {required PharmacyCategoryModel categorySelected,
-      required String pharmacyId}) async {
+      {required PharmacyCategoryModel categorySelected,}) async {
+        
+  String? pharmacyId =
+      FirebaseAuth.instance.currentUser?.uid;
     final result = await _iPharmacyFacade.updatePharmacyCategoryDetails(
-        pharmacyId: pharmacyId, category: categorySelected);
+        pharmacyId: pharmacyId ?? '', category: categorySelected);
     result.fold((failure) {
       CustomToast.errorToast(text: "Couldn't able to update category");
     }, (categorymodel) {
@@ -119,6 +121,9 @@ class PharmacyProvider extends ChangeNotifier {
 //////// Deleting pharmacy category-----------------------
   Future<void> deletePharmacyCategory(
       {required int index, required PharmacyCategoryModel category}) async {
+        
+  String? pharmacyId =
+      FirebaseAuth.instance.currentUser?.uid;
     // check if there is any pharmacy inside category that is going to be deleted
     final boolResult =
         await _iPharmacyFacade.checkProductInsidePharmacyCategory(
@@ -147,9 +152,7 @@ class PharmacyProvider extends ChangeNotifier {
 
 /////////////////////////////////////////////
 //---------------------------Product  Section---------------------------------
-
-  String? pharmacyId =
-      FirebaseAuth.instance.currentUser?.uid; // user id and pharmacy id is same
+ // user id and pharmacy id is same
   String? categoryId;
 
   /// these both are used in the category also to check wheather the user
@@ -464,6 +467,9 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   void medicineProductDetails() {
+    
+  String? pharmacyId =
+      FirebaseAuth.instance.currentUser?.uid;
     medicineData = PharmacyProductAddModel(
       categoryId: categoryId,
       pharmacyId: pharmacyId,
@@ -578,6 +584,9 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   void equipmentProductDetails() {
+    
+  String? pharmacyId =
+      FirebaseAuth.instance.currentUser?.uid;
     equipmentData = PharmacyProductAddModel(
       categoryId: categoryId,
       pharmacyId: pharmacyId,
@@ -636,6 +645,9 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   void otherProductDetails() {
+    
+  String? pharmacyId =
+      FirebaseAuth.instance.currentUser?.uid;
     otherData = PharmacyProductAddModel(
       categoryId: categoryId,
       pharmacyId: pharmacyId,
@@ -675,6 +687,9 @@ class PharmacyProvider extends ChangeNotifier {
 //// 2.)  Getting product details according to the category and pharmacy-------
 
   Future<void> getPharmacyProductDetails({String? searchText}) async {
+    
+  String? pharmacyId =
+      FirebaseAuth.instance.currentUser?.uid;
     fetchLoading = true;
     notifyListeners();
     final result = await _iPharmacyFacade.getPharmacyProductDetails(
@@ -863,6 +878,9 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   void medicineEditProductDetails(PharmacyProductAddModel medicineEditData) {
+    
+  String? pharmacyId =
+      FirebaseAuth.instance.currentUser?.uid;
     medicineData = PharmacyProductAddModel(
       id: medicineEditData.id,
       categoryId: categoryId,
@@ -939,6 +957,9 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   void equipmentEditProductDetails(PharmacyProductAddModel equipmentEditData) {
+    
+  String? pharmacyId =
+      FirebaseAuth.instance.currentUser?.uid;
     equipmentData = PharmacyProductAddModel(
       id: equipmentEditData.id,
       categoryId: categoryId,
@@ -1007,6 +1028,9 @@ class PharmacyProvider extends ChangeNotifier {
   }
 
   void otherEditProductDetails(PharmacyProductAddModel othersEditData) {
+    
+  String? pharmacyId =
+      FirebaseAuth.instance.currentUser?.uid;
     otherData = PharmacyProductAddModel(
       id: othersEditData.id,
       categoryId: categoryId,

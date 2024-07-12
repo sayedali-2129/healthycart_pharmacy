@@ -174,6 +174,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                         LoadingLottie.showLoading(
                                             context: context, text: 'Loading...');
                                         authenticationProvider.verifyPhoneNumber(
+                                          resend: true,
                                             context: context);
                                       })
                                 : TextSpan(

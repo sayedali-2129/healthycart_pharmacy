@@ -481,6 +481,7 @@ class _OnProcessOrderScreenState extends State<OnProcessOrderScreen> {
                                     orderProvider
                                         .updateOrderCompletedDetails(
                                       productData: onProcessOrderData,
+                                      context: context
                                     )
                                         .whenComplete(
                                       () {

@@ -19,7 +19,7 @@ class LocationProvider extends ChangeNotifier {
 
   List<PlaceMark> searchResults = [];
   bool searchLoading = false;
-  String? userId = FirebaseAuth.instance.currentUser?.uid;
+
 
   Future<bool> getLocationPermisson() async {
     locationGetLoading = true;
@@ -63,6 +63,7 @@ class LocationProvider extends ChangeNotifier {
       {required BuildContext context,
       required bool isPharmacyEditProfile,
       required int? pharmacyModelrequestedCount}) async {
+          String? userId = FirebaseAuth.instance.currentUser?.uid;
     log('Location selected::::$selectedPlaceMark');
     final result =
         await iLocationFacade.setLocationByPharmacy(selectedPlaceMark!);

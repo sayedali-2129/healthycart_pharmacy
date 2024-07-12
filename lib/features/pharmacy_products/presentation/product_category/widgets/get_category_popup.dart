@@ -155,7 +155,6 @@ class _AddDoctorsCategoryDilogueState extends State<AddDoctorsCategoryDilogue> {
                         context: context, text: 'Adding doctor category...');
                     await value.updatePharmacyCategoryDetails(
                       categorySelected: value.selectedRadioButtonCategoryValue!,
-                      pharmacyId: value.pharmacyId ?? '',
                     );
                     value.selectedRadioButtonCategoryValue = null;
                     // ignore: use_build_context_synchronously

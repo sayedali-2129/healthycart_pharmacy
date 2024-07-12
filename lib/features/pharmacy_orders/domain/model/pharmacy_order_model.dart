@@ -34,6 +34,7 @@ class PharmacyOrderModel {
   final bool? isPaymentRecieved;
   final String? productBillPdf;
   final String? paymentType;
+    final String? description;
   PharmacyOrderModel({
     this.id,
     this.pharmacyId,
@@ -63,6 +64,7 @@ class PharmacyOrderModel {
     this.isPaymentRecieved,
     this.productBillPdf,
     this.paymentType,
+    this.description,
   });
 
   PharmacyOrderModel copyWith({
@@ -94,6 +96,7 @@ class PharmacyOrderModel {
     bool? isPaymentRecieved,
     String? productBillPdf,
     String? paymentType,
+    String? description,
   }) {
     return PharmacyOrderModel(
       id: id ?? this.id,
@@ -124,6 +127,7 @@ class PharmacyOrderModel {
       isPaymentRecieved: isPaymentRecieved ?? this.isPaymentRecieved,
       productBillPdf: productBillPdf ?? this.productBillPdf,
       paymentType: paymentType ?? this.paymentType,
+       description: description ?? this.description
     );
   }
 
@@ -157,6 +161,7 @@ class PharmacyOrderModel {
       'isPaymentRecieved': isPaymentRecieved,
       'productBillPdf': productBillPdf,
       'paymentType': paymentType,
+       'description': description,
     };
   }
 
@@ -176,6 +181,7 @@ class PharmacyOrderModel {
       'isOrderPacked': isOrderPacked,
       'isOrderDelivered': isOrderDelivered,
       'isPaymentRecieved': isPaymentRecieved,
+
     };
   }
 
@@ -252,6 +258,7 @@ class PharmacyOrderModel {
           : null,
       paymentType:
           map['paymentType'] != null ? map['paymentType'] as String : null,
+           description: map['description'] != null ? map['description'] as String : null,     
     );
   }
 }
