@@ -105,6 +105,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                             width: double.infinity,
                                             height: 40,
                                             onTap: () {
+                                              orderProvider.clearFiledAndData();
                                               EasyNavigation.push(
                                                   context: context,
                                                   page:
@@ -247,6 +248,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                 ),
                                 const Divider(),
                                 Container(
+                                  padding: const EdgeInsets.only(right: 8),
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     color: Colors.grey.shade200,
@@ -287,59 +289,33 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                       fontWeight:
                                                           FontWeight.w600),
                                             ),
-                                            Row(
-                                              children: [
-                                                PhysicalModel(
-                                                  elevation: 2,
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          16),
-                                                  child: SizedBox(
-                                                    width: 40,
-                                                    height: 40,
-                                                    child: Center(
-                                                      child: IconButton(
-                                                          onPressed: () {},
-                                                          icon: const Icon(
-                                                            Icons
-                                                                .location_on_sharp,
-                                                            size: 24,
-                                                            color:
-                                                                Colors.blue,
-                                                          )),
-                                                    ),
+                                            
+                                            PhysicalModel(
+                                              elevation: 2,
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      16),
+                                              child: SizedBox(
+                                                width: 40,
+                                                height: 40,
+                                                child: Center(
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      orderProvider.lauchDialer(
+                                                          phoneNumber: orderData
+                                                                  .userDetails
+                                                                  ?.phoneNo ??
+                                                              '');
+                                                    },
+                                                    icon: const Icon(
+                                                        Icons.phone,
+                                                        size: 24,
+                                                        color:
+                                                            Colors.blue),
                                                   ),
                                                 ),
-                                                const Gap(12),
-                                                PhysicalModel(
-                                                  elevation: 2,
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          16),
-                                                  child: SizedBox(
-                                                    width: 40,
-                                                    height: 40,
-                                                    child: Center(
-                                                      child: IconButton(
-                                                        onPressed: () {
-                                                          orderProvider.lauchDialer(
-                                                              phoneNumber: orderData
-                                                                      .userDetails
-                                                                      ?.phoneNo ??
-                                                                  '');
-                                                        },
-                                                        icon: const Icon(
-                                                            Icons.phone,
-                                                            size: 24,
-                                                            color:
-                                                                Colors.blue),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ],
                                         )
@@ -357,6 +333,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                             width: double.infinity,
                                             child: ElevatedButton(
                                               onPressed: () {
+                                                orderProvider.clearFiledAndData();
                                                 EasyNavigation.push(
                                                   type: PageTransitionType
                                                       .rightToLeft,

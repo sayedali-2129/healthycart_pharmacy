@@ -121,7 +121,7 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                           children: [
                                             Container(
                                               height: 96,
-                                              width: 104,
+                                              width: 96,
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(14),
@@ -178,10 +178,10 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                               .textTheme
                                                               .labelLarge!
                                                               .copyWith(
-                                                                  fontSize: 12,
+                                                                  fontSize: 11,
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w700),
+                                                                          .w600, color: BColors.textLightBlack),
                                                         ),
                                                         TextSpan(
                                                           text: profileProvider
@@ -193,10 +193,10 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                               .textTheme
                                                               .labelLarge!
                                                               .copyWith(
-                                                                  fontSize: 13,
+                                                                  fontSize: 12,
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w700),
+                                                                          .w600, color: BColors.textBlack),
                                                         ),
                                                       ]),
                                                     ),
@@ -218,9 +218,9 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                                         .labelLarge!
                                                                         .copyWith(
                                                                             fontSize:
-                                                                                12,
+                                                                                11,
                                                                             fontWeight:
-                                                                                FontWeight.w700),
+                                                                                FontWeight.w600,  color: BColors.textLightBlack),
                                                                   ),
                                                                   TextSpan(
                                                                       text:
@@ -230,9 +230,9 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                                           .textTheme
                                                                           .labelLarge!
                                                                           .copyWith(
-                                                                              fontSize: 13,
+                                                                              fontSize: 12,
                                                                               color: BColors.green,
-                                                                              fontWeight: FontWeight.w700)),
+                                                                              fontWeight: FontWeight.w600,)),
                                                                   TextSpan(
                                                                     text:
                                                                         "${profileProvider.productList[index].productMRPRate} ",
@@ -242,10 +242,10 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                                         .labelLarge!
                                                                         .copyWith(
                                                                             fontSize:
-                                                                                13,
+                                                                                12,
                                                                             color:
                                                                                 BColors.green,
-                                                                            fontWeight: FontWeight.w700),
+                                                                            fontWeight: FontWeight.w600),
                                                                   ),
                                                                 ]),
                                                           )
@@ -261,9 +261,9 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                                       .labelLarge!
                                                                       .copyWith(
                                                                           fontSize:
-                                                                              12,
+                                                                              11,
                                                                           fontWeight:
-                                                                              FontWeight.w700),
+                                                                              FontWeight.w600),
                                                                 ),
                                                                 TextSpan(
                                                                     text: "₹ ",
@@ -273,10 +273,10 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                                         .labelLarge!
                                                                         .copyWith(
                                                                             fontSize:
-                                                                                13,
+                                                                                12,
                                                                             color:
                                                                                 BColors.green,
-                                                                            fontWeight: FontWeight.w700)),
+                                                                            fontWeight: FontWeight.w600)),
                                                                 TextSpan(
                                                                   text:
                                                                       "${profileProvider.productList[index].productDiscountRate}",
@@ -288,9 +288,9 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                                           color: BColors
                                                                               .green,
                                                                           fontSize:
-                                                                              13,
+                                                                              12,
                                                                           fontWeight:
-                                                                              FontWeight.w700),
+                                                                              FontWeight.w600),
                                                                 ),
                                                                 const TextSpan(
                                                                     text: '  '),
@@ -303,13 +303,13 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                                       .labelLarge!
                                                                       .copyWith(
                                                                           fontSize:
-                                                                              12,
+                                                                              11,
                                                                           decoration: TextDecoration
                                                                               .lineThrough,
                                                                           decorationThickness:
                                                                               2.0,
                                                                           fontWeight:
-                                                                              FontWeight.w700),
+                                                                              FontWeight.w600),
                                                                 ),
                                                               ])),
                                                     const Gap(8),
@@ -393,8 +393,8 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                                 BColors.white,
                                                             boxColor:
                                                                 BColors.offRed,
-                                                            width: 74,
-                                                            height: 26,
+                                                            width: 64,
+                                                            height: 24,
                                                           ),
                                                       ],
                                                     ),
@@ -423,7 +423,7 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                       .textTheme
                                                       .labelLarge!
                                                       .copyWith(
-                                                          fontSize: 11,
+                                                          fontSize: 10,
                                                           fontWeight:
                                                               FontWeight.w700),
                                                 ),
@@ -440,7 +440,7 @@ class _PrescriptionProductListState extends State<PrescriptionProductList> {
                                                       .copyWith(
                                                           color: BColors
                                                               .mainlightColor,
-                                                          fontSize: 12,
+                                                          fontSize: 11,
                                                           fontWeight:
                                                               FontWeight.w700),
                                                 ),

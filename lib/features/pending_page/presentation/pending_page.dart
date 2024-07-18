@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pending_page/application/pending_provider.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/widget/contact_us_sheet.dart';
 import 'package:healthycart_pharmacy/features/splash_screen/splash_screen.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 import 'package:healthycart_pharmacy/utils/constants/image/image.dart';
@@ -23,7 +24,7 @@ class PendingPageScreen extends StatelessWidget {
             type: PageTransitionType.bottomToTop,
             context: context,
             page: const SplashScreen());
-      }
+      } 
     });
     return Consumer2<PendingProvider, AuthenticationProvider>(builder: (context, pendingProvider,authProviderPharamacyDetails, _) {
       return Scaffold(
@@ -66,9 +67,13 @@ class PendingPageScreen extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  pendingProvider.reDirectToWhatsApp(
-                      message:
-                          'Hi, I like to know the details of the request regarding pharmacy approval through your application.');
+                  showModalBottomSheet(
+                    backgroundColor: BColors.white,
+                    elevation: 5,
+                    showDragHandle: true,
+                    context: context,        
+                    builder: (context) =>  ContactUsBottomSheet(message:  'Hi, I like to know the details of the request regarding${authProviderPharamacyDetails.pharmacyDataFetched?.pharmacyName} approval through  Healthy cart pharmacy admin.',),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(

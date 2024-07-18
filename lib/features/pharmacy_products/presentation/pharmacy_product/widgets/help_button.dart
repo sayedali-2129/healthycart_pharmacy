@@ -50,7 +50,7 @@ class HelpButtonWidget extends StatelessWidget {
                       },
                       child: Text(
                           textAlign: TextAlign.center,
-                          "Contact us",
+                          "Chat with us",
                           style:
                               Theme.of(context).textTheme.labelLarge!.copyWith(
                                     decorationColor: BColors.mainlightColor,

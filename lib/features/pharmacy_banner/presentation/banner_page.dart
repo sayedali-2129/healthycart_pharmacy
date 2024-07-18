@@ -22,18 +22,17 @@ class BannerScreen extends StatelessWidget {
         builder: (context, addBannerProvider, _) {
       return CustomScrollView(
         slivers: [
-         
           const CustomSliverCurveAppBarWidget(),
-        
           const SliverPadding(
             padding: EdgeInsets.all(16),
             sliver: SliverToBoxAdapter(
               child: AdSlider(),
             ),
           ),
-          
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16,),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
             sliver: SliverToBoxAdapter(
               child: Text(
                 "Add or Edit Banner's",
@@ -49,7 +48,7 @@ class BannerScreen extends StatelessWidget {
           (addBannerProvider.fetchLoading)
 
               /// loading is done here
-         ? const SliverToBoxAdapter(
+              ? const SliverToBoxAdapter(
                   child: Center(
                     child: Padding(
                       padding: EdgeInsets.all(16.0),
@@ -71,33 +70,35 @@ class BannerScreen extends StatelessWidget {
                             mainAxisExtent: 104),
                     itemBuilder: (context, index) {
                       if (index == addBannerProvider.bannerList.length) {
-                        return AddNewBannerWidget(
-                          onTap: () {
-                            popUp.showAddbannerDialouge(
-                              context: context,
-                              nameTitle: 'Tap to add banner',
-                              buttonText: 'Save',
-                              onAddTap: () {
-                                
-                                addBannerProvider.getImage();
-                              },
-                              buttonTap: () async {
-                                if (addBannerProvider.imageFile == null) {
-                                  CustomToast.errorToast(
-                                      text: 'Pick a banner image');
-                                  return;
-                                }
-                               
-                                await addBannerProvider
-                                    .saveImage()
-                                    .then((value) async{
-                                 await addBannerProvider.addBanner(context: context);
-                                });
-                              },
-                            );
-                          },
-                          child: const Center(child: Icon(Icons.add)),
-                        );
+                        return (addBannerProvider.bannerList.length < 3)
+                            ? AddNewBannerWidget(
+                                onTap: () {
+                                  popUp.showAddbannerDialouge(
+                                    context: context,
+                                    nameTitle: 'Tap to add banner',
+                                    buttonText: 'Save',
+                                    onAddTap: () {
+                                      addBannerProvider.getImage();
+                                    },
+                                    buttonTap: () async {
+                                      if (addBannerProvider.imageFile == null) {
+                                        CustomToast.errorToast(
+                                            text: 'Pick a banner image');
+                                        return;
+                                      }
+
+                                      await addBannerProvider
+                                          .saveImage()
+                                          .then((value) async {
+                                        await addBannerProvider.addBanner(
+                                            context: context);
+                                      });
+                                    },
+                                  );
+                                },
+                                child: const Center(child: Icon(Icons.add)),
+                              )
+                            : null;
                       } else {
                         return BannerImageWidget(
                           index: index,

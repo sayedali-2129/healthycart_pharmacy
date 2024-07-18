@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/core/custom/custom_cached_network/custom_cached_network_image.dart';
 import 'package:healthycart_pharmacy/core/custom/lottie/circular_loading.dart';
 import 'package:healthycart_pharmacy/core/custom/no_data/no_data_widget.dart';
-import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/application/provider/request_pharmacy_provider.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 import 'package:healthycart_pharmacy/utils/constants/image/image.dart';
@@ -69,7 +68,6 @@ class _UserPaymentState extends State<UserPayment> {
               itemBuilder: (context, index) {
                 final orders = ordersProvider.completedOrderList[index];
                 return Container(
-                  height: 65,
                   width: double.infinity,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
@@ -93,39 +91,67 @@ class _UserPaymentState extends State<UserPayment> {
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Column(
                               children: [
-                                Expanded(
-                                  child: Text(
-                                      orders.userDetails!.userName ??
-                                          'Not Provided',
-                                      overflow: TextOverflow.ellipsis,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                          orders.userDetails!.userName ??
+                                              'Not Provided',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge!
+                                              .copyWith(fontSize: 12)),
+                                    ),
+                                    Text(
+                                      orders.paymentType ?? '',
                                       style: Theme.of(context)
                                           .textTheme
-                                          .labelLarge),
+                                          .labelLarge!
+                                          .copyWith(
+                                              color: BColors.green,
+                                              fontSize: 12),
+                                    ),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            '₹${orders.finalAmount ?? 0}',
+                                            overflow: TextOverflow.ellipsis,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelLarge!
+                                                .copyWith(fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  orders.paymentType ?? '',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge!
-                                      .copyWith(color: BColors.green),
-                                ),
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        '₹${orders.finalAmount ?? 0}',
-                                        overflow: TextOverflow.ellipsis,
+                                const Gap(10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Commission : ${orders.commission}%',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .labelLarge,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                            .labelLarge!
+                                            .copyWith(fontSize: 12)),
+                                    Text(
+                                        'Commission Amt : ₹${orders.commissionAmt}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelLarge!
+                                            .copyWith(fontSize: 12)),
+                                  ],
+                                )
                               ],
                             ),
                           ),
@@ -143,6 +169,31 @@ class _UserPaymentState extends State<UserPayment> {
                 ? const Center(child: LoadingIndicater())
                 : const Gap(0)),
       ],
-    ));
+    ),
+          bottomNavigationBar: ordersProvider.pharmacyTransactionModel != null
+          ? Container(
+              height: 52,
+              color: BColors.mainlightColor,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Transaction : ₹${ordersProvider.pharmacyTransactionModel!.totalTransactionAmt}',
+                      style: const TextStyle(
+                          color: BColors.darkblue, fontSize: 12),
+                    ),
+                    Text(
+                      'Total Commission : ₹${ordersProvider.pharmacyTransactionModel!.totalCommissionPending}',
+                      style: const TextStyle(
+                          color: BColors.darkblue, fontSize: 12),
+                    )
+                  ],
+                ),
+              ),
+            )
+          : null,
+    );
   }
 }

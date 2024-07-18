@@ -26,7 +26,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -51,18 +54,9 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCOjyNpIkNH4KX750pUdAvEPw6XFbA-UGE',
-    appId: '1:263317797819:android:7e13df0557090237d4229e',
+    appId: '1:263317797819:android:e31fbf6d532ef847d4229e',
     messagingSenderId: '263317797819',
     projectId: 'healthycart-4c697',
     storageBucket: 'healthycart-4c697.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDYlk3mjfZe73xUuHmIghDIh2H_FBXRH-4',
-    appId: '1:263317797819:ios:1acbc2703e4559a0d4229e',
-    messagingSenderId: '263317797819',
-    projectId: 'healthycart-4c697',
-    storageBucket: 'healthycart-4c697.appspot.com',
-    iosBundleId: 'com.example.healthycart',
   );
 }

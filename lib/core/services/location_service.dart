@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:healthycart_pharmacy/core/failures/main_failure.dart';
 
 class LocationService {
-  Future<void> getPermission() async {
+    Future<bool> getPermission() async {
     bool isServiceEnabled;
     LocationPermission permission;
 
@@ -28,15 +28,16 @@ class LocationService {
           permission != LocationPermission.whileInUse) {
         // Handle permission denied scenario
         // return const MainFailure.locationError(errMsg: 'Denied location permission');
-        return;
+       return false;
       }
     }
 
     // If permission is granted temporarily, handle fetching location accordingly
     if (permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always ) {
-      await getCurrentLocationAddress();
+        permission == LocationPermission.always) {
+     return true;
     }
+    return true;
   }
 
   Future<Either<MainFailure, Placemark>> getCurrentLocationAddress() async {

@@ -31,6 +31,7 @@ class _OnProcessOrderScreenState extends State<OnProcessOrderScreen> {
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
         orderProvider.cancelStream();
+        orderProvider.getTransactionData();
         orderProvider.getpharmacyOnProcessData();
       },
     );
@@ -239,7 +240,8 @@ class _OnProcessOrderScreenState extends State<OnProcessOrderScreen> {
                                                 ? Colors.amber
                                                 : BColors.green,
                                       ),
-                                      if (onProcessOrderData.paymentType == 'COD')
+                                      if (onProcessOrderData.paymentType ==
+                                          'COD')
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
@@ -259,7 +261,9 @@ class _OnProcessOrderScreenState extends State<OnProcessOrderScreen> {
                                                       fontSize: 11),
                                             ),
                                             Checkbox(
-                                              value: onProcessOrderData.isPaymentRecieved ?? false,
+                                              value: onProcessOrderData
+                                                      .isPaymentRecieved ??
+                                                  false,
                                               onChanged: (value) {
                                                 LoadingLottie.showLoading(
                                                     context: context,
@@ -269,7 +273,7 @@ class _OnProcessOrderScreenState extends State<OnProcessOrderScreen> {
                                                         productData:
                                                             onProcessOrderData,
                                                         value: 3,
-                                                        updateValue:  value!)
+                                                        updateValue: value!)
                                                     .whenComplete(
                                                   () {
                                                     EasyNavigation.pop(
@@ -310,75 +314,93 @@ class _OnProcessOrderScreenState extends State<OnProcessOrderScreen> {
                                   ),
                                 ),
                                 const Divider(),
-                                (onProcessOrderData.isUserAccepted == true)?
-                                Wrap(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        OrderCheckBox(
-                                            text: 'Processing',
-                                            onChanged: (value) {
-
-                                            },
-                                            value: onProcessOrderData.isUserAccepted ??false),
-                                        OrderCheckBox(
-                                            text: 'Packed',
-                                            onChanged: (value) {
-                                                LoadingLottie.showLoading(
-                                                    context: context,
-                                                    text: 'Please wait...');
-                                                orderProvider
-                                                    .updateOrderStatusToDeliverDetails(
-                                                        productData:
-                                                            onProcessOrderData,
-                                                        value: 1, 
-                                                        updateValue: value!)
-                                                    .whenComplete(
-                                                  () {
-                                                    EasyNavigation.pop(
-                                                        context: context);
+                                (onProcessOrderData.isUserAccepted == true)
+                                    ? Wrap(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              OrderCheckBox(
+                                                  text: 'Processing',
+                                                  onChanged: (value) {},
+                                                  value: onProcessOrderData
+                                                          .isUserAccepted ??
+                                                      false),
+                                              OrderCheckBox(
+                                                text: 'Packed',
+                                                onChanged: (value) {
+                                                  if (onProcessOrderData
+                                                          .isOrderDelivered ==
+                                                      true) {
+                                                    CustomToast.sucessToast(
+                                                        text:
+                                                            'The order delivery is completed.');
+                                                    return;
+                                                  }
+                                                  LoadingLottie.showLoading(
+                                                      context: context,
+                                                      text: 'Please wait...');
+                                                  orderProvider
+                                                      .updateOrderStatusToDeliverDetails(
+                                                          productData:
+                                                              onProcessOrderData,
+                                                          value: 1,
+                                                          updateValue: value!)
+                                                      .whenComplete(
+                                                    () {
+                                                      EasyNavigation.pop(
+                                                          context: context);
+                                                    },
+                                                  );
+                                                },
+                                                value: onProcessOrderData
+                                                        .isOrderPacked ??
+                                                    false,
+                                              ),
+                                              OrderCheckBox(
+                                                  text: 'Delivered',
+                                                  onChanged: (value) {
+                                                    if (!onProcessOrderData
+                                                        .isOrderPacked!) {
+                                                      CustomToast.errorToast(
+                                                          text:
+                                                              'Complete packing to deliver the product.');
+                                                      return;
+                                                    }
+                                                    LoadingLottie.showLoading(
+                                                        context: context,
+                                                        text: 'Please wait...');
+                                                    orderProvider
+                                                        .updateOrderStatusToDeliverDetails(
+                                                            productData:
+                                                                onProcessOrderData,
+                                                            value: 2,
+                                                            updateValue: value!)
+                                                        .whenComplete(
+                                                      () {
+                                                        EasyNavigation.pop(
+                                                            context: context);
+                                                      },
+                                                    );
                                                   },
-                                                );
-                                            },
-                                            value: onProcessOrderData.isOrderPacked ?? false),
-                                        OrderCheckBox(
-                                            text: 'Delivered',
-                                            onChanged: (value) {
-                                              LoadingLottie.showLoading(
-                                                    context: context,
-                                                    text: 'Please wait...');
-                                                orderProvider
-                                                    .updateOrderStatusToDeliverDetails(
-                                                        productData:
-                                                            onProcessOrderData,
-                                                        value: 2, 
-                                                        updateValue: value!)
-                                                    .whenComplete(
-                                                  () {
-                                                    EasyNavigation.pop(
-                                                        context: context);
-                                                  },
-                                                );
-                                            },
-                                            value:onProcessOrderData.isOrderDelivered ?? false),
-                                      ],
-                                    ),
-                                  ],
-                                ): Text(
-                                              'Order is in customer review.',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .labelLarge!
-                                                  .copyWith(
-                                                     
-                                                      color: BColors
-                                                          .darkblue,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 14),
-                                            ),
+                                                  value: onProcessOrderData
+                                                          .isOrderDelivered ??
+                                                      false),
+                                            ],
+                                          ),
+                                        ],
+                                      )
+                                    : Text(
+                                        'Order is in customer review !',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelLarge!
+                                            .copyWith(
+                                                color: BColors.offRed,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 14),
+                                      ),
                                 Column(
                                   children: [
                                     const Divider(),
@@ -458,47 +480,60 @@ class _OnProcessOrderScreenState extends State<OnProcessOrderScreen> {
                                       UserModel(),
                                 ),
                                 const Gap(16),
-                                if(onProcessOrderData.isUserAccepted == true && onProcessOrderData.paymentStatus != 0 && onProcessOrderData.isOrderPacked == true && onProcessOrderData.isPaymentRecieved == true && onProcessOrderData.isOrderDelivered == true)
-                                CustomButton(
-                                  width: double.infinity,
-                                  height: 40,
-                                  onTap: () {
-                                    if (onProcessOrderData.isUserAccepted !=
-                                        true) {
-                                      CustomToast.errorToast(
-                                          text:
-                                              'Order is not accepted by user.');
-                                      return;
-                                    }
-                                    if (onProcessOrderData.paymentStatus == 0) {
-                                      CustomToast.errorToast(
-                                          text: 'Payment is not done yet.');
-                                      return;
-                                    }
-                                    LoadingLottie.showLoading(
+                                if (onProcessOrderData.isUserAccepted == true &&
+                                    onProcessOrderData.paymentStatus != 0 &&
+                                    onProcessOrderData.isOrderPacked == true &&
+                                    onProcessOrderData.isPaymentRecieved ==
+                                        true &&
+                                    onProcessOrderData.isOrderDelivered == true)
+                                  CustomButton(
+                                    width: double.infinity,
+                                    height: 40,
+                                    onTap: () {
+                                      if (onProcessOrderData.isUserAccepted !=
+                                          true) {
+                                        CustomToast.errorToast(
+                                            text:
+                                                'Order is not accepted by user.');
+                                        return;
+                                      }
+                                      if (onProcessOrderData.paymentStatus ==
+                                          0) {
+                                        CustomToast.errorToast(
+                                            text: 'Payment is not done yet.');
+                                        return;
+                                      }
+                                      LoadingLottie.showLoading(
+                                          context: context,
+                                          text: 'Please wait...');
+                                      orderProvider
+                                          .updateOrderCompletedDetails(
+                                        productData: onProcessOrderData,
                                         context: context,
-                                        text: 'Please wait...');
-                                    orderProvider
-                                        .updateOrderCompletedDetails(
-                                      productData: onProcessOrderData,
-                                      context: context
-                                    )
-                                        .whenComplete(
-                                      () {
-                                        EasyNavigation.pop(context: context);
-                                      },
-                                    );
-                                  },
-                                  text: 'Complete Order',
-                                  buttonColor: BColors.green,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelMedium!
-                                      .copyWith(
-                                          fontSize: 14,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w700),
-                                )
+                                        commission: orderProvider
+                                            .pharmacyTransactionModel!
+                                            .commission,
+                                        commissionAmt: orderProvider
+                                            .calculateOrderCommission(
+                                                onProcessOrderData
+                                                    .finalAmount!),
+                                      )
+                                          .whenComplete(
+                                        () {
+                                          EasyNavigation.pop(context: context);
+                                        },
+                                      );
+                                    },
+                                    text: 'Complete Order',
+                                    buttonColor: BColors.green,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium!
+                                        .copyWith(
+                                            fontSize: 14,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700),
+                                  )
                               ],
                             ),
                           ),

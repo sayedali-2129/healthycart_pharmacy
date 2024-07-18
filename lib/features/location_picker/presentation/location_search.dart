@@ -11,9 +11,10 @@ import 'package:provider/provider.dart';
 
 class UserLocationSearchWidget extends StatefulWidget {
   const UserLocationSearchWidget({
-    super.key, this.isHospitaEditProfile,
+    super.key,
+    this.isPharmacyEditProfile,
   });
-final bool? isHospitaEditProfile;
+  final bool? isPharmacyEditProfile;
 
   @override
   State<UserLocationSearchWidget> createState() =>
@@ -40,10 +41,9 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body:
-        Consumer2<LocationProvider, AuthenticationProvider>(builder: (context, locationProvider,authProviderPharamacyDetails ,_) {
-      return CustomScrollView(
-      slivers:[
+    return Scaffold(body: Consumer2<LocationProvider, AuthenticationProvider>(
+        builder: (context, locationProvider, authProviderPharamacyDetails, _) {
+      return CustomScrollView(slivers: [
         SliverCustomAppbar(
             title: 'Choose Location',
             onBackTap: () {
@@ -76,8 +76,12 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
               if (locationProvider.selectedPlaceMark == null) return;
               LoadingLottie.showLoading(
                   context: context, text: 'Saving Location..');
-              await locationProvider.updateUserLocation(context: context, isPharmacyEditProfile: widget.isHospitaEditProfile ?? false, pharmacyModelrequestedCount: authProviderPharamacyDetails.pharmacyDataFetched?.pharmacyRequested);
-              },
+              await locationProvider.updateUserLocation(
+                  context: context,
+                  isPharmacyEditProfile: widget.isPharmacyEditProfile ?? false,
+                  pharmacyModelrequestedCount: authProviderPharamacyDetails
+                      .pharmacyDataFetched?.pharmacyRequested);
+            },
             child: Padding(
               padding:
                   const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 4),
@@ -86,7 +90,7 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                  
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Icon(
@@ -126,7 +130,10 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
                                 (locationProvider.searchLoading)
                                     ? "Getting location, please wait..."
                                     : "Tap to save the location above.",
-                                style: Theme.of(context).textTheme.labelSmall!.copyWith(color:  BColors.green),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelSmall!
+                                    .copyWith(color: BColors.green),
                               ),
                             ],
                           ),
@@ -189,7 +196,8 @@ class _UserLocationSearchWidgetState extends State<UserLocationSearchWidget> {
                       size: 20,
                     ),
                     onTap: () {
-                      locationProvider.setSelectedPlaceMark(locationProvider.searchResults[index]);
+                      locationProvider.setSelectedPlaceMark(
+                          locationProvider.searchResults[index]);
                     },
                   ),
                 ),

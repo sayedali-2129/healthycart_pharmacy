@@ -24,10 +24,11 @@ class LocationProvider extends ChangeNotifier {
   Future<bool> getLocationPermisson() async {
     locationGetLoading = true;
     notifyListeners();
-    await iLocationFacade.getLocationPermisson();
+    bool? isPermissionEnabled;
+  isPermissionEnabled=  await iLocationFacade.getLocationPermisson();
     locationGetLoading = false;
     notifyListeners();
-    return true;
+    return isPermissionEnabled;
   }
 
   Future<void> getCurrentLocationAddress() async {

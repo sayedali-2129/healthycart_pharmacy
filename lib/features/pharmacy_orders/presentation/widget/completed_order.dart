@@ -7,7 +7,6 @@ import 'package:healthycart_pharmacy/features/pharmacy_orders/application/provid
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/user_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/widget/date_and_order_id.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/widget/product_view_container.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/widget/quantity_container.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/widget/row_text_widget.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/widget/user_detail_container.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';

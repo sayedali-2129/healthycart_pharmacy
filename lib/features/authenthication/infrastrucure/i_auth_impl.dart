@@ -56,7 +56,7 @@ class IAuthImpl implements IAuthFacade {
     try {
       final PhoneAuthCredential phoneAuthCredential =
           PhoneAuthProvider.credential(
-              verificationId: verificationId ?? "", smsCode: smsCode);
+              verificationId: verificationId!, smsCode: smsCode);
 
       UserCredential userCredential =
           await _firebaseAuth.signInWithCredential(phoneAuthCredential);

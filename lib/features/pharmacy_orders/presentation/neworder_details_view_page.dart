@@ -64,13 +64,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               ConfirmAlertBoxWidget.showAlertConfirmBox(
                   context: context,
                   confirmButtonTap: () {
-                    EasyNavigation.pop(context: context);
                     orderProvider.clearFiledAndData();
+                    EasyNavigation.pop(context: context);
                   },
                   titleText: 'Remove all changes',
-                  subText: "Are you sure to undo all the changes?");
-            } else {
-              orderProvider.clearFiledAndData();
+                  subText: "Are you sure to Undo all the changes?");
             }
           },
           child: CustomScrollView(
@@ -87,12 +85,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             EasyNavigation.pop(context: context);
                           },
                           titleText: 'Remove all changes',
-                          subText: "Are you sure to undo all the changes?");
+                          subText: "Are you sure to Undo all the changes?");
                     } else {
-                      orderProvider.clearFiledAndData();
                       EasyNavigation.pop(context: context);
                     }
-                  }),
+                  },
+                  ),
               SliverPadding(
                   padding: const EdgeInsets.all(16),
                   sliver: SliverToBoxAdapter(
@@ -264,7 +262,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                         RowTextContainerWidget(
                                           text1: 'Total Discount :',
                                           text2:
-                                              "- ₹ ${orderProvider.totalAmount - orderProvider.totalFinalAmount}",
+                                              "- ₹ ${orderProvider.discountAmountAsDifference}",
                                           text1Color: BColors.textLightBlack,
                                           fontSizeText1: 12,
                                           fontSizeText2: 12,
@@ -324,16 +322,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                           'Enter the delivery charge',
                                                       subText:
                                                           'Please enter a delivery amount or leave it blank if the delivery is free.',
-                                                      controller: orderProvider
-                                                          .deliveryController,
+                                                      controller: orderProvider.deliveryController,
                                                       maxlines: 1,
                                                       keyboardType:
-                                                          TextInputType
-                                                              .number,
+                                                          TextInputType.number,
                                                     );
                                                   },
                                                   child: Text(
-                                                    'Add delivery Charge',
+                                                    'Add Delivery Charge',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     maxLines: 1,
@@ -342,7 +338,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                         .bodyLarge!
                                                         .copyWith(
                                                           color: BColors
-                                                              .darkblue,
+                                                              .buttonRedShade,
                                                           decoration:
                                                               TextDecoration
                                                                   .underline,
@@ -483,11 +479,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     width: 136,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        if (orderData
+                                        if ((orderData
                                                     .productDetails?.length !=
                                                 orderProvider
                                                     .pharmacyUserProducts
-                                                    .length &&
+                                                    .length )&&
                                             orderProvider.reasonController
                                                 .text.isEmpty) {
                                           return CustomToast.errorToast(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/core/custom/lottie/circular_loading.dart';
 import 'package:healthycart_pharmacy/core/custom/no_data/no_data_widget.dart';
-import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/application/profile_provider.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 
@@ -79,7 +78,10 @@ class _AdminPaymentState extends State<AdminPayment> {
                           Expanded(
                             child: Text('Admin',
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.labelLarge),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(fontSize: 12)),
                           ),
                           Text(
                             formattedDate,
@@ -88,31 +90,44 @@ class _AdminPaymentState extends State<AdminPayment> {
                                 .labelMedium!
                                 .copyWith(
                                     color: BColors.black,
-                                    fontWeight: FontWeight.w600),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12),
                           ),
                           Expanded(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
                                       '₹${transaction.transferAmount}',
                                       overflow: TextOverflow.ellipsis,
                                       style: Theme.of(context)
                                           .textTheme
-                                          .labelLarge,
+                                          .labelLarge!
+                                          .copyWith(fontSize: 12),
                                     ),
                                     Text(
-                                      'Received',
+                                      transaction.transctionType == 'send'
+                                          ? 'Send'
+                                          : 'Received',
                                       overflow: TextOverflow.ellipsis,
                                       style: Theme.of(context)
                                           .textTheme
                                           .labelMedium!
-                                          .copyWith(color: BColors.green),
+                                          .copyWith(
+                                              color:
+                                                  transaction.transctionType ==
+                                                          'send'
+                                                      ? BColors.red
+                                                      : BColors.green,
+                                              fontSize: 12),
                                     ),
                                   ],
                                 ),
+                                if (transaction.transctionType == 'send')
+                                  const Gap(10),
                               ],
                             ),
                           ),

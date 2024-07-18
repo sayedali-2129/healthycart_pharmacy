@@ -25,6 +25,7 @@ class OrderIDAndDateSection extends StatelessWidget {
             CustomToast.sucessToast(text: 'Order ID sucessfully copied.');
           },
           child: Container(
+            padding: const EdgeInsets.all(4),
             height: 28,
             width: 176,
             decoration: BoxDecoration(
@@ -42,6 +43,7 @@ class OrderIDAndDateSection extends StatelessWidget {
         Container(
           height: 28,
           width: 128,
+
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(),

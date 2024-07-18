@@ -10,6 +10,7 @@ import 'package:healthycart_pharmacy/features/authenthication/application/authen
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/i_order_facade.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/day_transaction_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharmacy_order_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharmacy_transaction.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/product_quantity_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
 import 'package:injectable/injectable.dart';
@@ -55,6 +56,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
   }
 
 /* ---------------------------- PRICE CALCULATOR ---------------------------- */
+  num discountAmountAsDifference = 0;
   void totalAmountCalclator() {
     totalAmount = 0;
     totalFinalAmount = 0;
@@ -75,8 +77,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
       totalAmount += totalMRPAmount;
       totalFinalAmount += totalDiscountAmount;
     }
-
-    log("totalAmount  :$totalAmount");
+    discountAmountAsDifference = totalAmount - totalFinalAmount;
     notifyListeners();
   }
 
@@ -125,7 +126,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
 
 /* ------------------------ PRODUCT NEW ORDER STREAM SECTION ----------------------- */
   void getPharmacyNewOrders() {
-      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     _iOrderFacade
@@ -155,7 +156,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
 
 /* ------------------------ PRODUCT ON PROCESS ORDER STREAM SECTION ----------------------- */
   void getpharmacyOnProcessData() {
-      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     _iOrderFacade
@@ -247,7 +248,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
         CustomToast.sucessToast(
             text: (cancelOrApprove == 1)
                 ? "The order is sent to user"
-                : "The order is sucessfully cancelled.");
+                : "The order is cancelled sucessfully.");
         EasyNavigation.pop(context: context);
         EasyNavigation.pop(context: context);
         // EasyNavigation.pushAndRemoveUntil(context: context, page: const HomeScreen());
@@ -298,14 +299,16 @@ class RequestPharmacyProvider extends ChangeNotifier {
           productData: productDetail,
           productId: productDetail.id,
           quantity: quantityCount);
-      productMap[productDetail.id!] = productPrescriptionAdd ?? ProductAndQuantityModel();
+      productMap[productDetail.id!] =
+          productPrescriptionAdd ?? ProductAndQuantityModel();
     } else {
       quantityCount = 1;
       productPrescriptionAdd = ProductAndQuantityModel(
           productData: productDetail,
           productId: productDetail.id,
           quantity: quantityCount);
-      productMap[productDetail.id!] =  productPrescriptionAdd ?? ProductAndQuantityModel();
+      productMap[productDetail.id!] =
+          productPrescriptionAdd ?? ProductAndQuantityModel();
     }
     notifyListeners();
   }
@@ -340,26 +343,30 @@ class RequestPharmacyProvider extends ChangeNotifier {
   /* ------------------------- UPDATE COMPLETED ORDER ------------------------- */
 
   Future<void> updateOrderCompletedDetails({
-    required PharmacyOrderModel productData, required BuildContext context,
+    required PharmacyOrderModel productData,
+    required BuildContext context,
+    num? commission,
+    num? commissionAmt,
   }) async {
-   final pharmacyData =  context.read<AuthenticationProvider>().pharmacyDataFetched;
-      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    final pharmacyData =
+        context.read<AuthenticationProvider>().pharmacyDataFetched;
+    String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     final data = productData.copyWith(
-      orderStatus: 2,
-      completedAt: Timestamp.now(),
-    );
+        orderStatus: 2,
+        completedAt: Timestamp.now(),
+        commission: commission,
+        commissionAmt: commissionAmt);
     final result = await _iOrderFacade.updateProductOrderOnProcessDetails(
-      orderId: productData.id ?? '',
-      orderProducts: data,
-      pharmacyId: pharmacyId ??'',
-      dayTransactionDate:pharmacyData?.dayTransaction ?? ''  ,
-      dayTransactionModel: DayTransactionModel(
+        orderId: productData.id ?? '',
+        orderProducts: data,
+        pharmacyId: pharmacyId ?? '',
+        dayTransactionDate: pharmacyData?.dayTransaction ?? '',
+        dayTransactionModel: DayTransactionModel(
+          commission: data.commissionAmt,
           totalAmount: data.finalAmount,
           offlinePayment: data.paymentType != 'Online' ? data.finalAmount : 0,
           onlinePayment: data.paymentType == 'Online' ? data.finalAmount : 0,
-        )
-
-    );
+        ));
     result.fold(
       (failure) {
         CustomToast.errorToast(text: failure.errMsg);
@@ -368,18 +375,22 @@ class RequestPharmacyProvider extends ChangeNotifier {
       (orderProduct) {
         sendFcmMessage(
             token: orderProduct.userDetails?.fcmToken ?? '',
-            body: 'Your Order by ${orderProduct.pharmacyDetails?.pharmacyName ?? 'Pharmacy'} is completed, We always care about your health.!!',
+            body:
+                'Your Order by ${orderProduct.pharmacyDetails?.pharmacyName ?? 'Pharmacy'} is completed, We always care about your health.!!',
             title: 'Healthy Cart Order Completed!!');
-        CustomToast.sucessToast(text: "Order is sucessfully delivered.");
+        CustomToast.sucessToast(text: "Order is sucessfully completed.");
         notifyListeners();
       },
     );
   }
 
+  num calculateOrderCommission(num finalAmount) {
+    return (finalAmount * pharmacyTransactionModel!.commission!) / 100;
+  }
 /* -----------------------------GET COMPLETED ORDER ---------------------------- */
 
   Future<void> getCompletedOrderDetails({required int limit}) async {
-      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     final result = await _iOrderFacade.getCompletedOrderDetails(
@@ -402,7 +413,7 @@ class RequestPharmacyProvider extends ChangeNotifier {
 
 /* ------------------------- CANCELLED ORDER SECTION ------------------------ */
   Future<void> getCancelledOrderDetails() async {
-      String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     final result = await _iOrderFacade.getCancelledOrderDetails(
@@ -427,28 +438,28 @@ class RequestPharmacyProvider extends ChangeNotifier {
 /* --------------------- ORDER COMPLETION STATUS UPDATE --------------------- */
 
   Future<void> updateOrderStatusToDeliverDetails(
-      {required PharmacyOrderModel productData, required int value, required bool updateValue}) async {
-          String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+      {required PharmacyOrderModel productData,
+      required int value,
+      required bool updateValue}) async {
+    String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     PharmacyOrderModel? data;
     if (value == 1) {
-       data = productData.copyWith(
-         isOrderPacked: updateValue,
+      data = productData.copyWith(
+        isOrderPacked: updateValue,
       );
     } else if (value == 2) {
-             data = productData.copyWith(
-      isOrderDelivered: updateValue
-      );
+      data = productData.copyWith(isOrderDelivered: updateValue);
     } else {
-        data = productData.copyWith(
-       isPaymentRecieved: updateValue,
-       paymentStatus:updateValue? 1 : 0,
+      data = productData.copyWith(
+        isPaymentRecieved: updateValue,
+        paymentStatus: updateValue ? 1 : 0,
       );
     }
 
     final result = await _iOrderFacade.updateProductOrderOnProcessDetails(
       orderId: productData.id ?? '',
       orderProducts: data,
-      pharmacyId: pharmacyId ??'',
+      pharmacyId: pharmacyId ?? '',
     );
     result.fold(
       (failure) {
@@ -456,37 +467,62 @@ class RequestPharmacyProvider extends ChangeNotifier {
         notifyListeners();
       },
       (orderProduct) {
-         if (value == 1 && updateValue ==true) {
-              
-        CustomToast.sucessToast(text: "Order status updated to packed.");
-               sendFcmMessage(
-            token: orderProduct.userDetails?.fcmToken ?? '',
-            body:
-                'Your Order by ${orderProduct.pharmacyDetails?.pharmacyName ?? 'Pharmacy'} is packed, getting ready for delivery!!',
-            title: 'Your Healthy Cart Order Packed!!');
-    } else if(value == 1&& updateValue ==false) {
-      
-         CustomToast.errorToast(text: "Order status updated to not packed.");
-    }
+        if (value == 1 && updateValue == true) {
+          CustomToast.sucessToast(text: "Order status updated to packed.");
+          sendFcmMessage(
+              token: orderProduct.userDetails?.fcmToken ?? '',
+              body:
+                  'Your Order by ${orderProduct.pharmacyDetails?.pharmacyName ?? 'Pharmacy'} is packed, getting ready for delivery!!',
+              title: 'Your Healthy Cart Order Packed!!');
+        } else if (value == 1 && updateValue == false) {
+          CustomToast.errorToast(text: "Order status updated to not packed.");
+        }
 
-    if (value == 2 && updateValue ==true) {
-      
-        CustomToast.sucessToast(text: "Order is sucessfully delivered.");
-              sendFcmMessage(
-            token: orderProduct.userDetails?.fcmToken ?? '',
-            body:
-                'Your Order by ${orderProduct.pharmacyDetails?.pharmacyName  ?? 'Pharmacy'} is delivered !!',
-            title: 'Your Healthy Cart Order delivered!!');
-    }else if(value == 2 && updateValue ==false) {
-         CustomToast.errorToast(text: "Order status is removed from delivered.");
-    }
-    if(value == 3 && updateValue ==true){
-     CustomToast.sucessToast(text: "Order status updated as payment received.");
-    }else if(value == 3 && updateValue ==false) {
-     CustomToast.errorToast(text: "Order payment is not received.");
-    }
+        if (value == 2 && updateValue == true) {
+          CustomToast.sucessToast(text: "Order is sucessfully delivered.");
+          sendFcmMessage(
+              token: orderProduct.userDetails?.fcmToken ?? '',
+              body:
+                  'Your Order by ${orderProduct.pharmacyDetails?.pharmacyName ?? 'Pharmacy'} is delivered !!',
+              title: 'Your Healthy Cart Order delivered!!');
+        } else if (value == 2 && updateValue == false) {
+          CustomToast.errorToast(
+              text: "Order status is removed from delivered.");
+        }
+        if (value == 3 && updateValue == true) {
+          CustomToast.sucessToast(
+              text: "Order status updated as payment received.");
+        } else if (value == 3 && updateValue == false) {
+          CustomToast.errorToast(text: "Order payment is not received.");
+        }
         notifyListeners();
       },
     );
+  }
+
+  /* -------------------------- GET TRANSACTION DATA -------------------------- */
+  PharmacyTransactionModel? pharmacyTransactionModel;
+
+  Future<void> getTransactionData() async {
+    String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    fetchloading = true;
+    notifyListeners();
+    log('Called transcation fetch');
+    final result =
+        await _iOrderFacade.getTransactionData(pharmacyId: pharmacyId!);
+
+    result.fold(
+      (err) {
+        log('error in provider getTransactionData():: ${err.errMsg}');
+      },
+      (success) {
+        // log(success.toString());
+        pharmacyTransactionModel = success;
+        // log('transaction ID ::: $labId');
+      },
+    );
+    fetchloading = false;
+
+    notifyListeners();
   }
 }

@@ -34,7 +34,9 @@ class PharmacyOrderModel {
   final bool? isPaymentRecieved;
   final String? productBillPdf;
   final String? paymentType;
-    final String? description;
+  final String? description;
+  final num? commission;
+  final num? commissionAmt;
   PharmacyOrderModel({
     this.id,
     this.pharmacyId,
@@ -65,6 +67,8 @@ class PharmacyOrderModel {
     this.productBillPdf,
     this.paymentType,
     this.description,
+    this.commission,
+    this.commissionAmt,
   });
 
   PharmacyOrderModel copyWith({
@@ -97,6 +101,8 @@ class PharmacyOrderModel {
     String? productBillPdf,
     String? paymentType,
     String? description,
+    num? commission,
+    num? commissionAmt,
   }) {
     return PharmacyOrderModel(
       id: id ?? this.id,
@@ -127,7 +133,9 @@ class PharmacyOrderModel {
       isPaymentRecieved: isPaymentRecieved ?? this.isPaymentRecieved,
       productBillPdf: productBillPdf ?? this.productBillPdf,
       paymentType: paymentType ?? this.paymentType,
-       description: description ?? this.description
+      description: description ?? this.description,
+      commission: commission ?? this.commission,
+      commissionAmt: commissionAmt ?? this.commissionAmt,
     );
   }
 
@@ -161,7 +169,9 @@ class PharmacyOrderModel {
       'isPaymentRecieved': isPaymentRecieved,
       'productBillPdf': productBillPdf,
       'paymentType': paymentType,
-       'description': description,
+      'description': description,
+      'commission': commission,
+      'commissionAmt': commissionAmt,
     };
   }
 
@@ -181,7 +191,6 @@ class PharmacyOrderModel {
       'isOrderPacked': isOrderPacked,
       'isOrderDelivered': isOrderDelivered,
       'isPaymentRecieved': isPaymentRecieved,
-
     };
   }
 
@@ -258,7 +267,11 @@ class PharmacyOrderModel {
           : null,
       paymentType:
           map['paymentType'] != null ? map['paymentType'] as String : null,
-           description: map['description'] != null ? map['description'] as String : null,     
+      description:
+          map['description'] != null ? map['description'] as String : null,
+            commission: map['commission'] != null ? map['commission'] as num : null,
+      commissionAmt:
+          map['commissionAmt'] != null ? map['commissionAmt'] as num : null,    
     );
   }
 }

@@ -6,12 +6,14 @@ import 'package:healthycart_pharmacy/core/custom/custom_alertbox/textfield_alert
 import 'package:healthycart_pharmacy/core/custom/custom_buttons_and_search/common_button.dart';
 import 'package:healthycart_pharmacy/core/custom/image_view/image_view.dart';
 import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
+import 'package:healthycart_pharmacy/core/custom/text_formfield/textformfield.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/application/provider/request_pharmacy_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharmacy_order_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/user_address_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/user_model.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/prescription_product_list.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/prescription_product_add_list.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/widget/address_card.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/widget/date_and_order_id.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/widget/product_list_widget.dart';
@@ -45,13 +47,11 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
               ConfirmAlertBoxWidget.showAlertConfirmBox(
                   context: context,
                   confirmButtonTap: () {
-                    EasyNavigation.pop(context: context);
                     orderProvider.clearFiledAndData();
+                    EasyNavigation.pop(context: context);
                   },
                   titleText: 'Remove all changes',
-                  subText: "Are you sure to undo all the changes?");
-            } else {
-              orderProvider.clearFiledAndData();
+                  subText: "Are you sure to Undo all the changes?");
             }
           },
           child: CustomScrollView(
@@ -64,14 +64,13 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                       ConfirmAlertBoxWidget.showAlertConfirmBox(
                           context: context,
                           confirmButtonTap: () {
-                            EasyNavigation.pop(context: context);
                             orderProvider.clearFiledAndData();
+                            EasyNavigation.pop(context: context);
                           },
                           titleText: 'Remove all changes',
-                          subText: "Are you sure to undo all the changes?");
+                          subText: "Are you sure to Undo all the changes?");
                     } else {
                       EasyNavigation.pop(context: context);
-                      orderProvider.clearFiledAndData();
                     }
                   }),
               SliverPadding(
@@ -150,46 +149,47 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                 iconSize: 28,
                                 iconColor: BColors.black,
                               ),
-                              if(orderData.description != '' || orderData.description != null)
-                              
-                              Column(
-                                children: [
-                                   const Gap(16),
-                                   
-                                 
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(color: BColors.offRed),
-                                        borderRadius: BorderRadius.circular(8)),
-                                    child: RichText(
-                                      text: TextSpan(children: [
-                                        TextSpan(
-                                          text: 'Customer Note : ',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(
-                                                  fontSize: 12,
-                                                ),
-                                        ),
-                                        TextSpan(
-                                            text: ' ${orderData.description}',
+                              if (orderData.description != '' &&
+                                  orderData.description != null)
+                                Column(
+                                  children: [
+                                    const Gap(16),
+                                    Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 16),
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: BColors.offRed),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: RichText(
+                                        text: TextSpan(children: [
+                                          TextSpan(
+                                            text: 'Customer Note : ',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .labelLarge!
+                                                .bodyMedium!
                                                 .copyWith(
-                                                    fontSize: 13,
-                                                    color: BColors.textBlack,
-                                                    fontWeight: FontWeight.w600)),
-
-                                      ]),
+                                                  fontSize: 12,
+                                                ),
+                                          ),
+                                          TextSpan(
+                                              text: ' ${orderData.description}',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelLarge!
+                                                  .copyWith(
+                                                      fontSize: 13,
+                                                      color: BColors.textBlack,
+                                                      fontWeight:
+                                                          FontWeight.w600)),
+                                        ]),
+                                      ),
                                     ),
-                                  ),
-                                  const Gap(8),
-                                ],
-                              ),
+                                    const Gap(8),
+                                  ],
+                                ),
                               Column(
                                 children: [
                                   const Divider(),
@@ -216,8 +216,7 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                             const Gap(8),
                                             Expanded(
                                               child: AddressCard(
-                                                  addressData:
-                                                      orderData.addresss!),
+                                                  addressData: orderData.addresss ?? UserAddressModel()),
                                             ),
                                           ],
                                         )
@@ -319,7 +318,7 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                         RowTextContainerWidget(
                                           text1: 'Total Discount :',
                                           text2:
-                                              "- ₹ ${orderProvider.totalAmount - orderProvider.totalFinalAmount}",
+                                              "- ₹ ${orderProvider.discountAmountAsDifference}",
                                           text1Color: BColors.textLightBlack,
                                           fontSizeText1: 12,
                                           fontSizeText2: 12,
@@ -387,7 +386,7 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                                     );
                                                   },
                                                   child: Text(
-                                                    'Add delivery Charge',
+                                                    'Add Delivery Charge',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     maxLines: 1,
@@ -396,10 +395,11 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                                         .bodyLarge!
                                                         .copyWith(
                                                           color:
-                                                              BColors.darkblue,
+                                                              BColors.buttonRedShade,
                                                           decoration:
                                                               TextDecoration
                                                                   .underline,
+
                                                           fontSize: 12,
                                                           fontWeight:
                                                               FontWeight.w600,
@@ -450,7 +450,21 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                           color: Colors.white,
                                           fontWeight: FontWeight.w700),
                                 ),
-                              const Gap(12),
+                               const Gap(12),
+                              if (orderData.productDetails?.length !=
+                                  orderProvider.pharmacyUserProducts.length)
+                                Column(
+                                  children: [
+                                    TextfieldWidget(
+                                      hintText:
+                                          'Leave a note if there is any changes from the prescription.',
+                                      textInputAction: TextInputAction.done,
+                                      controller: orderProvider.reasonController,
+                                      maxlines: 4,
+                                    ),
+                                    const Divider(),
+                                  ],
+                                ),
                               UserDetailsContainer(
                                 userData: orderData.userDetails ?? UserModel(),
                               ),
@@ -518,11 +532,8 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                     width: 136,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        if (orderProvider
-                                            .pharmacyUserProducts.isEmpty) {
-                                          return CustomToast.errorToast(
-                                              text:
-                                                  "Can't approve since there is no items added.");
+                                        if (orderProvider.pharmacyUserProducts.isEmpty) {
+                                          return CustomToast.errorToast( text: "Can't approve since there is no items added.");
                                         }
                                         ConfirmAlertBoxWidget
                                             .showAlertConfirmBox(
@@ -534,14 +545,12 @@ class PrescriptionOrderDetailsScreen extends StatelessWidget {
                                                   orderProvider
                                                       .updateNewOrderDetails(
                                                           context: context,
-                                                          productData:
-                                                              orderData,
+                                                          productData: orderData,
                                                           cancelOrApprove: 1);
                                                 },
                                                 titleText: 'Confirm the order',
                                                 subText: (orderData
-                                                            .deliveryType ==
-                                                        'Home')
+                                                            .deliveryType =='Home')
                                                     ? 'Please tap yes to confirm this order as a Home Delivery order.'
                                                     : 'Please tap yes to confirm this order as a Pick-Up at pharmacy order.');
                                       },

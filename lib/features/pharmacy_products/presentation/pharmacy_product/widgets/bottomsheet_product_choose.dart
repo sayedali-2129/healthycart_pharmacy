@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/application/pharmacy_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_product/widgets/forms_widget/equipment_add_form.dart';
@@ -29,50 +30,59 @@ class ChooseProductBottomSheet extends StatelessWidget {
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              PharmacyProductChooseButton(
-                buttonTap: () {
-                     pharmacyProvider.clearProductDetails();
-                  EasyNavigation.push(
-                      context: context,
-                      page: const MedicineAddFormWidget(
-                        typeOfProduct: 'Medicine',
-                        isEditing: false,
-                      ));
-                },
-                text: 'Medicine',
-                icon: Icons.medication,
-                iconColor: BColors.mainlightColor,
+              const Gap(4),
+              Expanded(
+                child: PharmacyProductChooseButton(
+                  buttonTap: () {
+                    pharmacyProvider.clearProductDetails();
+                    EasyNavigation.push(
+                        context: context,
+                        page: const MedicineAddFormWidget(
+                          typeOfProduct: 'Medicine',
+                          isEditing: false,
+                        ));
+                  },
+                  text: 'Medicine',
+                  icon: Icons.medication,
+                  iconColor: BColors.mainlightColor,
+                ),
               ),
-              PharmacyProductChooseButton(
-                buttonTap: () {
-                  pharmacyProvider.clearProductDetails();
-                  EasyNavigation.push(
-                      context: context,
-                      page: const EquipmentAddFormWidget(
-                        typeOfProduct: 'Equipment',
-                        isEditing: false,
-                      ));
-                },
-                text: 'Equipment',
-                icon: Icons.devices_other_rounded,
-                iconColor: BColors.mainlightColor,
+              const Gap(4),
+              Expanded(
+                child: PharmacyProductChooseButton(
+                  buttonTap: () {
+                    pharmacyProvider.clearProductDetails();
+                    EasyNavigation.push(
+                        context: context,
+                        page: const EquipmentAddFormWidget(
+                          typeOfProduct: 'Equipment',
+                          isEditing: false,
+                        ));
+                  },
+                  text: 'Equipment',
+                  icon: Icons.devices_other_rounded,
+                  iconColor: BColors.mainlightColor,
+                ),
               ),
-              PharmacyProductChooseButton(
-                buttonTap: () {
-                     pharmacyProvider.clearProductDetails();
-                  EasyNavigation.push(
-                      context: context,
-                      page: const OtherAddFormWidget(
-                        typeOfProduct: "Other's",
-                        isEditing: false,
-                      ));
-                },
-                text: "Other",
-                icon: Icons.shopping_bag_rounded,
-                iconColor: BColors.mainlightColor,
+              const Gap(4),
+              Expanded(
+                child: PharmacyProductChooseButton(
+                  buttonTap: () {
+                    pharmacyProvider.clearProductDetails();
+                    EasyNavigation.push(
+                        context: context,
+                        page: const OtherAddFormWidget(
+                          typeOfProduct: "Other's",
+                          isEditing: false,
+                        ));
+                  },
+                  text: "Other",
+                  icon: Icons.shopping_bag_rounded,
+                  iconColor: BColors.mainlightColor,
+                ),
               ),
+              const Gap(4),
             ],
           ),
         ],

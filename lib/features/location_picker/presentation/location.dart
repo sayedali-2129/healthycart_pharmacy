@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/core/custom/custom_buttons_and_search/common_button.dart';
+import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/location_picker/application/location_provider.dart';
 import 'package:healthycart_pharmacy/features/location_picker/presentation/location_search.dart';
@@ -53,6 +54,9 @@ class LocationPage extends StatelessWidget {
                             EasyNavigation.push(
                                 context: context,
                                 page: const UserLocationSearchWidget());
+                          }else {
+                            CustomToast.errorToast(
+                                text: 'Please enable location.');
                           }
                         });
                       },

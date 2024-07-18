@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:healthycart_pharmacy/core/di/injection.dart';
+import 'package:healthycart_pharmacy/core/services/foreground_notification.dart';
 import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/application/pharmacy_form_provider.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_banner/application/add_banner_provider.dart';
@@ -13,12 +15,30 @@ import 'package:healthycart_pharmacy/main.dart';
 import 'package:healthycart_pharmacy/utils/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-class App extends StatelessWidget {
-  const App({super.key});
+class App extends StatefulWidget {
+  const App(
+      {super.key,
+      required this.androidNotificationChannel,
+      required this.flutterLocalNotificationsPlugin});
+  final AndroidNotificationChannel androidNotificationChannel;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  @override
+  void initState() {
+    ForegroundNotificationService.foregroundNotitficationInit(
+        channel: widget.androidNotificationChannel,
+        flutterLocalNotificationsPlugin:
+            widget.flutterLocalNotificationsPlugin);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-   
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -33,29 +53,35 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => sl<AddBannerProvider>(),
         ),
-       ChangeNotifierProvider(
+        ChangeNotifierProvider(
           create: (context) => sl<LocationProvider>(),
         ),
-
-      ChangeNotifierProvider(
+        ChangeNotifierProvider(
           create: (context) => sl<AuthenticationProvider>(),
-        ), 
-        
-      ChangeNotifierProvider(
+        ),
+        ChangeNotifierProvider(
           create: (context) => sl<PendingProvider>(),
-        ), 
-       ChangeNotifierProvider(
+        ),
+        ChangeNotifierProvider(
           create: (context) => sl<ProfileProvider>(),
         ),
       ],
-        child: MaterialApp(
+      child: MaterialApp(
+          builder: (context, child) => Overlay(
+                initialEntries: [
+                  if (child != null) ...[
+                    OverlayEntry(
+                      builder: (context) => child,
+                    ),
+                  ],
+                ],
+              ),
           navigatorKey: navigatorKey,
-            debugShowCheckedModeBanner: false,
-            themeMode: ThemeMode.light,
-            theme: BAppTheme.lightTheme,
-            darkTheme: BAppTheme.darkTheme,
-            home: const SplashScreen()),
-      
+          debugShowCheckedModeBanner: false,
+          themeMode: ThemeMode.light,
+          theme: BAppTheme.lightTheme,
+          darkTheme: BAppTheme.darkTheme,
+          home: const SplashScreen()),
     );
   }
 }

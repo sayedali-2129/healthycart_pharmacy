@@ -56,7 +56,7 @@ class AddressCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const Gap(5),
+                  const Gap(4),
                   Text(
                     '${addressData.address ?? 'Address'} ${addressData.landmark}, pincode : ${addressData.pincode}',
                     // overflow: TextOverflow.ellipsis,
@@ -66,7 +66,7 @@ class AddressCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         fontSize: 12),
                   ),
-                  const Gap(5)
+                  const Gap(4)
                 ],
               ),
               Text(

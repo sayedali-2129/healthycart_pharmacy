@@ -5,12 +5,13 @@ class DayTransactionModel {
   num? onlinePayment;
   num? offlinePayment;
   num? totalAmount;
-  DayTransactionModel({
-    this.createdAt,
-    this.onlinePayment,
-    this.offlinePayment,
-    this.totalAmount,
-  });
+  num? commission;
+  DayTransactionModel(
+      {this.createdAt,
+      this.onlinePayment,
+      this.offlinePayment,
+      this.totalAmount,
+      this.commission});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -18,6 +19,7 @@ class DayTransactionModel {
       'onlinePayment': onlinePayment,
       'offlinePayment': offlinePayment,
       'totalAmount': totalAmount,
+      'commission': commission,
     };
   }
 
@@ -31,6 +33,7 @@ class DayTransactionModel {
           map['offlinePayment'] != null ? map['offlinePayment'] as num : null,
       totalAmount:
           map['totalAmount'] != null ? map['totalAmount'] as num : null,
+      commission: map['commission'] != null ? map['commission'] as num : null,
     );
   }
 
@@ -39,12 +42,14 @@ class DayTransactionModel {
     num? onlinePayment,
     num? offlinePayment,
     num? totalAmount,
+    num? commission,
   }) {
     return DayTransactionModel(
       createdAt: createdAt ?? this.createdAt,
       onlinePayment: onlinePayment ?? this.onlinePayment,
       offlinePayment: offlinePayment ?? this.offlinePayment,
       totalAmount: totalAmount ?? this.totalAmount,
+      commission: commission ?? this.commission,
     );
   }
 }

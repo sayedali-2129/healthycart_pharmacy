@@ -10,6 +10,7 @@ import 'package:healthycart_pharmacy/core/services/get_network_time.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/i_order_facade.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/day_transaction_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharmacy_order_model.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharmacy_transaction.dart';
 
 import 'package:injectable/injectable.dart';
 
@@ -126,7 +127,7 @@ class IOrderImpl implements IOrderFacade {
     String? dayTransactionDate,
   }) async {
     try {
-      /* ------------------------------ ACCEPT ORDER ------------------------------ */
+      /* ------------------------------ ACCEPT ORDER AND PACKING AND DELIVERY ------------------------------ */ 
       if (orderProducts.orderStatus != 2) {
         await _firebaseFirestore
             .collection(FirebaseCollections.pharmacyOrder)
@@ -138,7 +139,7 @@ class IOrderImpl implements IOrderFacade {
         final formattedDate =
             await _networkTimeService.getFormattedNetworkTime();
 
-        final bookingDoc = _firebaseFirestore
+        final orderDoc = _firebaseFirestore
             .collection(FirebaseCollections.pharmacyOrder)
             .doc(orderId);
         final transactionDoc = _firebaseFirestore
@@ -153,29 +154,27 @@ class IOrderImpl implements IOrderFacade {
             .collection(FirebaseCollections.pharmacy)
             .doc(pharmacyId);
 
-        batch.update(bookingDoc, orderProducts.toMap());
+        batch.update(orderDoc, orderProducts.toMap());
         batch.update(transactionDoc, {
-          'totalTransactionAmt':
-              FieldValue.increment(orderProducts.finalAmount!)
+          'totalTransactionAmt':FieldValue.increment(orderProducts.finalAmount!),
+           'totalCommissionPending': FieldValue.increment(orderProducts.commissionAmt!)   
         });
 
         if (orderProducts.paymentType == 'Online') {
           batch.update(transactionDoc, {
-            'onlinePayment':
-                FieldValue.increment(orderProducts.finalAmount ?? 0)
+            'onlinePayment':FieldValue.increment(orderProducts.finalAmount ?? 0)
           });
         } else {
           batch.update(transactionDoc, {
-            'offlinePayment':
-                FieldValue.increment(orderProducts.finalAmount ?? 0)
+            'offlinePayment':FieldValue.increment(orderProducts.finalAmount ?? 0)
           });
         }
         batch.update(pharmacyDoc, {'dayTransaction': formattedDate});
 
         if (dayTransactionDate == formattedDate) {
-          log('same');
           batch.update(dayTransactionDoc, {
             'totalAmount': FieldValue.increment(orderProducts.finalAmount ?? 0),
+            'commission': FieldValue.increment(orderProducts.commissionAmt ?? 0),
             'offlinePayment': orderProducts.paymentType != 'Online'
                 ? FieldValue.increment(orderProducts.finalAmount ?? 0)
                 : FieldValue.increment(0),
@@ -278,6 +277,22 @@ class IOrderImpl implements IOrderFacade {
       return right(productList);
     } on FirebaseException catch (e) {
       return left(MainFailure.firebaseException(errMsg: e.message.toString()));
+    } catch (e) {
+      return left(MainFailure.generalException(errMsg: e.toString()));
+    }
+  }
+
+  /* ------------------------- GET TRANSACTION DETAIL ------------------------- */
+  @override
+  FutureResult<PharmacyTransactionModel> getTransactionData(
+      {required String pharmacyId}) async {
+    try {
+      final doc = await _firebaseFirestore
+          .collection(FirebaseCollections.transactionCollection)
+          .where('id', isEqualTo: pharmacyId)
+          .get();
+
+      return right(PharmacyTransactionModel.fromMap(doc.docs.single.data()));
     } catch (e) {
       return left(MainFailure.generalException(errMsg: e.toString()));
     }

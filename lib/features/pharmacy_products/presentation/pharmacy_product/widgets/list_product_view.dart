@@ -38,7 +38,7 @@ class ProductListWidget extends StatelessWidget {
                   children: [
                     Container(
                       height: 96,
-                      width: 104,
+                      width: 96,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -71,7 +71,7 @@ class ProductListWidget extends StatelessWidget {
                                   .textTheme
                                   .bodyLarge!
                                   .copyWith(
-                                      fontSize: 15,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w700),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -84,8 +84,9 @@ class ProductListWidget extends StatelessWidget {
                                       .textTheme
                                       .labelLarge!
                                       .copyWith(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700),
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: BColors.textLightBlack),
                                 ),
                                 TextSpan(
                                   text: pharmacyProvider
@@ -94,8 +95,8 @@ class ProductListWidget extends StatelessWidget {
                                       .textTheme
                                       .labelLarge!
                                       .copyWith(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600),
                                 ),
                               ]),
                             ),
@@ -108,8 +109,9 @@ class ProductListWidget extends StatelessWidget {
                                     .textTheme
                                     .labelLarge!
                                     .copyWith(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700),
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: BColors.textLightBlack),
                               ),
                               TextSpan(
                                 text: pharmacyProvider
@@ -119,8 +121,8 @@ class ProductListWidget extends StatelessWidget {
                                     .labelLarge!
                                     .copyWith(
                                         color: BColors.mainlightColor,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600),
                               ),
                             ])),
                             const Gap(4),
@@ -135,8 +137,9 @@ class ProductListWidget extends StatelessWidget {
                                             .textTheme
                                             .labelLarge!
                                             .copyWith(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w700),
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w600,
+                                                color: BColors.textLightBlack),
                                       ),
                                       TextSpan(
                                           text: "₹ ",
@@ -144,9 +147,9 @@ class ProductListWidget extends StatelessWidget {
                                               .textTheme
                                               .labelLarge!
                                               .copyWith(
-                                                  fontSize: 13,
+                                                  fontSize: 12,
                                                   color: BColors.green,
-                                                  fontWeight: FontWeight.w700)),
+                                                  fontWeight: FontWeight.w600)),
                                       TextSpan(
                                         text:
                                             "${pharmacyProvider.productList[index].productMRPRate} ",
@@ -154,9 +157,9 @@ class ProductListWidget extends StatelessWidget {
                                             .textTheme
                                             .labelLarge!
                                             .copyWith(
-                                                fontSize: 13,
+                                                fontSize: 12,
                                                 color: BColors.green,
-                                                fontWeight: FontWeight.w700),
+                                                fontWeight: FontWeight.w600),
                                       ),
                                     ]),
                                   )
@@ -168,8 +171,9 @@ class ProductListWidget extends StatelessWidget {
                                           .textTheme
                                           .labelLarge!
                                           .copyWith(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w700),
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w700,
+                                              color: BColors.textLightBlack),
                                     ),
                                     TextSpan(
                                         text: "₹ ",
@@ -177,21 +181,21 @@ class ProductListWidget extends StatelessWidget {
                                             .textTheme
                                             .labelLarge!
                                             .copyWith(
-                                                fontSize: 13,
+                                                fontSize: 12,
                                                 color: BColors.green,
                                                 fontWeight: FontWeight.w700)),
                                     TextSpan(
                                       text:
-                                          "${pharmacyProvider.productList[index].productDiscountRate}",
+                                          "${pharmacyProvider.productList[index].productDiscountRate} ",
                                       style: Theme.of(context)
                                           .textTheme
                                           .labelLarge!
                                           .copyWith(
                                               color: BColors.green,
-                                              fontSize: 13,
+                                              fontSize: 12,
                                               fontWeight: FontWeight.w700),
                                     ),
-                                    const TextSpan(text: '  '),
+                                    
                                     TextSpan(
                                       text:
                                           "${pharmacyProvider.productList[index].productMRPRate}",
@@ -218,8 +222,8 @@ class ProductListWidget extends StatelessWidget {
                                             '${pharmacyProvider.productList[index].discountPercentage}% off',
                                         textColor: BColors.white,
                                         boxColor: BColors.offRed,
-                                        width: 74,
-                                        height: 26,
+                                        width: 72,
+                                        height: 24,
                                       )
                                     : const SizedBox(
                                         height: 26,
@@ -233,7 +237,7 @@ class ProductListWidget extends StatelessWidget {
                                           .textTheme
                                           .labelLarge!
                                           .copyWith(
-                                              fontSize: 12,
+                                              fontSize: 11,
                                               fontWeight: FontWeight.w600),
                                     ),
                                     const Gap(8),

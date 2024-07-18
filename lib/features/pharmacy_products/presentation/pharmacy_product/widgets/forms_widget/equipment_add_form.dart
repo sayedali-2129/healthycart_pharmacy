@@ -280,7 +280,7 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                     ),
                                   ),
                                   Flexible(
-                                    flex: 1,
+                                    flex: 2,
                                     fit: FlexFit.loose,
                                     child: DropDownProductButton(
                                         value: pharmacyProvider
@@ -317,7 +317,7 @@ class EquipmentAddFormWidget extends StatelessWidget {
                                     ),
                                   ),
                                   Flexible(
-                                    flex: 1,
+                                    flex: 2,
                                     fit: FlexFit.loose,
                                     child: DropDownProductButton(
                                         value: pharmacyProvider

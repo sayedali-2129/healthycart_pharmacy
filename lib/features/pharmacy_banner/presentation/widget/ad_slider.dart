@@ -77,7 +77,7 @@ class AdSlider extends StatelessWidget {
                                 image:
                                     addBannerProvider.bannerList[index].image ??
                                         '',
-                                fit: BoxFit.contain,
+                                fit: BoxFit.cover,
                               )),
                         ),
                     ),

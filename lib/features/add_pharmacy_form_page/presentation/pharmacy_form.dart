@@ -8,6 +8,7 @@ import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/custom/text_formfield/textformfield.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/core/general/validator.dart';
+import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/application/pharmacy_form_provider.dart';
 import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/domain/model/pharmacy_model.dart';
 import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/presentation/widgets/container_image_widget.dart';
@@ -46,14 +47,13 @@ class PharmacyFormScreen extends StatelessWidget {
               FocusScope.of(context).unfocus();
             },
             child: PopScope(
-              canPop:(pharmacyProvider.pdfUrl != null),
+              canPop: (pharmacyProvider.pdfUrl != null),
               onPopInvoked: (didPop) {
                 if (pharmacyProvider.pdfUrl == null) {
-                              CustomToast.sucessToast(text: 'Please add PDF');
-                              return;
-                            }
+                  CustomToast.sucessToast(text: 'Please add PDF');
+                  return;
+                }
               },
-
               child: CustomScrollView(
                 slivers: [
                   (isEditing == true)
@@ -83,7 +83,8 @@ class PharmacyFormScreen extends StatelessWidget {
                                         top: 8,
                                       ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
                                         children: [
                                           Icon(
                                             Icons.location_on_outlined,
@@ -93,16 +94,30 @@ class PharmacyFormScreen extends StatelessWidget {
                                             width: 176,
                                             child: GestureDetector(
                                               onTap: () {
+                                                LoadingLottie.showLoading(
+                                                    context: context,
+                                                    text:
+                                                        'Getting Location...');
                                                 context
                                                     .read<LocationProvider>()
-                                                    .getLocationPermisson();
-                                                Navigator.of(context)
-                                                    .push(MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const UserLocationSearchWidget(
-                                                          isHospitaEditProfile:
-                                                              true),
-                                                ));
+                                                    .getLocationPermisson()
+                                                    .then(
+                                                  (value) {
+                                                    if (value == false) {
+                                                      CustomToast.errorToast(
+                                                          text:
+                                                              'Please enable location.');
+                                                      return;
+                                                    }
+                                                    EasyNavigation.pop(
+                                                        context: context);
+                                                    EasyNavigation.push(
+                                                      context: context,
+                                                      page: const UserLocationSearchWidget(
+                                                          isPharmacyEditProfile: true),
+                                                    );
+                                                  },
+                                                );
                                               },
                                               child: Text(
                                                 "${authProvider.pharmacyDataFetched?.placemark?.localArea},${authProvider.pharmacyDataFetched?.placemark?.district},${authProvider.pharmacyDataFetched?.placemark?.state}",
@@ -111,8 +126,8 @@ class PharmacyFormScreen extends StatelessWidget {
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
                                                     color: BColors.darkblue,
-                                                    decoration:
-                                                        TextDecoration.underline),
+                                                    decoration: TextDecoration
+                                                        .underline),
                                               ),
                                             ),
                                           ),
@@ -123,7 +138,8 @@ class PharmacyFormScreen extends StatelessWidget {
                               const Gap(24),
                               const ImageFormContainerWidget(),
                               const Gap(16),
-                              const DividerWidget(text: 'Tap above to add image'),
+                              const DividerWidget(
+                                  text: 'Tap above to add image'),
                               const Gap(24),
                               const TextAboveFormFieldWidget(
                                   starText: true, text: "Phone Number"),
@@ -141,7 +157,7 @@ class PharmacyFormScreen extends StatelessWidget {
                                 starText: true,
                                 text: "Pharmacy Name",
                               ),
-              
+
                               TextfieldWidget(
                                 hintText: 'Enter Pharmacy name',
                                 textInputAction: TextInputAction.next,
@@ -153,7 +169,7 @@ class PharmacyFormScreen extends StatelessWidget {
                                     pharmacyProvider.pharmacyNameController,
                               ),
                               const Gap(8),
-              
+
                               const TextAboveFormFieldWidget(
                                   starText: true, text: "Proprietor Name"),
                               TextfieldWidget(
@@ -161,11 +177,11 @@ class PharmacyFormScreen extends StatelessWidget {
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.name,
                                 validator: BValidator.validate,
-                                controller:
-                                    pharmacyProvider.pharmacyOwnerNameController,
+                                controller: pharmacyProvider
+                                    .pharmacyOwnerNameController,
                               ),
                               const Gap(8),
-              
+
                               const TextAboveFormFieldWidget(
                                   starText: true, text: "Pharmacy email"),
                               TextfieldWidget(
@@ -177,7 +193,7 @@ class PharmacyFormScreen extends StatelessWidget {
                                     pharmacyProvider.pharmacyEmailController,
                               ),
                               const Gap(8),
-              
+
                               const TextAboveFormFieldWidget(
                                   starText: true, text: "Pharmacy Address"),
                               TextfieldWidget(
@@ -199,8 +215,10 @@ class PharmacyFormScreen extends StatelessWidget {
                                   },
                                   style: ElevatedButton.styleFrom(
                                       shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8)),
-                                      backgroundColor: BColors.buttonLightColor),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      backgroundColor:
+                                          BColors.buttonLightColor),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -222,7 +240,7 @@ class PharmacyFormScreen extends StatelessWidget {
                                 ),
                               ),
                               const Gap(16),
-              
+
                               (pharmacyProvider.pdfUrl != null)
                                   ? Center(
                                       child: PDFShowerWidget(
@@ -254,20 +272,22 @@ class PharmacyFormScreen extends StatelessWidget {
                                       return;
                                     }
                                     LoadingLottie.showLoading(
-                                        context: context, text: 'Please wait...');
+                                        context: context,
+                                        text: 'Please wait...');
                                     if (pharmacyModel?.pharmacyRequested != 2) {
                                       // here we are checking if the hospital was not in review
                                       await pharmacyProvider
                                           .saveImage()
                                           .then((value) async {
-                                        await pharmacyProvider.addPharmacyDetails(
-                                            context: context);
+                                        await pharmacyProvider
+                                            .addPharmacyDetails(
+                                                context: context);
                                       });
                                     } else {
                                       if (pharmacyProvider.imageUrl == null) {
                                         await pharmacyProvider.saveImage();
                                       }
-              
+
                                       await pharmacyProvider.updatePharmacyForm(
                                         context: context,
                                       );

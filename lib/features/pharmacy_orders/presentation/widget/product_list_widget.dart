@@ -66,7 +66,7 @@ class ProductDetailsWidget extends StatelessWidget {
                               .textTheme
                               .labelSmall!
                               .copyWith(
-                                  fontWeight: FontWeight.w600, fontSize: 11),
+                                  fontWeight: FontWeight.w600, fontSize: 11,),
                         ),
                         TextSpan(
                             text: productData.productData?.productBrandName ??

@@ -35,7 +35,7 @@ class PercentageShowContainerWidget extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .labelLarge!
-                .copyWith(color: textColor),
+                .copyWith(color: textColor, fontSize: 12),
           ),
         ),
       ),

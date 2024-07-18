@@ -20,16 +20,15 @@ class DoctorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pharmacyProvider = Provider.of<PharmacyProvider>(context, listen: false);
+    final pharmacyProvider =
+        Provider.of<PharmacyProvider>(context, listen: false);
     final mainProvider =
         Provider.of<AuthenticationProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (pharmacyProvider.pharmacyCategoryIdList.isEmpty) {
-        pharmacyProvider.pharmacyCategoryIdList =
-            mainProvider 
-                   .pharmacyDataFetched!
-                    .selectedCategoryId ??
-                [];// here we are passing the list of category id in the hospital admin side
+        pharmacyProvider.pharmacyCategoryIdList = mainProvider
+                .pharmacyDataFetched!.selectedCategoryId ??
+            []; // here we are passing the list of category id in the hospital admin side
         await pharmacyProvider.getpharmacyCategory();
       }
     });
@@ -133,9 +132,9 @@ class DoctorScreen extends StatelessWidget {
                         return VerticalImageText(
                             onTap: () {
                               pharmacyProvider.selectedProductType(
-                                  catId: productCategory.id ?? 'No ID',
-                                  selectedCategory: productCategory.category,
-                                  );
+                                catId: productCategory.id ?? 'No ID',
+                                selectedCategory: productCategory.category,
+                              );
                               EasyNavigation.push(
                                 type: PageTransitionType.rightToLeft,
                                 context: context,
@@ -143,20 +142,23 @@ class DoctorScreen extends StatelessWidget {
                               );
                             },
                             onLongPress: () {
-                              LoadingLottie.showLoading(
-                                  context: context, text: 'Please wait..');
                               ConfirmAlertBoxWidget.showAlertConfirmBox(
                                   context: context,
                                   titleText: 'Confirm to delete',
                                   subText: "Are you sure you want to delete?",
                                   confirmButtonTap: () async {
+                                    LoadingLottie.showLoading(
+                                        context: context,
+                                        text: 'Please wait..');
                                     await pharmacyProvider
                                         .deletePharmacyCategory(
                                             index: index - 1,
                                             category: productCategory)
-                                        .then((value) {
-                                      EasyNavigation.pop(context: context);
-                                    });
+                                        .whenComplete(
+                                      () {
+                                        EasyNavigation.pop(context: context);
+                                      },
+                                    );
                                   });
                             },
                             image: productCategory.image,

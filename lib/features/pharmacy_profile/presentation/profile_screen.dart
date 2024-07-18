@@ -8,6 +8,7 @@ import 'package:healthycart_pharmacy/features/authenthication/application/authen
 import 'package:healthycart_pharmacy/features/pharmacy_profile/application/profile_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/product_list_profile/product_list.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/transaction/payment_history_tab.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/widget/contact_us_sheet.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/widget/profile_header_widget.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/widget/profile_main_container_widget.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
@@ -17,7 +18,6 @@ import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Consumer2<AuthenticationProvider, ProfileProvider>(
@@ -121,6 +121,25 @@ class ProfileScreen extends StatelessWidget {
                         sideChild: Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Icon(Icons.arrow_forward_ios),
+                        )),
+                  ),
+                   const Gap(4),
+                  GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        backgroundColor: BColors.white,
+                        barrierColor: BColors.black.withOpacity(0.5),
+                        elevation: 5,
+                        showDragHandle: true,
+                        context: context,
+                        builder: (context) =>  ContactUsBottomSheet(message:  'Hi, I am reaching out from ${authProviderPharamacyDetails.pharmacyDataFetched?.pharmacyName}',),
+                      );
+                    },
+                    child: const ProfileMainContainer(
+                        text: 'Contact Us',
+                        sideChild: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(Icons.call),
                         )),
                   ),
                   const Gap(4),

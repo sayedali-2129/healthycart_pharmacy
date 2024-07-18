@@ -91,7 +91,6 @@ class PharmacyProvider extends ChangeNotifier {
 
   void removingFromUniqueCategoryList() {
     for (var element in pharmacyCategoryList) {
-      // removing selected category
       pharmacyCategoryUniqueList.removeWhere((cat) {
         return cat.id == element.id;
       });
@@ -479,7 +478,7 @@ class PharmacyProvider extends ChangeNotifier {
       productImage: imageProductUrlList,
       typeOfProduct: typeOfProduct,
       productMRPRate: num.tryParse(productMRPController.text),
-      productDiscountRate: num.tryParse(productDiscountRateController.text),
+      productDiscountRate:num.tryParse(productDiscountRateController.text),
       discountPercentage: discountPercentage,
     //  totalQuantity: int.parse(totalQuantityController.text),
       storingDegree: storeBelowController.text,
