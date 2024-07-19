@@ -1,4 +1,5 @@
 import 'package:healthycart_pharmacy/core/general/typdef.dart';
+import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/domain/model/pharmacy_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/domain/model/transaction_model.dart';
 
@@ -7,7 +8,7 @@ abstract class IProfileFacade {
     required bool isPharmacyON,
     required String pharmacyId,
   });
-    FutureResult<String> setPharmacyHomeDelivery({
+  FutureResult<String> setPharmacyHomeDelivery({
     required bool isHomeDeliveryON,
     required String pharmacyId,
   });
@@ -15,9 +16,12 @@ abstract class IProfileFacade {
     required String pharmacyId,
     required String? searchText,
   });
-   void clearFetchData();
+  void clearFetchData();
 
- FutureResult<List<TransferTransactionsModel>> getAdminTransactionList(
+  FutureResult<List<TransferTransactionsModel>> getAdminTransactionList(
       {required String pharmacyId});
   void clearTransactionData();
+
+  FutureResult<String> addBankDetails(
+      {required PharmacyModel bankDetails, required String pharmacyId});
 }

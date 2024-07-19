@@ -4,11 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
+import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/domain/model/pharmacy_model.dart';
+import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/domain/i_profile_facade.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/domain/model/transaction_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 @injectable
 class ProfileProvider extends ChangeNotifier {
@@ -17,13 +20,15 @@ class ProfileProvider extends ChangeNotifier {
   bool isPharmacyON = false;
   bool isHomeDeliveryON = false;
 
+  final bankFormKey = GlobalKey<FormState>();
+
   void pharmacyStatus(bool status) {
     isPharmacyON = status;
     notifyListeners();
   }
 
   Future<void> setActivePharmacy() async {
-      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     final result = await iProfileFacade.setActivePharmacy(
         isPharmacyON: isPharmacyON, pharmacyId: pharmacyId ?? '');
     result.fold((failure) {
@@ -33,12 +38,14 @@ class ProfileProvider extends ChangeNotifier {
     });
     notifyListeners();
   }
+
   void homeDeliveryStatus(bool status) {
     isHomeDeliveryON = status;
     notifyListeners();
   }
+
   Future<void> setPharmacyHomeDelivery() async {
-      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     final result = await iProfileFacade.setPharmacyHomeDelivery(
         isHomeDeliveryON: isHomeDeliveryON, pharmacyId: pharmacyId ?? '');
     result.fold((failure) {
@@ -62,7 +69,7 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<void> getPharmacyProductDetails({String? searchText}) async {
-      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchLoading = true;
     notifyListeners();
     final result = await iProfileFacade.getPharmacyAllProductDetails(
@@ -96,10 +103,11 @@ class ProfileProvider extends ChangeNotifier {
 
   List<TransferTransactionsModel> adminTransactionList = [];
   Future<void> getAdminTransactions() async {
-      final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchLoading = true;
     notifyListeners();
-    final result = await iProfileFacade.getAdminTransactionList(pharmacyId: pharmacyId ?? '');
+    final result = await iProfileFacade.getAdminTransactionList(
+        pharmacyId: pharmacyId ?? '');
     result.fold((err) {
       log('ERROR :;  ${err.errMsg}');
     }, (succes) {
@@ -109,8 +117,9 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void transactionInit(
-      {required ScrollController scrollController,}) {
+  void transactionInit({
+    required ScrollController scrollController,
+  }) {
     scrollController.addListener(
       () {
         if (scrollController.position.atEdge &&
@@ -128,4 +137,45 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /* ---------------------------- ADD BANK DETAILS ---------------------------- */
+
+  final accountHolderNameController = TextEditingController();
+  final bankNameController = TextEditingController();
+  final accountNumberController = TextEditingController();
+  final ifscCodeController = TextEditingController();
+  Future<void> addBankDetails({required BuildContext context}) async {
+    PharmacyModel pharmacyModel = PharmacyModel(
+        accountHolderName: accountHolderNameController.text,
+        bankName: bankNameController.text,
+        accountNumber: accountNumberController.text,
+        ifscCode: ifscCodeController.text);
+    final pharmacyId =
+        context.read<AuthenticationProvider>().pharmacyDataFetched!.id!;
+
+    final result = await iProfileFacade.addBankDetails(
+        bankDetails: pharmacyModel, pharmacyId: pharmacyId);
+    result.fold((err) {
+      log('ERROR :: ${err.errMsg}');
+      CustomToast.errorToast(text: 'Bank details update failed');
+    }, (success) {
+      CustomToast.sucessToast(text: success);
+    });
+    notifyListeners();
+  }
+
+  void setBankEditData(PharmacyModel editData) {
+    accountHolderNameController.text = editData.accountHolderName ?? '';
+    bankNameController.text = editData.bankName ?? '';
+    accountNumberController.text = editData.accountNumber ?? '';
+    ifscCodeController.text = editData.ifscCode ?? '';
+    notifyListeners();
+  }
+
+  void clearControllers() {
+    accountHolderNameController.clear();
+    bankNameController.clear();
+    accountNumberController.clear();
+    ifscCodeController.clear();
+    notifyListeners();
+  }
 }

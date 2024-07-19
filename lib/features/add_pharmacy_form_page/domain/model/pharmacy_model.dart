@@ -22,6 +22,10 @@ class PharmacyModel {
   final String? fcmToken;
   final String? email;
   final String? dayTransaction;
+  String? accountHolderName;
+  String? bankName;
+  String? ifscCode;
+  String? accountNumber;
   PharmacyModel({
     this.id,
     this.phoneNo,
@@ -42,6 +46,10 @@ class PharmacyModel {
     this.pharmacyKeywords,
     this.rejectionReason,
     this.dayTransaction,
+    this.accountHolderName,
+    this.bankName,
+    this.ifscCode,
+    this.accountNumber,
   });
 
   PharmacyModel copyWith({
@@ -64,6 +72,10 @@ class PharmacyModel {
     String? email,
     String? rejectionReason,
     String? dayTransaction,
+    String? accountHolderName,
+    String? bankName,
+    String? ifscCode,
+    String? accountNumber,
   }) {
     return PharmacyModel(
       id: id ?? this.id,
@@ -86,6 +98,10 @@ class PharmacyModel {
       pharmacyKeywords: pharmacyKeywords ?? this.pharmacyKeywords,
       rejectionReason: rejectionReason ?? this.rejectionReason,
       dayTransaction: dayTransaction ?? this.dayTransaction,
+      accountHolderName: accountHolderName ?? this.accountHolderName,
+      bankName: bankName ?? this.bankName,
+      ifscCode: ifscCode ?? this.ifscCode,
+      accountNumber: accountNumber ?? this.accountNumber,
     );
   }
 
@@ -110,9 +126,14 @@ class PharmacyModel {
       'fcmToken': fcmToken,
       'rejectionReason': rejectionReason,
       'dayTransaction': dayTransaction,
+      'accountHolderName': accountHolderName,
+      'bankName': bankName,
+      'ifscCode': ifscCode,
+      'accountNumber': accountNumber,
     };
   }
-    Map<String, dynamic> toFormMap() {
+
+  Map<String, dynamic> toFormMap() {
     return <String, dynamic>{
       'id': id,
       'phoneNo': phoneNo,
@@ -155,6 +176,15 @@ class PharmacyModel {
       'phoneNo': phoneNo,
       'fcmToken': fcmToken,
       'email': email,
+    };
+  }
+
+  Map<String, dynamic> toBankDetailsMap() {
+    return <String, dynamic>{
+      'accountHolderName': accountHolderName,
+      'bankName': bankName,
+      'ifscCode': ifscCode,
+      'accountNumber': accountNumber,
     };
   }
 
@@ -202,6 +232,13 @@ class PharmacyModel {
       dayTransaction: map['dayTransaction'] != null
           ? map['dayTransaction'] as String
           : null,
+      accountHolderName: map['accountHolderName'] != null
+          ? map['accountHolderName'] as String
+          : null,
+      bankName: map['bankName'] != null ? map['bankName'] as String : null,
+      ifscCode: map['ifscCode'] != null ? map['ifscCode'] as String : null,
+      accountNumber:
+          map['accountNumber'] != null ? map['accountNumber'] as String : null,
     );
   }
 }

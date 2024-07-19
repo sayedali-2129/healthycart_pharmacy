@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:healthycart_pharmacy/core/failures/main_failure.dart';
 import 'package:healthycart_pharmacy/core/general/firebase_collection.dart';
 import 'package:healthycart_pharmacy/core/general/typdef.dart';
+import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/domain/model/pharmacy_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/domain/model/pharmacy_product_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/domain/i_profile_facade.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/domain/model/transaction_model.dart';
@@ -105,6 +106,7 @@ class IProfileImpl implements IProfileFacade {
     noMoreData = false;
     lastDoc = null;
   }
+
 /* ---------------------- HOME DELIVERY ENABLE SECTION ---------------------- */
   @override
   FutureResult<String> setPharmacyHomeDelivery(
@@ -114,7 +116,7 @@ class IProfileImpl implements IProfileFacade {
           .collection(FirebaseCollections.pharmacy)
           .doc(pharmacyId)
           .update({'isHomeDelivery': isHomeDeliveryON});
-         return right('Successfully updated delivery status');  
+      return right('Successfully updated delivery status');
     } on FirebaseException catch (e) {
       log(e.code);
       log(e.message!);
@@ -125,7 +127,7 @@ class IProfileImpl implements IProfileFacade {
   }
 
   /* --------------------------- TRANSACTION SECTION -------------------------- */
-  
+
   DocumentSnapshot<Map<String, dynamic>>? lastTransactionDoc;
   bool noMoreTransactionData = false;
   @override
@@ -152,7 +154,8 @@ class IProfileImpl implements IProfileFacade {
       if (result.docs.length < limit || result.docs.isEmpty) {
         noMoreTransactionData = true;
       } else {
-        lastTransactionDoc = result.docs.last as DocumentSnapshot<Map<String, dynamic>>;
+        lastTransactionDoc =
+            result.docs.last as DocumentSnapshot<Map<String, dynamic>>;
       }
 
       final transactionList = result.docs
@@ -172,4 +175,19 @@ class IProfileImpl implements IProfileFacade {
     noMoreTransactionData = false;
   }
 
+/* ---------------------------- ADD BANK DETAILS ---------------------------- */
+
+  @override
+  FutureResult<String> addBankDetails(
+      {required PharmacyModel bankDetails, required String pharmacyId}) async {
+    try {
+      await _firebaseFirestore
+          .collection(FirebaseCollections.pharmacy)
+          .doc(pharmacyId)
+          .update(bankDetails.toBankDetailsMap());
+      return right('Bank Details Updated Successfully');
+    } catch (e) {
+      return left(MainFailure.generalException(errMsg: e.toString()));
+    }
+  }
 }
