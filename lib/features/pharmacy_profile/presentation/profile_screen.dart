@@ -6,6 +6,7 @@ import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/application/profile_provider.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/bank_details/bank_account_details_screen.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/product_list_profile/product_list.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/transaction/payment_history_tab.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/widget/contact_us_sheet.dart';
@@ -47,7 +48,7 @@ class ProfileScreen extends StatelessWidget {
                       iconOn: Icons.power_settings_new,
                       animationDuration: const Duration(milliseconds: 300),
                       onChanged: (bool ispharmacyON) async {
-                         LoadingLottie.showLoading(
+                        LoadingLottie.showLoading(
                             context: context, text: 'Please wait...');
                         profileProvider.pharmacyStatus(ispharmacyON);
                         await profileProvider.setActivePharmacy().whenComplete(
@@ -99,6 +100,21 @@ class ProfileScreen extends StatelessWidget {
                       EasyNavigation.push(
                           context: context,
                           type: PageTransitionType.rightToLeft,
+                          page: const BankAccountDetailsScreen());
+                    },
+                    child: const ProfileMainContainer(
+                        text: 'Bank Account Details',
+                        sideChild: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(Icons.arrow_forward_ios),
+                        )),
+                  ),
+                  const Gap(4),
+                  GestureDetector(
+                    onTap: () {
+                      EasyNavigation.push(
+                          context: context,
+                          type: PageTransitionType.rightToLeft,
                           page: const PharmacyProfileProductList());
                     },
                     child: const ProfileMainContainer(
@@ -111,7 +127,7 @@ class ProfileScreen extends StatelessWidget {
                   const Gap(4),
                   GestureDetector(
                     onTap: () {
-                 EasyNavigation.push(
+                      EasyNavigation.push(
                           context: context,
                           type: PageTransitionType.rightToLeft,
                           page: const PaymentsScreen());
@@ -123,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
                           child: Icon(Icons.arrow_forward_ios),
                         )),
                   ),
-                   const Gap(4),
+                  const Gap(4),
                   GestureDetector(
                     onTap: () {
                       showModalBottomSheet(
@@ -132,7 +148,10 @@ class ProfileScreen extends StatelessWidget {
                         elevation: 5,
                         showDragHandle: true,
                         context: context,
-                        builder: (context) =>  ContactUsBottomSheet(message:  'Hi, I am reaching out from ${authProviderPharamacyDetails.pharmacyDataFetched?.pharmacyName}',),
+                        builder: (context) => ContactUsBottomSheet(
+                          message:
+                              'Hi, I am reaching out from ${authProviderPharamacyDetails.pharmacyDataFetched?.pharmacyName}',
+                        ),
                       );
                     },
                     child: const ProfileMainContainer(
